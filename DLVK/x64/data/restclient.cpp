@@ -9,7 +9,7 @@ EnableRewards(1)
 EnableRejectionChecksums(0)
 ReleaseLevel(100)
 DownloadBufferSize(65536)
-EnableTestPatching(0) //Only use if you know how.
-TestGetPatch(0) //v Same for these v
+EnableTestPatching(0)//Only use if you know how. v v v 
+TestGetPatch(0)
 TestGetEvent(0)
 TestUseLocalFilesInsteadOfServer(1) //Prevents overriding any client changes.
