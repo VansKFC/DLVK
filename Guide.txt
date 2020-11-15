@@ -1,0 +1,19 @@
+The file type extensions have been changed for development convenience and for better management.
+
+Releases will not require any conversion as they will be pre-converted.
+There'll be two source downloads, one with converted types (.scr, .def) and the default/git version (.cpp, .h).
+
+When building from Git version, you will need to convert them like so:
+
+.cpp = .scr
+.h = .def
+
+If some files have an "ini" commented on them, build them as a .ini file regardless of file extension.
+
+I'm doing this for:
+
+- easier forking
+- github statistics
+- easier updating
+
+If you have any questions, contact me.
