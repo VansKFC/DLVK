@@ -1,4 +1,4 @@
-!include("restclient.def") //Include the defined vars
+!include("restclient.c") //Include the defined vars
 DevServer("https://plsdev.dyinglightgame.com")
 ProdServer("https://pls.dyinglightgame.com")
 EnablePLS(1)
