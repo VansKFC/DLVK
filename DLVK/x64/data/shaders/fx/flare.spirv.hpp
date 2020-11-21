@@ -1,5 +1,6 @@
-//Unmodified
-
+/* I plan on optimizing this in HLSL at first.
+* Then simply converting it to Spir-V later on.
+*/
 using engineflags;
 using settemplates;
 using tmu;
@@ -62,16 +63,6 @@ template
 
 			Cull(NONE);
 			BlendFunc(ONE, ONE, ZERO, ONE);
-			// BlendFunc(ONE, ONE, ZERO, ONE);
-			// ???
-			// if(b_sun_on)
-			// {
-				// BlendFunc(ONE, ONE, ZERO, ONE);
-			// }
-			// else
-			// {
-				// BlendFunc(DST_ALPHA, ONE, ZERO, ONE);
-			// }
 			if(technique == "glow_1")
 			{
 				DepthFunc(ALWAYS, FALSE);
