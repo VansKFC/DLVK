@@ -1,3 +1,4 @@
+//Quick shrinkage and disable of facemimic script to reduce load.
 !MimicSet(s)
 !BlinkFrequency(f)
 !BlinkSpeed(f)
