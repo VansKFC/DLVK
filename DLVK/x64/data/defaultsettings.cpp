@@ -1,14 +1,7 @@
-!Device(s,f,f,f,f,s,f,f) //name, vec4 x y z w, cruve_texture, default gamma correction (in gamma steps), default gamma
-!DefaultPCDevice(i) //index of device: starts from 0
-!DefaultXBOXDevice(i)
-!DefaultPS3Device(i)
-!GammaSteps(i) //amount of gauge steps for gamma
-
-GammaSteps(40)
-
-Device("&DisplayDevice_Monitor&", 0.0, 1.0, 1.0, 1.0, "curves_def.dds", 0, 1.0)
-Device("&DisplayDevice_TV&",      0.0, 1.0, 1.0, 1.0, "curves_def.dds", 1, 1.0)
-
+!Device(s,f,f,f,f,s,f,f)
+!DefaultPCDevice(i)
+!GammaSteps(i)
+GammaSteps(20)//Halved for less overhead.
+Device("&DisplayDevice_Monitor&",0.0,1.0,1.0,1.0,"curves_def.dds",0,0.0)//Test tweaks applied, may cause crashing or artifacting.
+Device("&DisplayDevice_TV&",0.0,1.0,1.0,1.0,"curves_def.dds",0, 0.0)
 DefaultPCDevice(1)
-DefaultXBOXDevice(1)
-DefaultPS3Device(1)
