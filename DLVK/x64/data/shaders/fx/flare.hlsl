@@ -1,6 +1,4 @@
-/* I plan on optimizing this in HLSL at first.
-* Then simply converting it to Spir-V later on.
-*/
+//Going to Optimize this..
 using engineflags;
 using settemplates;
 using tmu;
