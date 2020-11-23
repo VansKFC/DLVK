@@ -1,4 +1,4 @@
-import "item_color.def"
+import "item_color.h"
 
 // Xp(xp_to_gain)
 // Item("item_id", color, count, level)
