@@ -1,10 +1,4 @@
-//icntr - integers
-//fcntr - floats
-
-sub main()
-{
-  icntr(0, "DP", 1000, 1200);
-  icntr(1, "Rendered objects", 1000, 1200);
-  icntr(2, "Prerendered objects", 1500, 2500);
-  icntr(3, "Trees", 1000, 1200);
-}
+sub main(){icntr(0,"DP",500,600);
+icntr(1,"Rendered objects",50,600);
+icntr(2,"Prerendered objects",300,500);
+icntr(3,"Trees",500,600);}
