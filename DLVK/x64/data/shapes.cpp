@@ -217,105 +217,71 @@ SurfaceID(0)
 Vertex("Corner"){
 Position(-9.00000, 0.00500)
 Color(255, 255, 255, 255)
-TexCoord(0.04400)
-}
-Vertex("Corner")
-{
+TexCoord(0.04400)}
+Vertex("Corner"){
 Position(-9.00000, 0.00000)
 Color(255, 255, 255, 255)
-TexCoord(0.00000)
-}
-}
-Segment()
-{
+TexCoord(0.00000)}}
+Segment(){
 Loop(0)
 Material("floor_marble_a_nd.mat")
 SurfaceID(0)
-Vertex("Corner")
-{
+Vertex("Corner"){
 Position(-1.80000, 0.00000)
 Color(255, 255, 255, 255)
-TexCoord(0.00000)
-}
-Vertex("Corner")
-{
+TexCoord(0.00000)}
+Vertex("Corner"){
 Position(3.00000, 0.00000)
 Color(255, 255, 255, 255)
-TexCoord(1.50000)
-}
-}
-Segment()
-{
+TexCoord(1.50000)}}
+Segment(){
 Loop(0)
 Material("road_sidewalk.mat")
 SurfaceID(0)
-Vertex("Corner")
-{
+Vertex("Corner"){
 Position(-3.00000, 0.00500)
 Color(255, 255, 255, 255)
-TexCoord(0.04400)
-}
-Vertex("Corner")
-{
+TexCoord(0.04400)}
+Vertex("Corner"){
 Position(-1.80000, 0.00000)
 Color(255, 255, 255, 255)
-TexCoord(0.92400)
-}
-}
-Segment()
-{
+TexCoord(0.92400)}}
+Segment(){
 Loop(0)
 Material("road_sidewalk.mat")
 SurfaceID(0)
-Vertex("BezierCorner")
-{
+Vertex("BezierCorner"){
 Position(5.00000, 0.00000)
 Color(255, 255, 255, 255)
 TexCoord(0.00000)
-VecOut(5.00000, 0.00000)
-}
-Vertex("Corner")
-{
+VecOut(5.00000, 0.00000)}
+Vertex("Corner"){
 Position(5.00000, -0.40000)
 Color(255, 255, 255, 255)
-TexCoord(0.20000)
-}
-}
-Segment()
-{
+TexCoord(0.20000)}}
+Segment(){
 Loop(0)
 Material("floor_marble_a_nd.mat")
 SurfaceID(0)
-Vertex("Corner")
-{
+Vertex("Corner"){
 Position(5.00000, -0.40000)
 Color(255, 255, 255, 255)
-TexCoord(0.20000)
-}
-Vertex("BezierCorner")
-{
+TexCoord(0.20000)}
+Vertex("BezierCorner"){
 Position(9.81000, -0.39706)
 Color(255, 255, 255, 255)
 TexCoord(1.50000)
-VecIn(9.81000, -0.39706)
-}
-}
-}
-Shape("slums_wall_3m")
-{
-Segment()
-{
+VecIn(9.81000, -0.39706)}}}
+Shape("slums_wall_3m"){
+Segment(){
 Loop(0)
 Material("shadow_caster.mat")
 SurfaceID(0)
-Vertex("Corner")
-{
+Vertex("Corner"){
 Position(-0.40000, -0.30000)
 Color(255, 255, 255, 255)
-TexCoord(0.00000)
-}
-Vertex("Corner")
-{
+TexCoord(0.00000)}
+Vertex("Corner"){
 Position(-0.40000, 2.90000)
 Color(255, 255, 255, 255)
 TexCoord(0.00000)
