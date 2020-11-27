@@ -6,11 +6,11 @@ There'll be two source downloads, one with converted types (.scr, .def) and the 
 When building from Git version, you will need to convert them like so:
 
 .cpp = .scr
-.h = .def
+.hpp = .def
+.h = ini
 
-Files in the /data/postprocess/ directory are .ppfx
+Files in the /data/postprocess/ directory are .ppfx (mostly)
 Files in the /data/presets/ directory are .pre
-If some files have an "ini" commented on them, build them as a .ini file regardless of file extension.
 XML files stay the same.
 
 I'm doing this for:
