@@ -43,265 +43,178 @@ Segment(){
 Loop(0)
 Material("road_sidewalk.mat")
 SurfaceID(0)
-Vertex("Corner")
-{
+Vertex("Corner"){
 Position(3.00000, 0.00500)
 Color(255, 255, 255, 255)
-TexCoord(0.04400)
-}
-Vertex("Corner")
-{
+TexCoord(0.04400)}
+Vertex("Corner"){
 Position(4.41000, 0.00500)
 Color(255, 255, 255, 255)
-TexCoord(0.92400)
-}
-}
-Segment()
-{
+TexCoord(0.92400)}}
+Segment(){
 Loop(0)
 Material("road_sidewalk.mat")
 SurfaceID(0)
-Vertex("Corner")
-{
+Vertex("Corner"){
 Position(4.41000, 0.00500)
 Color(255, 255, 255, 255)
-TexCoord(1.00000)
-}
-Vertex("Corner")
-{
+TexCoord(1.00000)}
+Vertex("Corner"){
 Position(4.41000, 0.01000)
 Color(255, 255, 255, 255)
-TexCoord(0.10000)
-}
-Vertex("Corner")
-{
+TexCoord(0.10000)}
+Vertex("Corner"){
 Position(4.50000, 0.01000)
 Color(255, 255, 255, 255)
-TexCoord(0.30000)
-}
-Vertex("Corner")
-{
+TexCoord(0.30000)}
+Vertex("Corner"){
 Position(4.50000, -0.02000)
 Color(255, 255, 255, 255)
-TexCoord(0.50000)
-}
-}
-Segment()
-{
+TexCoord(0.50000)}}
+Segment(){
 Loop(0)
 Material("road_sidewalk.mat")
 SurfaceID(0)
-Vertex("Corner")
-{
+Vertex("Corner"){
 Position(-4.50000, -0.02000)
 Color(255, 255, 255, 255)
-TexCoord(0.50000)
-}
-Vertex("Corner")
-{
+TexCoord(0.50000)}
+Vertex("Corner"){
 Position(-4.50000, 0.01000)
 Color(255, 255, 255, 255)
-TexCoord(0.30000)
-}
-Vertex("Corner")
-{
+TexCoord(0.30000)}
+Vertex("Corner"){
 Position(-4.41000, 0.01000)
 Color(255, 255, 255, 255)
-TexCoord(0.10000)
-}
-Vertex("Corner")
-{
+TexCoord(0.10000)}
+Vertex("Corner"){
 Position(-4.41000, 0.00500)
 Color(255, 255, 255, 255)
-TexCoord(0.94400)
-}
-}
-Segment()
-{
+TexCoord(0.94400)}}
+Segment(){
 Loop(0)
 Material("road_sidewalk.mat")
 SurfaceID(0)
-Vertex("Corner")
-{
+Vertex("Corner"){
 Position(-4.41000, 0.00500)
 Color(255, 255, 255, 255)
-TexCoord(0.92400)
-}
-Vertex("Corner")
-{
+TexCoord(0.92400)}
+Vertex("Corner"){
 Position(-3.00000, 0.00500)
 Color(255, 255, 255, 255)
-TexCoord(0.04500)
-}
-}
-Segment()
-{
+TexCoord(0.04500)}}
+Segment(){
 Loop(0)
 Material("road_sidewalk.mat")
 SurfaceID(0)
-Vertex("Corner")
-{
+Vertex("Corner"){
 Position(-3.00000, 0.00500)
 Color(255, 255, 255, 255)
-TexCoord(0.04400)
-}
-Vertex("Corner")
-{
+TexCoord(0.04400)}
+Vertex("Corner"){
 Position(-3.00000, 0.00000)
 Color(255, 255, 255, 255)
-TexCoord(0.00000)
-}
-}
-}
-Shape("road600_sidewalk650")
-{
-Segment()
-{
+TexCoord(0.00000)}}}
+Shape("road600_sidewalk650"){
+Segment(){
 Loop(0)
 Material("road_asphalt.mat")
 SurfaceID(0)
-Vertex("Corner")
-{
+Vertex("Corner"){
 Position(-9.00000, 0.00000)
 Color(255, 255, 255, 255)
-TexCoord(1.00000)
-}
-Vertex("Corner")
-{
+TexCoord(1.00000)}
+Vertex("Corner"){
 Position(-6.00000, 0.00000)
 Color(255, 255, 255, 255)
-TexCoord(0.19000)
-}
-Vertex("Corner")
-{
+TexCoord(0.19000)}
+Vertex("Corner"){
 Position(-3.00000, 0.00000)
 Color(255, 255, 255, 255)
-TexCoord(1.00000)
-}
-}
-Segment()
-{
+TexCoord(1.00000)}}
+Segment(){
 Loop(0)
 Material("road_sidewalk.mat")
 SurfaceID(0)
-Vertex("Corner")
-{
+Vertex("Corner"){
 Position(3.00000, 0.00000)
 Color(255, 255, 255, 255)
-TexCoord(0.12000)
-}
-Vertex("Corner")
-{
+TexCoord(0.12000)}
+Vertex("Corner"){
 Position(3.00000, 0.00500)
 Color(255, 255, 255, 255)
-TexCoord(0.00000)
-}
-}
-Segment()
-{
+TexCoord(0.00000)}}
+Segment(){
 Loop(0)
 Material("road_sidewalk.mat")
 SurfaceID(0)
-Vertex("Corner")
-{
+Vertex("Corner"){
 Position(3.00000, 0.00500)
 Color(255, 255, 255, 255)
-TexCoord(0.04400)
-}
-Vertex("Corner")
-{
+TexCoord(0.04400)}
+Vertex("Corner"){
 Position(5.00000, 0.00000)
 Color(255, 255, 255, 255)
-TexCoord(0.92400)
-}
-}
-Segment()
-{
+TexCoord(0.92400)}}
+Segment(){
 Loop(0)
 Material("road_sidewalk.mat")
 SurfaceID(0)
-Vertex("Corner")
-{
+Vertex("Corner"){
 Position(9.81000, -0.39706)
 Color(255, 255, 255, 255)
-TexCoord(1.00000)
-}
-Vertex("BezierCorner")
-{
+TexCoord(1.00000)}
+Vertex("BezierCorner"){
 Position(9.80000, 0.00555)
 Color(255, 255, 255, 255)
 TexCoord(0.00000)
 VecIn(9.80000, 0.00555)
-VecOut(9.80000, 0.00555)
-}
-Vertex("Corner")
-{
+VecOut(9.80000, 0.00555)}
+Vertex("Corner"){
 Position(10.30000, 0.00000)
 Color(255, 255, 255, 255)
-TexCoord(1.00000)
-}
-Vertex("Corner")
-{
+TexCoord(1.00000)}
+Vertex("Corner"){
 Position(12.40000, -10.41794)
 Color(255, 255, 255, 255)
-TexCoord(3.00000)
-}
-}
-Segment()
-{
+TexCoord(3.00000)}}
+Segment(){
 Loop(0)
 Material("road_sidewalk.mat")
 SurfaceID(0)
-Vertex("Corner")
-{
+Vertex("Corner"){
 Position(-10.50000, -0.02000)
 Color(255, 255, 255, 255)
-TexCoord(0.50000)
-}
-Vertex("Corner")
-{
+TexCoord(0.50000)}
+Vertex("Corner"){
 Position(-10.50000, 0.01000)
 Color(255, 255, 255, 255)
-TexCoord(0.30000)
-}
-Vertex("Corner")
-{
+TexCoord(0.30000)}
+Vertex("Corner"){
 Position(-10.41000, 0.01000)
 Color(255, 255, 255, 255)
-TexCoord(0.10000)
-}
-Vertex("Corner")
-{
+TexCoord(0.10000)}
+Vertex("Corner"){
 Position(-10.41000, 0.00500)
 Color(255, 255, 255, 255)
-TexCoord(0.94400)
-}
-}
-Segment()
-{
+TexCoord(0.94400)}}
+Segment(){
 Loop(0)
 Material("road_sidewalk.mat")
 SurfaceID(0)
-Vertex("Corner")
-{
+Vertex("Corner"){
 Position(-10.41000, 0.00500)
 Color(255, 255, 255, 255)
-TexCoord(0.92400)
-}
-Vertex("Corner")
-{
+TexCoord(0.92400)}
+Vertex("Corner"){
 Position(-9.00000, 0.00500)
 Color(255, 255, 255, 255)
-TexCoord(0.04500)
-}
-}
-Segment()
-{
+TexCoord(0.04500)}}
+Segment(){
 Loop(0)
 Material("road_sidewalk.mat")
 SurfaceID(0)
-Vertex("Corner")
-{
+Vertex("Corner"){
 Position(-9.00000, 0.00500)
 Color(255, 255, 255, 255)
 TexCoord(0.04400)
@@ -4863,103 +4776,69 @@ Color(255, 255, 255, 255)
 TexCoord(0.65000)
 VecOut(-0.80000, 0.10000)
 }
-Vertex("Corner")
-{
+Vertex("Corner"){
 Position(0.80000, 0.10000)
 Color(255, 255, 255, 255)
-TexCoord(0.00000)
-}
-Vertex("Corner")
-{
+TexCoord(0.00000)}
+Vertex("Corner"){
 Position(1.35000, -0.02000)
 Color(255, 255, 255, 255)
 TexCoord(0.95000)
-OnTerrain()
-}
-}
-Segment()
-{
+OnTerrain()}}
+Segment(){
 Loop(0)
 Material("t5_road_sidewalk_a.mat")
 SurfaceID(0)
-Vertex("Corner")
-{
+Vertex("Corner"){
 Position(-1.00000, -0.30000)
 Color(255, 255, 255, 255)
-TexCoord(1.00000)
-}
-Vertex("Corner")
-{
+TexCoord(1.00000)}
+Vertex("Corner"){
 Position(-0.95000, 0.06000)
 Color(255, 255, 255, 255)
-TexCoord(0.91500)
-}
-Vertex("Corner")
-{
+TexCoord(0.91500)}
+Vertex("Corner"){
 Position(-0.93000, 0.07000)
 Color(255, 255, 255, 255)
-TexCoord(0.90000)
-}
-Vertex("Corner")
-{
+TexCoord(0.90000)}
+Vertex("Corner"){
 Position(-0.80000, 0.10000)
 Color(255, 255, 255, 255)
-TexCoord(0.80000)
-}
-}
-}
-Shape("wl_road_ocean_wall_a")
-{
-Segment()
-{
+TexCoord(0.80000)}}}
+Shape("wl_road_ocean_wall_a"){
+Segment(){
 Loop(0)
 Material("slums_ground_plane_asphalt.mat")
 SurfaceID(0)
-Vertex("Corner")
-{
+Vertex("Corner"){
 Position(-6.00000, -0.70000)
 Color(255, 255, 255, 255)
-TexCoord(0.00000)
-}
-Vertex("Corner")
-{
+TexCoord(0.00000)}
+Vertex("Corner"){
 Position(0.00000, 0.10000)
 Color(255, 255, 255, 255)
-TexCoord(1.00000)
-}
-}
-Segment()
-{
+TexCoord(1.00000)}}
+Segment(){
 Loop(0)
 Material("shadow_caster.mat")
 SurfaceID(0)
-Vertex("Corner")
-{
+Vertex("Corner"){
 Position(-6.00000, -0.80000)
 Color(255, 255, 255, 255)
-TexCoord(0.00000)
-}
-Vertex("Corner")
-{
+TexCoord(0.00000)}
+Vertex("Corner"){
 Position(0.10000, 0.00000)
 Color(255, 255, 255, 255)
-TexCoord(0.00000)
-}
-Vertex("Corner")
-{
+TexCoord(0.00000)}
+Vertex("Corner"){
 Position(0.20000, 1.00000)
 Color(255, 255, 255, 255)
-TexCoord(0.00000)
-}
-Vertex("Corner")
-{
+TexCoord(0.00000)}
+Vertex("Corner"){
 Position(0.30000, -2.00000)
 Color(255, 255, 255, 255)
-TexCoord(0.00000)
-}
-}
-Segment()
-{
+TexCoord(0.00000)}}
+Segment(){
 Loop(0)
 Material("concrete_wall_slums_stairs.mat")
 SurfaceID(0)
