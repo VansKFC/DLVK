@@ -27,7 +27,7 @@ Tech("ufb");
 ;//Tech("rfl");
 Tech("rfr");
 Tech("trn_blur");
-Tech("trn_dpt");
+;Tech("trn_dpt");
 Tech("opq_first");
 Tech("opq_last");
 Tech("trn_back");
@@ -54,9 +54,9 @@ Tech("env");
 Tech("opq_wtr");
 Tech("haze");
 Tech("rfr2");
-Tech("rfl2");
+;//Tech("rfl2");
 Tech("lit_dim");
 Tech("ssss");
 Tech("ice");
 Tech("shd");
-Tech("rfr3");}
+;Tech("rfr3");}
