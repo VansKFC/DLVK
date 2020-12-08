@@ -33,7 +33,6 @@ import "hr_indication_pulse.osc"
 import "hr_indication_close.osc"
 sub main(){
 use nuclear_blast();
-//useflickering_tv_ammbox();uselighttower_hotelroom_light();usefan_rotation_continous();uselamp_hotel_pendulum_a();useair_conditioning_rotation_continous();uselamp_flickering_more_dark_a();uselamp_flickering_more_light_a();
 use light_spot_fire_a();
 use steam_emitter_continous();
 use telebim();
