@@ -1,0 +1,622 @@
+import "EngineDefs.mth"
+///////////////////////////////////////////////////////////////////////////////
+sub mtt_vs(
+    int i_const = -1,
+    bool b_lit_on = FALSE,
+    bool b_lit_cam_on = FALSE,
+    bool b_pos_bias_scale_on = FALSE,
+    bool b_sprite_on = FALSE,
+    bool b_uv_0_on = FALSE,
+    bool b_uv_1_on = FALSE,
+    bool b_vertex_color_on = FALSE
+)
+{
+    VertexShader()
+    {
+        if(i_const >= 0) { Define("V_CONST", "CONST_" + i_const); }
+        if(b_sprite_on)
+        {
+            Define("SPRITE_ON", 1);
+        }
+        else
+        {
+            if(b_pos_bias_scale_on) { Define("POS_BIAS_SCALE_ON", 1); }
+        }
+        if(b_lit_on) { Define("LIT_ON", 1); }
+        if(b_lit_cam_on) { Define("LIT_CAM_ON", 1); }
+        if(b_vertex_color_on) { Define("VERTEX_COLOR_ON", 1); }
+        if(b_uv_0_on)
+        {
+            Define("UV_0_ON", 1);
+            if(b_uv_1_on) { Define("UV_1_ON", 1); }
+        }
+
+        hlsl() = "
+			#include <commonVarsLayout.hlsl>
+            #if defined(V_CONST)
+                CONST_FLOAT4 V_CONST;
+            #endif
+            #if defined(LIT_ON)
+                CONST_FLOAT3 vsundir;
+            #endif
+            #if defined(LIT_CAM_ON)
+                CONST_FLOAT3 CAMERA_POS_MS;
+            #endif
+            #if defined(SPRITE_ON)
+                #include <pos_out_sprite.hlsl>
+            #else
+                CONST_FLOAT4 COMBINED_XFORM[4];
+            #endif
+
+            struct VIN
+            {
+                float4 v_pos: POSITION;
+                #if defined(VERTEX_COLOR_ON)
+                    float4 v_clr_0: COLOR0;
+                #endif
+                #if defined(UV_0_ON)
+                    float4 v_uv_0: TEXCOORD0;
+                    #if defined(UV_1_ON)
+                        float4 v_uv_1: TEXCOORD1;
+                    #endif
+                #endif
+                #if defined(LIT_ON) || defined(LIT_CAM_ON)
+                    float3 v_nrm: NORMAL;
+                #endif
+            };
+            struct V2P
+            {
+                float4 v_pos: POSITION;
+                #if defined(LIT_ON) || defined(VERTEX_COLOR_ON) || defined(LIT_CAM_ON)
+                    float4 v_clr_0: COLOR0;
+                #endif
+                #if defined(UV_0_ON)
+                    #define UV_0 v_uvs.xy
+                    #define UV_1 v_uvs.zw
+                    #if defined(UV_1_ON)
+                        float4 v_uvs: TEXCOORD0;
+                    #else
+                        float2 v_uvs: TEXCOORD0;
+                    #endif
+                #endif
+            };
+
+            void main(in VIN IN, out V2P OUT )
+            {
+                #if defined(SPRITE_ON)
+                    OUT.v_pos = Pos_Out_Sprite3D(IN.v_pos);
+                #else
+                    #if defined(POS_BIAS_SCALE_ON)
+                        IN.v_pos.xyz *= POSITION_BIAS_SCALE.w + POSITION_BIAS_SCALE.xyz;
+                    #endif
+                    OUT.v_pos.x = dot(IN.v_pos, COMBINED_XFORM[0]);
+                    OUT.v_pos.y = dot(IN.v_pos, COMBINED_XFORM[1]);
+                    OUT.v_pos.z = dot(IN.v_pos, COMBINED_XFORM[2]);
+                    OUT.v_pos.w = dot(IN.v_pos, COMBINED_XFORM[3]);
+                #endif
+
+                #if defined(LIT_ON) || defined(VERTEX_COLOR_ON) || defined(LIT_CAM_ON)
+                    #if defined(V_CONST)
+                        OUT.v_clr_0 = V_CONST;
+                    #else
+                        OUT.v_clr_0 = 1.0;
+                    #endif
+
+                    #if defined(LIT_ON)
+                        float3 v_nrm;
+                        v_nrm.x = dot(IN.v_nrm.xyz, MODEL_XFORM[0].xyz);
+                        v_nrm.y = dot(IN.v_nrm.xyz, MODEL_XFORM[1].xyz);
+                        v_nrm.z = dot(IN.v_nrm.xyz, MODEL_XFORM[2].xyz);
+                        OUT.v_clr_0.xyz *= saturate(dot(v_nrm.xyz * NRM_TAN_TEX_SCALE.x, vsundir.xyz) * 0.4 + 0.6);
+                    #endif
+
+                    #if defined(LIT_CAM_ON)
+                        float3 v_cam_dir_n = normalize(CAMERA_POS_MS.xyz - IN.v_pos.xyz);
+                        OUT.v_clr_0.xyz *= saturate(dot(v_cam_dir_n, IN.v_nrm.xyz));
+                    #endif
+
+                    #if defined(VERTEX_COLOR_ON)                     
+                         OUT.v_clr_0 *= IN.v_clr_0;
+                    #endif
+                #endif
+
+                #if defined(UV_0_ON)
+                    OUT.UV_0 = IN.v_uv_0;
+                    #if defined(UV_1_ON)
+                        OUT.UV_1 = IN.v_uv_1;
+                    #endif
+                    #if defined(POS_BIAS_SCALE_ON)
+                        OUT.v_uvs *= NRM_TAN_TEX_SCALE.z;
+                    #endif
+                #endif
+            }
+        "
+    }
+}
+
+// VERTEX SHADERS ///////////////////////////////////////////////////////////////
+
+sub VS_Pos(bool pos_bias_scale = FALSE)
+{
+    use mtt_vs(b_pos_bias_scale_on = pos_bias_scale);
+}
+
+sub VS_PosColor0(bool pos_bias_scale = false)
+{
+    use mtt_vs(
+        b_pos_bias_scale_on = pos_bias_scale,
+        b_vertex_color_on = TRUE
+    );
+}
+
+sub VS_PosColor0MulConst0(bool pos_bias_scale = false)
+{
+    use mtt_vs(
+        b_pos_bias_scale_on = pos_bias_scale,
+        b_vertex_color_on = TRUE,
+        i_const = 255 //tu kiedys bylo 0
+    );
+}
+
+
+sub VS_PosTex0(bool pos_bias_scale = false)
+{
+    use mtt_vs(
+        b_pos_bias_scale_on = pos_bias_scale,
+        b_uv_0_on = TRUE
+    );
+}
+
+sub VS_PosTex01(bool pos_bias_scale = false)
+{
+    use mtt_vs(
+        b_pos_bias_scale_on = pos_bias_scale,
+        b_uv_0_on = TRUE,
+        b_uv_1_on = TRUE
+    );
+}
+
+sub VS_PosTex0Color0(bool pos_bias_scale = false)
+{
+    use mtt_vs(
+        b_pos_bias_scale_on = pos_bias_scale,
+        b_uv_0_on = TRUE,
+        b_vertex_color_on = TRUE
+    );
+}
+
+sub VS_PosLit(bool pos_bias_scale = false)
+{
+    use mtt_vs(
+        b_lit_on = TRUE,
+        b_pos_bias_scale_on = pos_bias_scale
+    );
+}
+
+sub VS_PosConst255Lit(bool pos_bias_scale = false)
+{
+    use mtt_vs(
+        b_lit_on = TRUE,
+        b_pos_bias_scale_on = pos_bias_scale,
+        i_const = 255 //tu kiedys bylo 0
+    );
+}
+sub VS_PosColor0Lit(bool pos_bias_scale = false)
+{
+    use mtt_vs(
+        b_lit_on = TRUE,
+        b_pos_bias_scale_on = pos_bias_scale,
+        b_vertex_color_on = TRUE
+    );
+}
+
+sub VS_PosTex0Lit(bool pos_bias_scale = false)
+{
+    use mtt_vs(
+        b_lit_on = TRUE,
+        b_pos_bias_scale_on = pos_bias_scale,
+        b_uv_0_on = TRUE
+    );
+}
+
+sub VS_PosTex0Color0Lit(bool pos_bias_scale = false)
+{
+    use mtt_vs(
+        b_lit_on = TRUE,
+        b_pos_bias_scale_on = pos_bias_scale,
+        b_uv_0_on = TRUE,
+        b_vertex_color_on = TRUE
+    );
+}
+
+sub VS_PosTex0CameraLit(bool pos_bias_scale = false)
+{
+    use mtt_vs(
+        b_lit_cam_on = TRUE,
+        b_pos_bias_scale_on = pos_bias_scale,
+        b_uv_0_on = TRUE
+    );
+}
+
+// PIXEL SHADERS /////////////////////////////////////////////////////////////////////////////
+
+sub PS_Const0()
+{
+    PixelShader()
+    {
+        hlsl() ="
+			#include <commonVarsLayout.hlsl>
+            CONST_FLOAT4 CONST;
+            void main(DX11POS out half4 output : COLOR )
+            {
+                output = CONST;
+            }
+        "
+    }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+sub PS_Const1()
+{
+    PixelShader()
+    {
+        hlsl() ="
+			#include <commonVarsLayout.hlsl>
+            CONST_FLOAT4 CONST_1;
+            void main(DX11POS out half4 output : COLOR )
+            {
+                output = CONST_1;
+            }
+        "
+    }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+sub PS_Const255()
+{
+    PixelShader()
+    {
+        hlsl() ="
+			#include <commonVarsLayout.hlsl>
+            CONST_FLOAT4 CONST_255;
+            void main(DX11POS out half4 output : COLOR )
+            {
+                output = CONST_255;
+            }
+        "
+    }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+sub PS_Color0()
+{
+    PixelShader()
+    {
+       hlsl() ="
+            struct VS2PS
+            {
+                DX11POS_STRUCT
+                
+                #if defined(SHADER_PATH_DX1x)
+                    float4 Position: SV_POSITION;
+                #else
+                    float4 Position: VPOS;
+                #endif
+                half4 VertexColor: COLOR0;
+            };
+
+            void main( in VS2PS input, out half4 output : COLOR )
+            {
+                output = input.VertexColor;
+            }
+        "
+    }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+sub PS_Tex0()
+{
+    PixelShader()
+    {
+       hlsl() ="
+            sampler s_Tex0: register(s0);
+
+            struct VS2PS
+            {
+                DX11POS_STRUCT
+                #if defined(SHADER_PATH_DX1x)
+                    float4 Position: SV_POSITION;
+                #else
+                    float4 Position: VPOS;
+                #endif
+                float2 Texcoord0: TEXCOORD0;
+            };
+
+            void main( in VS2PS input, out half4 output : COLOR )
+            {
+                output = tex2D( s_Tex0, input.Texcoord0.xy );
+            }
+        "
+    }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+sub PS_Tex0MulColor0()
+{
+    PixelShader()
+    {
+       hlsl() ="
+            sampler s_Tex0: register(s0);
+
+            struct VS2PS
+            {
+                DX11POS_STRUCT
+                #if defined(SHADER_PATH_DX1x)
+                    float4 Position: SV_POSITION;
+                #else
+                    float4 Position: VPOS;
+                #endif
+                half4 VertexColor: COLOR0;
+                float2 Texcoord0: TEXCOORD0;
+            };
+
+            void main( in VS2PS input, out half4 output : COLOR )
+            {
+                output = tex2D( s_Tex0, input.Texcoord0.xy ) * input.VertexColor;
+            }
+        "
+    }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+sub PS_Tex0MulColor0MulConst0()
+{
+    PixelShader()
+    {
+       hlsl() ="
+			#include <commonVarsLayout.hlsl>
+            CONST_FLOAT4 CONST;
+
+            sampler s_Tex0: register(s0);
+
+            struct VS2PS
+            {
+                DX11POS_STRUCT
+                #if defined(SHADER_PATH_DX1x)
+                    float4 Position: SV_POSITION;
+                #else
+                    float4 Position: VPOS;
+                #endif
+                float4 VertexColor: COLOR0;
+                float2 Texcoord0: TEXCOORD0;
+            };
+
+            void main( in VS2PS input, out half4 output : COLOR )
+            {
+                output = tex2D( s_Tex0, input.Texcoord0.xy ) * input.VertexColor * CONST;
+            }
+        "
+    }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+sub PS_Tex0MulConst0()
+{
+    PixelShader()
+    {
+       hlsl() ="
+			#include <commonVarsLayout.hlsl>
+            CONST_FLOAT4 CONST;
+
+            sampler s_Tex0: register(s0);
+
+            struct VS2PS
+            {
+                DX11POS_STRUCT
+                #if defined(SHADER_PATH_DX1x)
+                    float4 Position: SV_POSITION;
+                #else
+                    float4 Position: VPOS;
+                #endif
+                float2 Texcoord0: TEXCOORD0;
+            };
+
+            void main( in VS2PS input, out half4 output : COLOR )
+            {
+                output = tex2D( s_Tex0, input.Texcoord0.xy ) * CONST;
+            }
+        "
+    }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+sub PS_Tex0MulConst1()
+{
+    PixelShader()
+    {
+       hlsl() ="
+			#include <commonVarsLayout.hlsl>
+            CONST_FLOAT4 CONST_1;
+
+            sampler s_Tex0: register(s0);
+
+            struct VS2PS
+            {
+                DX11POS_STRUCT
+                #if defined(SHADER_PATH_DX1x)
+                    float4 Position: SV_POSITION;
+                #else
+                    float4 Position: VPOS;
+                #endif
+                float2 Texcoord0: TEXCOORD0;
+            };
+
+            void main( in VS2PS input, out half4 output : COLOR )
+            {
+                output = tex2D( s_Tex0, input.Texcoord0.xy ) * CONST_1;
+            }
+        "
+    }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+sub PS_Tex0MulConst255()
+{
+    PixelShader()
+    {
+       hlsl() ="
+			#include <commonVarsLayout.hlsl>
+            CONST_FLOAT4 CONST_255;
+
+            sampler s_Tex0: register(s0);
+
+            struct VS2PS
+            {
+                DX11POS_STRUCT
+                #if defined(SHADER_PATH_DX1x)
+                    float4 Position: SV_POSITION;
+                #else
+                    float4 Position: VPOS;
+                #endif
+                float2 Texcoord0: TEXCOORD0;
+            };
+
+            void main( in VS2PS input, out half4 output : COLOR )
+            {
+                output = tex2D( s_Tex0, input.Texcoord0.xy ) * CONST_255;
+            }
+        "
+    }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+sub PS_Tex0MulConst0AConst0()
+{
+    PixelShader()
+    {
+       hlsl() ="
+			#include <commonVarsLayout.hlsl>
+            CONST_FLOAT4 CONST;
+
+            sampler s_Tex0: register(s0);
+
+            struct VS2PS
+            {
+                DX11POS_STRUCT
+                #if defined(SHADER_PATH_DX1x)
+                    float4 Position: SV_POSITION;
+                #else
+                    float4 Position: VPOS;
+                #endif
+                float2 Texcoord0: TEXCOORD0;
+            };
+
+            void main( in VS2PS input, out half4 output : COLOR )
+            {
+                output.xyz = tex2D( s_Tex0, input.Texcoord0.xy ).xyz * CONST.xyz;
+                output.w = CONST.w;
+            }
+        "
+    }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+sub PS_Color0MulConst0()
+{
+    PixelShader()
+    {
+       hlsl() ="
+			#include <commonVarsLayout.hlsl>
+            CONST_FLOAT4 CONST;
+
+            struct VS2PS
+            {
+                DX11POS_STRUCT
+                #if defined(SHADER_PATH_DX1x)
+                    float4 Position: SV_POSITION;
+                #else
+                    float4 Position: VPOS;
+                #endif
+                float4 VertexColor: COLOR0;
+            };
+
+            void main( in VS2PS input, out half4 output : COLOR )
+            {
+                output = input.VertexColor * CONST;
+            }
+        "
+    }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+sub PS_Color0MulConst255()
+{
+    PixelShader()
+    {
+       hlsl() ="
+			#include <commonVarsLayout.hlsl>
+            CONST_FLOAT4 CONST_255;
+
+            struct VS2PS
+            {
+                DX11POS_STRUCT
+                #if defined(SHADER_PATH_DX1x)
+                    float4 Position: SV_POSITION;
+                #else
+                    float4 Position: VPOS;
+                #endif
+                float4 VertexColor: COLOR0;
+            };
+
+            void main( in VS2PS input, out half4 output : COLOR )
+            {
+                output = input.VertexColor * CONST_255;
+            }
+        "
+    }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+sub PS_Black()
+{
+    PixelShader()
+    {
+        hlsl() ="
+            void main(DX11POS out half4 output : COLOR )
+            {
+                output = 0;
+            }
+        "
+    }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+sub PS_White()
+{
+    PixelShader()
+    {
+        hlsl() ="
+            void main(DX11POS out half4 output : COLOR )
+            {
+                output = 1.0;
+            }
+        "
+    }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
