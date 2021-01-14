@@ -1,0 +1,801 @@
+import "common.mtt"
+
+//master material const
+
+// INTS
+int i_cst_i_current = i_const_int_first;                        //i_cst_int_current contain first avalibe CONST_INT_XX (1)
+
+export int i_cst_i_00 = i_cst_i_current;                            //
+export string s_cst_i_00 = s_const_int_name + i_cst_i_00;            //string var s_cst_i_00 contain real const name CONST_INT_1
+int i_cst_i_current = i_cst_i_current + 1;        //first avalibe: 2 = 1 + 1
+
+export int i_cst_i_01 = i_cst_i_current;                            //
+export string s_cst_i_01 = s_const_int_name + i_cst_i_01;
+//    int i_cst_i_current = i_cst_i_current + 1;      //uncomment if more consts
+
+// FLOATS
+int i_cst_current = i_const_first;                        //i_cst_current contain first avalibe CONST_XXX (100)
+
+export int i_cst_mm_000 = i_cst_current;                            //X: F_WIND_BEND_SCALE_DEF, Y: F_WIND_NOISE_SCALE_DEF, Z: F_WIND_NOISE_SIZE_DEF, W: F_WIND_NOISE_SPEED_DEF
+export string s_cst_mm_000 = s_const_name + i_cst_mm_000;               //string var s_cst_mm_000 contain real const name CONST_100
+int i_cst_current = i_cst_current + 1;        //first avalibe: 104 = 100 + 4
+
+export int i_cst_mm_001 = i_cst_current;                             //XYZW: V_EYE_CENTER_LEFT
+export string s_cst_mm_001 = s_const_name + i_cst_mm_001;
+int i_cst_current = i_cst_current + 1;
+
+export int i_cst_mm_002 = i_cst_current;                             //XYZW: HGT PARAMS
+export string s_cst_mm_002 = s_const_name + i_cst_mm_002;
+int i_cst_current = i_cst_current + 1;
+
+export int i_cst_mm_003 = i_cst_current;                             //XYZW: PS3: TERRAIN MORPH CONSTS / GRASS VTX WEIGHTS
+export string s_cst_mm_003 = s_const_name + i_cst_mm_003;
+int i_cst_current = i_cst_current + 1;
+
+export int i_cst_mm_004 = i_cst_current;                              //XYZW: PS3: TERRAIN MORPH CONSTS / GRASS VTX WEIGHTS
+export string s_cst_mm_004 = s_const_name + i_cst_mm_004;
+int i_cst_current = i_cst_current + 1;
+
+export int i_cst_mm_005 = i_cst_current;                              //XYZW: PS3: TERRAIN MORPH CONSTS / GRASS VTX WEIGHTS
+export string s_cst_mm_005 = s_const_name + i_cst_mm_005;
+int i_cst_current = i_cst_current + 1;
+
+export int i_cst_mm_006 = i_cst_current;                               //XYZW: PS3: TERRAIN MORPH CONSTS / GRASS VTX WEIGHTS
+export string s_cst_mm_006 = s_const_name + i_cst_mm_006;
+int i_cst_current = i_cst_current + 1;
+
+export int i_cst_mm_007 = i_cst_current;                               //XYZW: PS3: TERRAIN MORPH CONSTS
+export string s_cst_mm_007 = s_const_name + i_cst_mm_007;
+int i_cst_current = i_cst_current + 1;
+
+export int i_cst_mm_008 = i_cst_current;                               //XYZ: V_TERRAIN_INV_SIZE, W: F_HGT_STEPS_LIN_INV
+export string s_cst_mm_008 = s_const_name + i_cst_mm_008;
+int i_cst_current = i_cst_current + 1;
+
+export int i_cst_mm_009 = i_cst_current;                               //XYZW: V_EYE_CENTER_RIGHT
+export string s_cst_mm_009 = s_const_name + i_cst_mm_009;
+int i_cst_current = i_cst_current + 1;
+
+//user/template material const
+
+int i_cst_size = 1;
+
+export int i_cst_000 = i_cst_current;                             //XYZW: FREE
+export string s_cst_000 = s_const_name + i_cst_000;
+int i_cst_current = i_cst_current + 1;
+
+export int i_cst_001 = i_cst_current;                             //XYZW: FREE
+export string s_cst_001 = s_const_name + i_cst_001;
+int i_cst_current = i_cst_current + 1;
+
+export int i_cst_002 = i_cst_current;                             //XYZW: FREE
+export string s_cst_002 = s_const_name + i_cst_002;
+int i_cst_current = i_cst_current + 1;
+
+export int i_cst_003 = i_cst_current;                             //XYZW: FREE
+export string s_cst_003 = s_const_name + i_cst_003;
+int i_cst_current = i_cst_current + 1;
+
+export int i_cst_004 = i_cst_current;                              //XYZW: FREE
+export string s_cst_004 = s_const_name + i_cst_004;
+int i_cst_current = i_cst_current + 1;
+
+export int i_cst_005 = i_cst_current;                              //XYZW: FREE
+export string s_cst_005 = s_const_name + i_cst_005;
+int i_cst_current = i_cst_current + 1;
+
+export int i_cst_006 = i_cst_current;                               //XYZW: FREE
+export string s_cst_006 = s_const_name + i_cst_006;
+int i_cst_current = i_cst_current + 1;
+
+export int i_cst_007 = i_cst_current;                               //XYZW: FREE
+export string s_cst_007 = s_const_name + i_cst_007;
+int i_cst_current = i_cst_current + 1;
+
+export int i_cst_008 = i_cst_current;                               //XYZW: FREE
+export string s_cst_008 = s_const_name + i_cst_008;
+int i_cst_current = i_cst_current + 1;
+
+export int i_cst_009 = i_cst_current;                               //XYZW: FREE
+export string s_cst_009 = s_const_name + i_cst_009;
+int i_cst_current = i_cst_current + 1;
+
+export int i_cst_010 = i_cst_current;                               //XYZW: FREE
+export string s_cst_010 = s_const_name + i_cst_010;
+int i_cst_current = i_cst_current + 1;
+
+export int i_cst_011 = i_cst_current;                               //XYZW: FREE
+export string s_cst_011 = s_const_name + i_cst_011;
+int i_cst_current = i_cst_current + 1;
+
+export int i_cst_012 = i_cst_current;                               //XYZW: FREE
+export string s_cst_012 = s_const_name + i_cst_012;
+int i_cst_current = i_cst_current + 1;
+
+export int i_cst_013 = i_cst_current;                               //XYZW: FREE
+export string s_cst_013 = s_const_name + i_cst_013;
+int i_cst_current = i_cst_current + 1;
+
+export int i_cst_014 = i_cst_current;                               //XYZW: FREE
+export string s_cst_014 = s_const_name + i_cst_014;
+int i_cst_current = i_cst_current + 1;
+
+export int i_cst_015 = i_cst_current;                               //XYZW: FREE
+export string s_cst_015 = s_const_name + i_cst_015;
+int i_cst_current = i_cst_current + 1;
+
+
+export int i_cst_016 = i_cst_current;                               //XYZW: FREE
+export string s_cst_016 = s_const_name + i_cst_016;
+int i_cst_current = i_cst_current + 1;
+
+export int i_cst_017 = i_cst_current;                               //XYZW: FREE
+export string s_cst_017 = s_const_name + i_cst_017;
+int i_cst_current = i_cst_current + 1;
+
+export int i_cst_018 = i_cst_current;                               //XYZW: FREE
+export string s_cst_018 = s_const_name + i_cst_018;
+int i_cst_current = i_cst_current + 1;
+
+export int i_cst_019 = i_cst_current;                               //XYZW: FREE
+export string s_cst_019 = s_const_name + i_cst_019;
+int i_cst_current = i_cst_current + 1;
+
+export int i_cst_020 = i_cst_current;                               //XYZW: FREE
+export string s_cst_020 = s_const_name + i_cst_020;
+int i_cst_current = i_cst_current + 1;
+
+export int i_cst_021 = i_cst_current;                               //XYZW: FREE
+export string s_cst_021 = s_const_name + i_cst_021;
+int i_cst_current = i_cst_current + 1;
+
+export int i_cst_022 = i_cst_current;                               //XYZW: FREE
+export string s_cst_022 = s_const_name + i_cst_022;
+int i_cst_current = i_cst_current + 1;
+
+export int i_cst_023 = i_cst_current;                               //XYZW: FREE
+export string s_cst_023 = s_const_name + i_cst_023;
+int i_cst_current = i_cst_current + 1;
+
+export int i_cst_024 = i_cst_current;                               //XYZW: FREE
+export string s_cst_024 = s_const_name + i_cst_024;
+int i_cst_current = i_cst_current + 1;
+
+export int i_cst_025 = i_cst_current;                               //XYZW: FREE
+export string s_cst_025 = s_const_name + i_cst_025;
+int i_cst_current = i_cst_current + 1;
+
+export int i_cst_026 = i_cst_current;                               //XYZW: FREE
+export string s_cst_026 = s_const_name + i_cst_026;
+int i_cst_current = i_cst_current + 1;
+
+export int i_cst_027 = i_cst_current;                               //XYZW: FREE
+export string s_cst_027 = s_const_name + i_cst_027;
+int i_cst_current = i_cst_current + 1;
+
+export int i_cst_028 = i_cst_current;                               //XYZW: FREE
+export string s_cst_028 = s_const_name + i_cst_028;
+int i_cst_current = i_cst_current + 1;
+
+export int i_cst_029 = i_cst_current;                               //XYZW: FREE
+export string s_cst_029 = s_const_name + i_cst_029;
+int i_cst_current = i_cst_current + 1;
+
+export int i_cst_030 = i_cst_current;                               //XYZW: FREE
+export string s_cst_030 = s_const_name + i_cst_030;
+int i_cst_current = i_cst_current + 1;
+
+export int i_cst_031 = i_cst_current;                               //XYZW: FREE
+export string s_cst_031 = s_const_name + i_cst_031;
+int i_cst_current = i_cst_current + 1;
+
+
+export int i_xfm_00 = i_cst_current;
+export string s_xfm_00 = s_const_name + i_xfm_00;
+int i_cst_current = i_cst_current + 4;
+
+export int i_xfm_01 = i_cst_current;
+export string s_xfm_01 = s_const_name + i_xfm_01;
+int i_cst_current = i_cst_current + 4;
+
+export int i_xfm_02 = i_cst_current;
+export string s_xfm_02 = s_const_name + i_xfm_02;
+int i_cst_current = i_cst_current + 4;
+
+export int i_xfm_03 = i_cst_current;
+export string s_xfm_03 = s_const_name + i_xfm_03;
+int i_cst_current = i_cst_current + 4; 
+
+export int i_xfm_04 = i_cst_current;
+export string s_xfm_04 = s_const_name + i_xfm_04;
+int i_cst_current = i_cst_current + 4;       
+
+export int i_xfm_05 = i_cst_current;
+export string s_xfm_05 = s_const_name + i_xfm_05;
+int i_cst_current = i_cst_current + 4;       
+
+export int i_xfm_06 = i_cst_current;
+export string s_xfm_06 = s_const_name + i_xfm_06;
+int i_cst_current = i_cst_current + 4;       
+
+export int i_xfm_07 = i_cst_current;
+export string s_xfm_07 = s_const_name + i_xfm_07;
+int i_cst_current = i_cst_current + 4;       
+
+export int i_xfm_08 = i_cst_current;
+export string s_xfm_08 = s_const_name + i_xfm_08;
+int i_cst_current = i_cst_current + 4;       
+
+export int i_xfm_09 = i_cst_current;
+export string s_xfm_09 = s_const_name + i_xfm_09;
+int i_cst_current = i_cst_current + 4;       
+
+export int i_xfm_10 = i_cst_current;
+export string s_xfm_10 = s_const_name + i_xfm_10;
+int i_cst_current = i_cst_current + 4;       
+
+export int i_xfm_11 = i_cst_current;
+export string s_xfm_11 = s_const_name + i_xfm_11;
+int i_cst_current = i_cst_current + 4;       
+
+export int i_xfm_12 = i_cst_current;
+export string s_xfm_12 = s_const_name + i_xfm_12;
+int i_cst_current = i_cst_current + 4;       
+
+export int i_xfm_13 = i_cst_current;
+export string s_xfm_13 = s_const_name + i_xfm_13;
+int i_cst_current = i_cst_current + 4;       
+
+export int i_xfm_14 = i_cst_current;
+export string s_xfm_14 = s_const_name + i_xfm_14;
+int i_cst_current = i_cst_current + 4;       
+
+export int i_xfm_15 = i_cst_current;
+export string s_xfm_15 = s_const_name + i_xfm_15;
+//int i_cst_current = i_cst_current + 4;       // uncomment if more consts
+
+export bool b_req_ps_on_def = FALSE;
+
+export vec4 v_cst_def = [ 1.0, 1.0, 1.0, 1.0 ];
+
+export string s_t00 = "v_t00";
+export string s_t01 = "v_t01";
+export string s_t02 = "v_t02";
+export string s_t03 = "v_t03";
+export string s_t04 = "v_t04";
+export string s_t05 = "v_t05";
+export string s_t06 = "v_t06";
+export string s_t07 = "v_t07";
+export string s_t08 = "v_t08";
+export string s_t09 = "v_t09";
+export string s_t10 = "v_t10";
+export string s_t11 = "v_t11";
+export string s_t12 = "v_t12";
+export string s_t13 = "v_t13";
+export string s_t14 = "v_t14";
+export string s_t15 = "v_t15";
+
+export string s_t00_rgb = s_t00 + ".rgb";
+export string s_t01_rgb = s_t01 + ".rgb";
+export string s_t02_rgb = s_t02 + ".rgb";
+export string s_t03_rgb = s_t03 + ".rgb";
+export string s_t04_rgb = s_t04 + ".rgb";
+export string s_t05_rgb = s_t05 + ".rgb";
+export string s_t06_rgb = s_t06 + ".rgb";
+export string s_t07_rgb = s_t07 + ".rgb";
+export string s_t08_rgb = s_t08 + ".rgb";
+export string s_t09_rgb = s_t09 + ".rgb";
+export string s_t10_rgb = s_t10 + ".rgb";
+export string s_t11_rgb = s_t11 + ".rgb";
+export string s_t12_rgb = s_t12 + ".rgb";
+export string s_t13_rgb = s_t13 + ".rgb";
+export string s_t14_rgb = s_t14 + ".rgb";
+export string s_t15_rgb = s_t15 + ".rgb";
+
+export string s_t00_agb = s_t00 + ".agb";
+export string s_t01_agb = s_t01 + ".agb";
+export string s_t02_agb = s_t02 + ".agb";
+export string s_t03_agb = s_t03 + ".agb";
+export string s_t04_agb = s_t04 + ".agb";
+export string s_t05_agb = s_t05 + ".agb";
+export string s_t06_agb = s_t06 + ".agb";
+export string s_t07_agb = s_t07 + ".agb";
+export string s_t08_agb = s_t08 + ".agb";
+export string s_t09_agb = s_t09 + ".agb";
+export string s_t10_agb = s_t10 + ".agb";
+export string s_t11_agb = s_t11 + ".agb";
+export string s_t12_agb = s_t12 + ".agb";
+export string s_t13_agb = s_t13 + ".agb";
+export string s_t14_agb = s_t14 + ".agb";
+export string s_t15_agb = s_t15 + ".agb";
+
+export string s_t00_r = s_t00 + ".r";
+export string s_t01_r = s_t01 + ".r";
+export string s_t02_r = s_t02 + ".r";
+export string s_t03_r = s_t03 + ".r";
+export string s_t04_r = s_t04 + ".r";
+export string s_t05_r = s_t05 + ".r";
+export string s_t06_r = s_t06 + ".r";
+export string s_t07_r = s_t07 + ".r";
+export string s_t08_r = s_t08 + ".r";
+export string s_t09_r = s_t09 + ".r";
+export string s_t10_r = s_t10 + ".r";
+export string s_t11_r = s_t11 + ".r";
+export string s_t12_r = s_t12 + ".r";
+export string s_t13_r = s_t13 + ".r";
+export string s_t14_r = s_t14 + ".r";
+export string s_t15_r = s_t15 + ".r";
+
+export string s_t00_r_upper = s_t00_r + " * 2.0 - 1.0";
+export string s_t01_r_upper = s_t01_r + " * 2.0 - 1.0";
+export string s_t02_r_upper = s_t02_r + " * 2.0 - 1.0";
+export string s_t03_r_upper = s_t03_r + " * 2.0 - 1.0";
+export string s_t04_r_upper = s_t04_r + " * 2.0 - 1.0";
+export string s_t05_r_upper = s_t05_r + " * 2.0 - 1.0";
+export string s_t06_r_upper = s_t06_r + " * 2.0 - 1.0";
+export string s_t07_r_upper = s_t07_r + " * 2.0 - 1.0";
+export string s_t08_r_upper = s_t08_r + " * 2.0 - 1.0";
+export string s_t09_r_upper = s_t09_r + " * 2.0 - 1.0";
+export string s_t10_r_upper = s_t10_r + " * 2.0 - 1.0";
+export string s_t11_r_upper = s_t11_r + " * 2.0 - 1.0";
+export string s_t12_r_upper = s_t12_r + " * 2.0 - 1.0";
+export string s_t13_r_upper = s_t13_r + " * 2.0 - 1.0";
+export string s_t14_r_upper = s_t14_r + " * 2.0 - 1.0";
+export string s_t15_r_upper = s_t15_r + " * 2.0 - 1.0";
+
+export string s_t00_r_upper_sat = "saturate( " + s_t00_r_upper + " )";
+export string s_t01_r_upper_sat = "saturate( " + s_t01_r_upper + " )";
+export string s_t02_r_upper_sat = "saturate( " + s_t02_r_upper + " )";
+export string s_t03_r_upper_sat = "saturate( " + s_t03_r_upper + " )";
+export string s_t04_r_upper_sat = "saturate( " + s_t04_r_upper + " )";
+export string s_t05_r_upper_sat = "saturate( " + s_t05_r_upper + " )";
+export string s_t06_r_upper_sat = "saturate( " + s_t06_r_upper + " )";
+export string s_t07_r_upper_sat = "saturate( " + s_t07_r_upper + " )";
+export string s_t08_r_upper_sat = "saturate( " + s_t08_r_upper + " )";
+export string s_t09_r_upper_sat = "saturate( " + s_t09_r_upper + " )";
+export string s_t10_r_upper_sat = "saturate( " + s_t10_r_upper + " )";
+export string s_t11_r_upper_sat = "saturate( " + s_t11_r_upper + " )";
+export string s_t12_r_upper_sat = "saturate( " + s_t12_r_upper + " )";
+export string s_t13_r_upper_sat = "saturate( " + s_t13_r_upper + " )";
+export string s_t14_r_upper_sat = "saturate( " + s_t14_r_upper + " )";
+export string s_t15_r_upper_sat = "saturate( " + s_t15_r_upper + " )";
+
+export string s_t00_r_lower = s_t00_r + " * 2.0";
+export string s_t01_r_lower = s_t01_r + " * 2.0";
+export string s_t02_r_lower = s_t02_r + " * 2.0";
+export string s_t03_r_lower = s_t03_r + " * 2.0";
+export string s_t04_r_lower = s_t04_r + " * 2.0";
+export string s_t05_r_lower = s_t05_r + " * 2.0";
+export string s_t06_r_lower = s_t06_r + " * 2.0";
+export string s_t07_r_lower = s_t07_r + " * 2.0";
+export string s_t08_r_lower = s_t08_r + " * 2.0";
+export string s_t09_r_lower = s_t09_r + " * 2.0";
+export string s_t10_r_lower = s_t10_r + " * 2.0";
+export string s_t11_r_lower = s_t11_r + " * 2.0";
+export string s_t12_r_lower = s_t12_r + " * 2.0";
+export string s_t13_r_lower = s_t13_r + " * 2.0";
+export string s_t14_r_lower = s_t14_r + " * 2.0";
+export string s_t15_r_lower = s_t15_r + " * 2.0";
+
+export string s_t00_r_lower_sat = "saturate( " + s_t00_r_lower + " )";
+export string s_t01_r_lower_sat = "saturate( " + s_t01_r_lower + " )";
+export string s_t02_r_lower_sat = "saturate( " + s_t02_r_lower + " )";
+export string s_t03_r_lower_sat = "saturate( " + s_t03_r_lower + " )";
+export string s_t04_r_lower_sat = "saturate( " + s_t04_r_lower + " )";
+export string s_t05_r_lower_sat = "saturate( " + s_t05_r_lower + " )";
+export string s_t06_r_lower_sat = "saturate( " + s_t06_r_lower + " )";
+export string s_t07_r_lower_sat = "saturate( " + s_t07_r_lower + " )";
+export string s_t08_r_lower_sat = "saturate( " + s_t08_r_lower + " )";
+export string s_t09_r_lower_sat = "saturate( " + s_t09_r_lower + " )";
+export string s_t10_r_lower_sat = "saturate( " + s_t10_r_lower + " )";
+export string s_t11_r_lower_sat = "saturate( " + s_t11_r_lower + " )";
+export string s_t12_r_lower_sat = "saturate( " + s_t12_r_lower + " )";
+export string s_t13_r_lower_sat = "saturate( " + s_t13_r_lower + " )";
+export string s_t14_r_lower_sat = "saturate( " + s_t14_r_lower + " )";
+export string s_t15_r_lower_sat = "saturate( " + s_t15_r_lower + " )";
+
+export string s_t00_g = s_t00 + ".g";
+export string s_t01_g = s_t01 + ".g";
+export string s_t02_g = s_t02 + ".g";
+export string s_t03_g = s_t03 + ".g";
+export string s_t04_g = s_t04 + ".g";
+export string s_t05_g = s_t05 + ".g";
+export string s_t06_g = s_t06 + ".g";
+export string s_t07_g = s_t07 + ".g";
+export string s_t08_g = s_t08 + ".g";
+export string s_t09_g = s_t09 + ".g";
+export string s_t10_g = s_t10 + ".g";
+export string s_t11_g = s_t11 + ".g";
+export string s_t12_g = s_t12 + ".g";
+export string s_t13_g = s_t13 + ".g";
+export string s_t14_g = s_t14 + ".g";
+export string s_t15_g = s_t15 + ".g";
+
+export string s_t00_g_upper = s_t00_g + " * 2.0 - 1.0";
+export string s_t01_g_upper = s_t01_g + " * 2.0 - 1.0";
+export string s_t02_g_upper = s_t02_g + " * 2.0 - 1.0";
+export string s_t03_g_upper = s_t03_g + " * 2.0 - 1.0";
+export string s_t04_g_upper = s_t04_g + " * 2.0 - 1.0";
+export string s_t05_g_upper = s_t05_g + " * 2.0 - 1.0";
+export string s_t06_g_upper = s_t06_g + " * 2.0 - 1.0";
+export string s_t07_g_upper = s_t07_g + " * 2.0 - 1.0";
+export string s_t08_g_upper = s_t08_g + " * 2.0 - 1.0";
+export string s_t09_g_upper = s_t09_g + " * 2.0 - 1.0";
+export string s_t10_g_upper = s_t10_g + " * 2.0 - 1.0";
+export string s_t11_g_upper = s_t11_g + " * 2.0 - 1.0";
+export string s_t12_g_upper = s_t12_g + " * 2.0 - 1.0";
+export string s_t13_g_upper = s_t13_g + " * 2.0 - 1.0";
+export string s_t14_g_upper = s_t14_g + " * 2.0 - 1.0";
+export string s_t15_g_upper = s_t15_g + " * 2.0 - 1.0";
+
+export string s_t00_g_upper_sat = "saturate( " + s_t00_g_upper + " )";
+export string s_t01_g_upper_sat = "saturate( " + s_t01_g_upper + " )";
+export string s_t02_g_upper_sat = "saturate( " + s_t02_g_upper + " )";
+export string s_t03_g_upper_sat = "saturate( " + s_t03_g_upper + " )";
+export string s_t04_g_upper_sat = "saturate( " + s_t04_g_upper + " )";
+export string s_t05_g_upper_sat = "saturate( " + s_t05_g_upper + " )";
+export string s_t06_g_upper_sat = "saturate( " + s_t06_g_upper + " )";
+export string s_t07_g_upper_sat = "saturate( " + s_t07_g_upper + " )";
+export string s_t08_g_upper_sat = "saturate( " + s_t08_g_upper + " )";
+export string s_t09_g_upper_sat = "saturate( " + s_t09_g_upper + " )";
+export string s_t10_g_upper_sat = "saturate( " + s_t10_g_upper + " )";
+export string s_t11_g_upper_sat = "saturate( " + s_t11_g_upper + " )";
+export string s_t12_g_upper_sat = "saturate( " + s_t12_g_upper + " )";
+export string s_t13_g_upper_sat = "saturate( " + s_t13_g_upper + " )";
+export string s_t14_g_upper_sat = "saturate( " + s_t14_g_upper + " )";
+export string s_t15_g_upper_sat = "saturate( " + s_t15_g_upper + " )";
+
+export string s_t00_g_lower = s_t00_g + " * 2.0";
+export string s_t01_g_lower = s_t01_g + " * 2.0";
+export string s_t02_g_lower = s_t02_g + " * 2.0";
+export string s_t03_g_lower = s_t03_g + " * 2.0";
+export string s_t04_g_lower = s_t04_g + " * 2.0";
+export string s_t05_g_lower = s_t05_g + " * 2.0";
+export string s_t06_g_lower = s_t06_g + " * 2.0";
+export string s_t07_g_lower = s_t07_g + " * 2.0";
+export string s_t08_g_lower = s_t08_g + " * 2.0";
+export string s_t09_g_lower = s_t09_g + " * 2.0";
+export string s_t10_g_lower = s_t10_g + " * 2.0";
+export string s_t11_g_lower = s_t11_g + " * 2.0";
+export string s_t12_g_lower = s_t12_g + " * 2.0";
+export string s_t13_g_lower = s_t13_g + " * 2.0";
+export string s_t14_g_lower = s_t14_g + " * 2.0";
+export string s_t15_g_lower = s_t15_g + " * 2.0";
+
+export string s_t00_g_lower_sat = "saturate( " + s_t00_g_lower + " )";
+export string s_t01_g_lower_sat = "saturate( " + s_t01_g_lower + " )";
+export string s_t02_g_lower_sat = "saturate( " + s_t02_g_lower + " )";
+export string s_t03_g_lower_sat = "saturate( " + s_t03_g_lower + " )";
+export string s_t04_g_lower_sat = "saturate( " + s_t04_g_lower + " )";
+export string s_t05_g_lower_sat = "saturate( " + s_t05_g_lower + " )";
+export string s_t06_g_lower_sat = "saturate( " + s_t06_g_lower + " )";
+export string s_t07_g_lower_sat = "saturate( " + s_t07_g_lower + " )";
+export string s_t08_g_lower_sat = "saturate( " + s_t08_g_lower + " )";
+export string s_t09_g_lower_sat = "saturate( " + s_t09_g_lower + " )";
+export string s_t10_g_lower_sat = "saturate( " + s_t10_g_lower + " )";
+export string s_t11_g_lower_sat = "saturate( " + s_t11_g_lower + " )";
+export string s_t12_g_lower_sat = "saturate( " + s_t12_g_lower + " )";
+export string s_t13_g_lower_sat = "saturate( " + s_t13_g_lower + " )";
+export string s_t14_g_lower_sat = "saturate( " + s_t14_g_lower + " )";
+export string s_t15_g_lower_sat = "saturate( " + s_t15_g_lower + " )";
+
+export string s_t00_b = s_t00 + ".b";
+export string s_t01_b = s_t01 + ".b";
+export string s_t02_b = s_t02 + ".b";
+export string s_t03_b = s_t03 + ".b";
+export string s_t04_b = s_t04 + ".b";
+export string s_t05_b = s_t05 + ".b";
+export string s_t06_b = s_t06 + ".b";
+export string s_t07_b = s_t07 + ".b";
+export string s_t08_b = s_t08 + ".b";
+export string s_t09_b = s_t09 + ".b";
+export string s_t10_b = s_t10 + ".b";
+export string s_t11_b = s_t11 + ".b";
+export string s_t12_b = s_t12 + ".b";
+export string s_t13_b = s_t13 + ".b";
+export string s_t14_b = s_t14 + ".b";
+export string s_t15_b = s_t15 + ".b";
+
+export string s_t00_b_upper = s_t00_b + " * 2.0 - 1.0";
+export string s_t01_b_upper = s_t01_b + " * 2.0 - 1.0";
+export string s_t02_b_upper = s_t02_b + " * 2.0 - 1.0";
+export string s_t03_b_upper = s_t03_b + " * 2.0 - 1.0";
+export string s_t04_b_upper = s_t04_b + " * 2.0 - 1.0";
+export string s_t05_b_upper = s_t05_b + " * 2.0 - 1.0";
+export string s_t06_b_upper = s_t06_b + " * 2.0 - 1.0";
+export string s_t07_b_upper = s_t07_b + " * 2.0 - 1.0";
+export string s_t08_b_upper = s_t08_b + " * 2.0 - 1.0";
+export string s_t09_b_upper = s_t09_b + " * 2.0 - 1.0";
+export string s_t10_b_upper = s_t10_b + " * 2.0 - 1.0";
+export string s_t11_b_upper = s_t11_b + " * 2.0 - 1.0";
+export string s_t12_b_upper = s_t12_b + " * 2.0 - 1.0";
+export string s_t13_b_upper = s_t13_b + " * 2.0 - 1.0";
+export string s_t14_b_upper = s_t14_b + " * 2.0 - 1.0";
+export string s_t15_b_upper = s_t15_b + " * 2.0 - 1.0";
+
+export string s_t00_b_upper_sat = "saturate( " + s_t00_b_upper + " )";
+export string s_t01_b_upper_sat = "saturate( " + s_t01_b_upper + " )";
+export string s_t02_b_upper_sat = "saturate( " + s_t02_b_upper + " )";
+export string s_t03_b_upper_sat = "saturate( " + s_t03_b_upper + " )";
+export string s_t04_b_upper_sat = "saturate( " + s_t04_b_upper + " )";
+export string s_t05_b_upper_sat = "saturate( " + s_t05_b_upper + " )";
+export string s_t06_b_upper_sat = "saturate( " + s_t06_b_upper + " )";
+export string s_t07_b_upper_sat = "saturate( " + s_t07_b_upper + " )";
+export string s_t08_b_upper_sat = "saturate( " + s_t08_b_upper + " )";
+export string s_t09_b_upper_sat = "saturate( " + s_t09_b_upper + " )";
+export string s_t10_b_upper_sat = "saturate( " + s_t10_b_upper + " )";
+export string s_t11_b_upper_sat = "saturate( " + s_t11_b_upper + " )";
+export string s_t12_b_upper_sat = "saturate( " + s_t12_b_upper + " )";
+export string s_t13_b_upper_sat = "saturate( " + s_t13_b_upper + " )";
+export string s_t14_b_upper_sat = "saturate( " + s_t14_b_upper + " )";
+export string s_t15_b_upper_sat = "saturate( " + s_t15_b_upper + " )";
+
+export string s_t00_b_lower = s_t00_b + " * 2.0";
+export string s_t01_b_lower = s_t01_b + " * 2.0";
+export string s_t02_b_lower = s_t02_b + " * 2.0";
+export string s_t03_b_lower = s_t03_b + " * 2.0";
+export string s_t04_b_lower = s_t04_b + " * 2.0";
+export string s_t05_b_lower = s_t05_b + " * 2.0";
+export string s_t06_b_lower = s_t06_b + " * 2.0";
+export string s_t07_b_lower = s_t07_b + " * 2.0";
+export string s_t08_b_lower = s_t08_b + " * 2.0";
+export string s_t09_b_lower = s_t09_b + " * 2.0";
+export string s_t10_b_lower = s_t10_b + " * 2.0";
+export string s_t11_b_lower = s_t11_b + " * 2.0";
+export string s_t12_b_lower = s_t12_b + " * 2.0";
+export string s_t13_b_lower = s_t13_b + " * 2.0";
+export string s_t14_b_lower = s_t14_b + " * 2.0";
+export string s_t15_b_lower = s_t15_b + " * 2.0";
+
+export string s_t00_b_lower_sat = "saturate( " + s_t00_b_lower + " )";
+export string s_t01_b_lower_sat = "saturate( " + s_t01_b_lower + " )";
+export string s_t02_b_lower_sat = "saturate( " + s_t02_b_lower + " )";
+export string s_t03_b_lower_sat = "saturate( " + s_t03_b_lower + " )";
+export string s_t04_b_lower_sat = "saturate( " + s_t04_b_lower + " )";
+export string s_t05_b_lower_sat = "saturate( " + s_t05_b_lower + " )";
+export string s_t06_b_lower_sat = "saturate( " + s_t06_b_lower + " )";
+export string s_t07_b_lower_sat = "saturate( " + s_t07_b_lower + " )";
+export string s_t08_b_lower_sat = "saturate( " + s_t08_b_lower + " )";
+export string s_t09_b_lower_sat = "saturate( " + s_t09_b_lower + " )";
+export string s_t10_b_lower_sat = "saturate( " + s_t10_b_lower + " )";
+export string s_t11_b_lower_sat = "saturate( " + s_t11_b_lower + " )";
+export string s_t12_b_lower_sat = "saturate( " + s_t12_b_lower + " )";
+export string s_t13_b_lower_sat = "saturate( " + s_t13_b_lower + " )";
+export string s_t14_b_lower_sat = "saturate( " + s_t14_b_lower + " )";
+export string s_t15_b_lower_sat = "saturate( " + s_t15_b_lower + " )";
+
+export string s_t00_a = s_t00 + ".a";
+export string s_t01_a = s_t01 + ".a";
+export string s_t02_a = s_t02 + ".a";
+export string s_t03_a = s_t03 + ".a";
+export string s_t04_a = s_t04 + ".a";
+export string s_t05_a = s_t05 + ".a";
+export string s_t06_a = s_t06 + ".a";
+export string s_t07_a = s_t07 + ".a";
+export string s_t08_a = s_t08 + ".a";
+export string s_t09_a = s_t09 + ".a";
+export string s_t10_a = s_t10 + ".a";
+export string s_t11_a = s_t11 + ".a";
+export string s_t12_a = s_t12 + ".a";
+export string s_t13_a = s_t13 + ".a";
+export string s_t14_a = s_t14 + ".a";
+export string s_t15_a = s_t15 + ".a";
+
+export string s_t00_a_upper = s_t00_a + " * 2.0 - 1.0";
+export string s_t01_a_upper = s_t01_a + " * 2.0 - 1.0";
+export string s_t02_a_upper = s_t02_a + " * 2.0 - 1.0";
+export string s_t03_a_upper = s_t03_a + " * 2.0 - 1.0";
+export string s_t04_a_upper = s_t04_a + " * 2.0 - 1.0";
+export string s_t05_a_upper = s_t05_a + " * 2.0 - 1.0";
+export string s_t06_a_upper = s_t06_a + " * 2.0 - 1.0";
+export string s_t07_a_upper = s_t07_a + " * 2.0 - 1.0";
+export string s_t08_a_upper = s_t08_a + " * 2.0 - 1.0";
+export string s_t09_a_upper = s_t09_a + " * 2.0 - 1.0";
+export string s_t10_a_upper = s_t10_a + " * 2.0 - 1.0";
+export string s_t11_a_upper = s_t11_a + " * 2.0 - 1.0";
+export string s_t12_a_upper = s_t12_a + " * 2.0 - 1.0";
+export string s_t13_a_upper = s_t13_a + " * 2.0 - 1.0";
+export string s_t14_a_upper = s_t14_a + " * 2.0 - 1.0";
+export string s_t15_a_upper = s_t15_a + " * 2.0 - 1.0";
+
+export string s_t00_a_upper_sat = "saturate( " + s_t00_a_upper + " )";
+export string s_t01_a_upper_sat = "saturate( " + s_t01_a_upper + " )";
+export string s_t02_a_upper_sat = "saturate( " + s_t02_a_upper + " )";
+export string s_t03_a_upper_sat = "saturate( " + s_t03_a_upper + " )";
+export string s_t04_a_upper_sat = "saturate( " + s_t04_a_upper + " )";
+export string s_t05_a_upper_sat = "saturate( " + s_t05_a_upper + " )";
+export string s_t06_a_upper_sat = "saturate( " + s_t06_a_upper + " )";
+export string s_t07_a_upper_sat = "saturate( " + s_t07_a_upper + " )";
+export string s_t08_a_upper_sat = "saturate( " + s_t08_a_upper + " )";
+export string s_t09_a_upper_sat = "saturate( " + s_t09_a_upper + " )";
+export string s_t10_a_upper_sat = "saturate( " + s_t10_a_upper + " )";
+export string s_t11_a_upper_sat = "saturate( " + s_t11_a_upper + " )";
+export string s_t12_a_upper_sat = "saturate( " + s_t12_a_upper + " )";
+export string s_t13_a_upper_sat = "saturate( " + s_t13_a_upper + " )";
+export string s_t14_a_upper_sat = "saturate( " + s_t14_a_upper + " )";
+export string s_t15_a_upper_sat = "saturate( " + s_t15_a_upper + " )";
+
+export string s_t00_a_lower = s_t00_a + " * 2.0";
+export string s_t01_a_lower = s_t01_a + " * 2.0";
+export string s_t02_a_lower = s_t02_a + " * 2.0";
+export string s_t03_a_lower = s_t03_a + " * 2.0";
+export string s_t04_a_lower = s_t04_a + " * 2.0";
+export string s_t05_a_lower = s_t05_a + " * 2.0";
+export string s_t06_a_lower = s_t06_a + " * 2.0";
+export string s_t07_a_lower = s_t07_a + " * 2.0";
+export string s_t08_a_lower = s_t08_a + " * 2.0";
+export string s_t09_a_lower = s_t09_a + " * 2.0";
+export string s_t10_a_lower = s_t10_a + " * 2.0";
+export string s_t11_a_lower = s_t11_a + " * 2.0";
+export string s_t12_a_lower = s_t12_a + " * 2.0";
+export string s_t13_a_lower = s_t13_a + " * 2.0";
+export string s_t14_a_lower = s_t14_a + " * 2.0";
+export string s_t15_a_lower = s_t15_a + " * 2.0";
+
+export string s_t00_a_lower_sat = "saturate( " + s_t00_a_lower + " )";
+export string s_t01_a_lower_sat = "saturate( " + s_t01_a_lower + " )";
+export string s_t02_a_lower_sat = "saturate( " + s_t02_a_lower + " )";
+export string s_t03_a_lower_sat = "saturate( " + s_t03_a_lower + " )";
+export string s_t04_a_lower_sat = "saturate( " + s_t04_a_lower + " )";
+export string s_t05_a_lower_sat = "saturate( " + s_t05_a_lower + " )";
+export string s_t06_a_lower_sat = "saturate( " + s_t06_a_lower + " )";
+export string s_t07_a_lower_sat = "saturate( " + s_t07_a_lower + " )";
+export string s_t08_a_lower_sat = "saturate( " + s_t08_a_lower + " )";
+export string s_t09_a_lower_sat = "saturate( " + s_t09_a_lower + " )";
+export string s_t10_a_lower_sat = "saturate( " + s_t10_a_lower + " )";
+export string s_t11_a_lower_sat = "saturate( " + s_t11_a_lower + " )";
+export string s_t12_a_lower_sat = "saturate( " + s_t12_a_lower + " )";
+export string s_t13_a_lower_sat = "saturate( " + s_t13_a_lower + " )";
+export string s_t14_a_lower_sat = "saturate( " + s_t14_a_lower + " )";
+export string s_t15_a_lower_sat = "saturate( " + s_t15_a_lower + " )";
+
+export string s__clr_vrt = "_clr_vrt";
+export string s_clr_vrt = "v" + s__clr_vrt;
+export string s_clr_vrt_rgba = "v" + s__clr_vrt + "_rgba";
+export string s_clr_vrt_rgb = "v" + s__clr_vrt + "_rgb";
+export string s_clr_vrt_r = "f" + s__clr_vrt + "_r";
+export string s_clr_vrt_g = "f" + s__clr_vrt + "_g";
+export string s_clr_vrt_b = "f" + s__clr_vrt + "_b";
+export string s_clr_vrt_a = "f" + s__clr_vrt + "_a";
+
+export string __clr_vrt_def = s_clr_vrt;
+export string __clr_vrt_gamma_def = "float4(Gamma_Decode((" + s_clr_vrt + ").rgb), (" + s_clr_vrt + ").a)";
+
+export string s__clr_usr = "_clr_usr";
+export string s_clr_usr = "v" + s__clr_usr;
+export string s_clr_usr_rgba = "v" + s__clr_usr + "_rgba";
+export string s_clr_usr_rgb = "v" + s__clr_usr + "_rgb";
+export string s_clr_usr_r = "f" + s__clr_usr + "_r";
+export string s_clr_usr_g = "f" + s__clr_usr + "_g";
+export string s_clr_usr_b = "f" + s__clr_usr + "_b";
+export string s_clr_usr_a = "f" + s__clr_usr + "_a";
+
+export string __clr_usr_def = s_clr_usr;
+export string __clr_usr_gamma_def = "float4(Gamma_Decode((" + s_clr_usr_rgba + ").rgb), (" + s_clr_usr_rgba + ").a)";
+
+export string s_uv_0 = "v_uv_0";
+export string s_uv_0_define = uppercase( s_uv_0 );
+export string s_uv_1 = "v_uv_1";
+export string s_uv_1_define = uppercase( s_uv_1 );
+export string s_uv_2 = "v_uv_2";
+export string s_uv_2_define = uppercase( s_uv_2 );
+export string s_uv_3 = "v_uv_3";
+export string s_uv_3_define = uppercase( s_uv_3 );
+export string s_uv_lmp = "v_uv_lmp";
+export string s_uv_lmp_define = uppercase( s_uv_lmp );
+export string s_uv_screen = "v_uv_screen";
+export string s_uv_screen_define = uppercase( s_uv_screen );
+
+export string __tex_uv_def = s_uv_0;
+
+export string s_uv_channel_0 = "v_uv_channel_0";
+export string s_uv_channel_1 = "v_uv_channel_1";
+export string s_uv_channel_2 = "v_uv_channel_2";
+export string s_uv_channel_3 = "v_uv_channel_3";
+export string s_uv_eye = "v_uv_eye";
+export string s_uv_world_top = "v_uv_world_top";
+export string s_uv_world_front = "v_uv_world_front";
+export string s_uv_world_side = "v_uv_world_side";
+export string s_uv_world_user_top = "v_uv_world_user_top";
+export string s_uv_world_user_front = "v_uv_world_user_front";
+export string s_uv_world_user_side = "v_uv_world_user_side";
+
+export string s_dpt = "f_dpt";
+
+export string __uv_0_def = s_uv_channel_0;
+export string __uv_0_define = "__UV_0";
+export string __uv_1_def = s_uv_channel_1;
+export string __uv_1_define = "__UV_1";
+export string __uv_2_def = s_uv_channel_2;
+export string __uv_2_define = "__UV_2";
+export string __uv_3_def = s_uv_channel_3;
+export string __uv_3_define = "__UV_3";
+
+export vec4 v_eye_center_def = [ 0.0, 0.0, 0.0, 1.0 ];
+
+export float f_ocl_scale_def = 1.0;
+export float f_ocl_amb_scale_def = f_ocl_scale_def;
+export float f_ocl_lit_scale_def = f_ocl_scale_def;
+
+//culling
+export int e_cull_def = -1;
+
+//shader input components factors
+export float f_hgt_def = 0.0;
+export int i_hgt_steps_bin_def = 3;
+export int i_hgt_steps_lin_def = 5;
+
+export int e_dpt_func_def = LEQUAL;
+export bool b_dpt_out_def = TRUE;
+export bool b_dpt_write_def = TRUE;
+
+export bool b_render_color_on_def = TRUE;
+export bool b_render_reflection_on_def = TRUE;
+export bool b_render_shadows_on_def = TRUE;
+
+export int i_light_distance_sun_near_def = 0;
+export int i_light_distance_sun_far_def = 3;
+export int i_light_distance_dyn_near_def = 0;
+export int i_light_distance_dyn_far_def = 3;
+export int i_shader_distance_near_def = 3;
+export int i_shader_off_distance_near_def = -1;
+export int i_shader_off_distance_far_def = 4;
+export int i_shader_distance_def = 3;
+
+export int i_tex_aspect_def = 0;
+
+export string s_tng_v = "v_tng_v";
+export string s_bnr_v = "v_bnr_v";
+export string s_nrm_v = "v_nrm_v";
+export string s_nrm = "v_nrm";
+export string s_nrm_n = "v_nrm_n";
+export string s_ts2ws = "m_ts2ws";
+export string s_rfl_v = "v_rfl_v";
+export string s_rfl = "v_rfl";
+export string s_rfl_n = "v_rfl_n";
+
+export string s_mph = "v_mph";
+export string s_mph_x = s_mph + ".x";
+export string s_mph_y = s_mph + ".y";
+export string s_mph_z = s_mph + ".z";
+export string s_mph_w = s_mph + ".w";
+
+export string s_morph_pos_def = s_empty;
+export string s_morph_nrm_def = s_empty;
+export string s_morph_tng_def = s_empty;
+
+export string s_nrm_ts_def = "float3( 0.0, 0.0, 1.0 )";
+
+export string __wind_def = __none;
+export float f_wind_noise_scale_def = 0.0;
+export float f_wind_noise_size_def = 1.0;
+export float f_wind_noise_speed_def = 16.0;
+
+export string s_wind_bend = "v_wind_bend";
+export string s_wind_noise = "v_wind_noise";
+
+//blend modes
+export int e_bm_none = 0; //opaque
+export int e_bm_lerp = 1; //SRC_ALPHA, INV_SRC_ALPHA, AlphaFunc( GREATER, 0.0 ), fog: normal
+export int e_bm_lerp_pm = 2; //ONE, INV_SRC_ALPHA, AlphaFunc( GREATER, 0.0 ), fog: normal ()
+export int e_bm_add = 3; //ONE, ONE, AlphaFunc( GREATER, 0.0 ) - alpha=saturate(dot( OUT_CLR, 1.0 )), fog: black
+export int e_bm_mul = 4; //ZERO, SRC_COLOR, AlphaFunc( LESS, 1.0 ) - alpha=saturate(dot( OUT_CLR, 1.0/3.0 )), fog: none
+export int e_bm_lerp_rain = 5; //rain blend
+export int e_bm_mul_inv_a = 6; //ALPHA ONLY
+
+export int e_blend_mode_def = e_bm_none;
+
+export bool b_hide_elements_on_def = FALSE;
+export bool b_instancing_on_def = TRUE;
+
+export bool b_marked_on_def = FALSE;
+export bool b_write_channel_def = TRUE;
+
+export bool b_fog_apply_on_def = TRUE;
+export bool b_ps_clr_encode_on_def = TRUE;
+export bool b_ps_lit_calc_on_def = TRUE;
+
+extern float f_alpha_test_value;
+export float f_alpha_test_value_def = f_alpha_test_value;
+
+extern string s_env;
