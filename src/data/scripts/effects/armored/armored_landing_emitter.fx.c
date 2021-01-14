@@ -1,0 +1,19 @@
+EmiterDef()
+{
+	Meter()
+	Space("world")
+	GenType("one_time")
+	GenArea("radial")
+	LifeTime()
+	{
+		keyf(0.0,3.0)
+	}
+	NumParticles()
+	{
+		keyf(0.0,5.0)
+	}
+	StartVelocity()
+	{
+		keyf(0.0,0.0)
+	}
+}
