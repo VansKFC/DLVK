@@ -1,4 +1,5 @@
 //Condensed param set to remove facemimic'ing.
+int main(){
 !MimicSet(s)
 !BlinkFrequency(f)
 !BlinkSpeed(f)
@@ -155,4 +156,4 @@ HeadMovementFrequency(0)
 HeadMovementSpeed(0)
 MineChangeFrequency(0)
 SpeechStrenght(0)
-FaceMimic("Pain_00",0,0,0,0,0)}
+FaceMimic("Pain_00",0,0,0,0,0) return 0;}
