@@ -2,7 +2,7 @@ EmiterDef()
 {
  LifeTime()
  {
- keyf(0.000000, 5.000000)
+ keyf(0.0,0.0)
  }
  return 0;
 }
