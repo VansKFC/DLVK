@@ -1,0 +1,87 @@
+//new
+
+using engineflags;
+using settemplates;
+using tmu;
+
+template
+{   
+	category Main
+	{
+		string_dat s_clr = s_tex_def;
+		bool_dat b_flow_on = FALSE;
+	}
+	
+    templatebody()
+    {
+		platform("*", "none; instancing");
+
+		tech(s_tech_opq_clr)
+        {
+					
+			Cull(CW);
+			DepthFunc(LEQUAL, FALSE);
+			BlendFunc(SRC_ALPHA, INV_SRC_ALPHA, ZERO, INV_SRC_ALPHA);		
+			BlendFunc(SRC_ALPHA, INV_SRC_ALPHA, ZERO, INV_SRC_ALPHA, 1);		
+			
+			Input I_POS_MS = new InputFloat4("POSITION");
+			Input I_UV_0 = new InputFloat2("TEXCOORD0");
+			Input I_CLR_0 = new InputFloat4("COLOR0");
+
+			Output O_SPC = new OutputFLOAT4("COLOR0");
+			Output O_DIF = new OutputFLOAT4("COLOR1");
+
+			X_UV_0 = SetTexcoord2();			
+			X_OPACITY = SetTexcoord();
+			X_THRESHOLD = SetTexcoord();
+
+			S_CLR = SetTexture(s_clr, e_tex_filter_def, CLAMP, CLAMP, false);
+
+			if(b_flow_on) { Define("FLOW_ON", 1.0); }			
+			
+			VertexShader()
+			{
+				hlsl()
+				{				
+					#include <master_new.hlsl>
+
+					void main()
+					{
+						V_POS_OUT_TC = Pos_Out_WS(I_POS_MS);
+						X_UV_0 = I_UV_0;
+						
+						X_THRESHOLD = (256.0/255.0) - I_CLR_0.z;
+						X_OPACITY = I_CLR_0.w;											
+					}
+				}
+
+			}
+
+			PixelShader()
+			{
+				hlsl()
+				{					
+					#include <master_new.hlsl>
+					#include <colorops.hlsl>
+
+					void main()
+					{
+						FLOAT4 v_clr = Sample(S_CLR, X_UV_0);
+						clip(v_clr.w - X_THRESHOLD);
+						#if defined(FLOW_ON)
+							v_clr.w = X_OPACITY;
+						#else
+							v_clr.w *= X_OPACITY;
+						#endif
+						
+						O_SPC = v_clr.xyzw;
+						O_DIF = O_SPC;
+						O_SPC.xyz = SwizzleXXX(Luminance(O_SPC.xyz) * sqrt(0.5));
+					}
+				}
+			}
+        }
+    }
+}
+
+  

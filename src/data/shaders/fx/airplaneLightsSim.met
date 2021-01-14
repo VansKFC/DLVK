@@ -1,0 +1,96 @@
+//new
+
+using engineflags;
+using settemplates;
+using tmu;
+
+template
+{   
+	category Main
+	{
+	}
+	
+    templatebody()
+    {
+		tech(s_tech_trn)
+        {
+			use SetupMaterial();		
+			Cull(NONE);
+			BlendFunc(ONE, ONE, ONE, ONE);
+            DepthFunc(LEQUAL, FALSE);
+			
+			Input I_POS_MS = new InputFloat4("POSITION");
+			Input I_UV_0 = new InputFloat2("TEXCOORD0");
+			Input I_CLR_0 = new InputFloat4("COLOR0");
+			
+			Output O_CLR = new OutputFLOAT4("COLOR0");
+
+			X_UV_0 = SetTexcoord2();			
+			X_CLR_0 = SetTexcoord4();
+			
+			extern float_dat f_pp_hdr_intensity_emissive;
+			C_PP_HDR_INTENSITY_EMISSIVE = SetConst(f_pp_hdr_intensity_emissive);
+			
+			S_TMU_0 = SetTexture("airplanelightssim.dds");
+						
+			VertexShader()
+			{
+				hlsl(s_hlsl_profile_def)
+				{
+					
+					#include <master_new.hlsl>
+
+					void main()
+					{
+						float distance = 500000.0; // travel distance. increases speed as well.
+						FLOAT timescale = 0.2; // lower slows lights down. global.
+						float speedscale = 3.0;  // influence of height on speed
+						FLOAT blinkoffset = 0.3;
+						  
+						FLOAT3 dir = normalize(float3((2.0 * I_CLR_0.r - 1.0), 0.0, ( 2.0 * I_CLR_0.g - 1.0)));
+
+						float4 pos = Decode_Pos(I_POS_MS);
+						pos = Mul_Pos(pos, MODEL_XFORM);
+
+						float progress = sin((speedscale + I_CLR_0.a) * timescale*(TIME + I_CLR_0.b) /100.0);
+
+						pos.y += CAMERA_POS_WS.y;
+						pos.z += CAMERA_POS_WS.z + distance * progress * dir.x;
+						pos.x += CAMERA_POS_WS.x + distance * progress * dir.z;
+
+						V_POS_OUT_TC = Mul44(pos, VIEWPROJ_XFORM);
+
+						X_UV_0 =  Decode_UV(I_UV_0);
+						X_CLR_0 =  I_CLR_0;
+
+						
+
+						float blinkf = frac(TIME + I_CLR_0.b);
+						float blinkf2 = frac(TIME + I_CLR_0.b + blinkoffset);
+						FLOAT blink = step(0.8, blinkf) + step(0.8, blinkf2);
+
+						X_CLR_0.a = (blink)* (1 - abs(progress)) * C_PP_HDR_INTENSITY_EMISSIVE * 0.1;												
+					}
+				}
+
+			}
+
+			PixelShader()
+			{
+				hlsl(s_hlsl_profile_def)
+				{
+					
+					#include <master_new.hlsl>
+
+					void main()
+					{
+						O_CLR = Sample_h4(S_TMU_0, X_UV_0);
+						O_CLR *= X_CLR_0.a;
+					}
+				}
+			}
+        }
+    }
+}
+
+  

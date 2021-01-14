@@ -1,0 +1,428 @@
+//new
+
+using engineflags;
+using settemplates;
+using tmu;
+
+public class mesh_dir : StringVariantConv
+{
+	public static object[] Data = { "\"X\"", "\"Y\"", "\"Z\"" };
+	public override object[] GetData() { return Data; }
+}
+
+template
+{
+	public string TemplateCategory() { return "Objects FX"; }
+
+//	public static extern vec3_dat vSunDir;
+
+	category Main
+	{
+		class Textures
+		{
+			string_dat clr_0_tex = "" : editor(ImageFileNameEditor), display(Projection texture);
+			string_dat msk_0_tex = "" : editor(ImageFileNameEditor), display(Mask texture);
+		}
+		class Shape
+		{
+			float_dat ray_width_factor = 1.0: display(Width);
+		}
+		class Appearance
+		{
+			bool_dat dust_shadows_on = FALSE: display(Dust shadows enabled - requires projection texture with alpha);
+			bool_dat spot_projection_on = FALSE: display(Projection correct UV);
+		}
+
+/*
+	float_dat f_width = 0.02; //drop width
+		float_dat f_length = 1.0; //drop length
+		float_dat f_speed = 0.8; //drop moving speed
+		float_dat f_opacity = 0.5; //drop opacity
+		float_dat f_amount = 1.0; // % of drops
+		float_dat f_extent = 80.0; //rain range
+		float_dat f_frustum_threshold = 0.75; //frustum visibility treshold
+		float_dat f_fade_near_distance = 10.0; //fading near camera
+		float_dat f_depth_blend_distance = 1.0; //fading near background
+		vec3_dat v_dir = -vSunDir; //drops falling direction
+*/
+	}
+	category Fading
+	{
+		class Camera Distance
+		{
+			bool_dat fade_near_on = FALSE: display(Near fading enabled);
+			float_dat fade_near_range = 0.0: display(Near fading range);
+			float_dat fade_near_offset = 0.0: display(Near fading offset);
+			bool_dat fade_far_on = FALSE: display(Far fading enabled);
+			float_dat fade_far_range = 0.0: display(Far fading range);
+			float_dat fade_far_offset = 0.0: display(Far fading offset);
+		}
+		class Camera Angle Mask 
+		{
+			bool_dat fade_angle_on = FALSE: display(Angle fading enabled);
+			float_dat fade_angle_neg_min = 0.0: display(In the mesh direction - start);
+			float_dat fade_angle_neg_max = 1.0: display(In the mesh direction - end);
+			float_dat fade_angle_pos_min = 0.0: display(Opposite the mesh direction - start);
+			float_dat fade_angle_pos_max = 1.0: display(Opposite the mesh direction - end);
+		}
+		class Depth
+		{
+			float_dat fade_depth_distance = 0.0: display(Depth blending distance);
+			float_dat fade_depth_u_factor = 0.0: display(Depth blending U factor);
+		}
+	}
+	category Transformations
+	{
+		class Sun dependency
+		{
+			bool_dat follow_sun_dir = FALSE: display(Rays direction aligned to sun);
+		}
+		class XForm
+		{
+			float_dat rotation_speed = 0.0: display(Rotation speed);
+		}
+	}
+	category Advanced
+	{
+		class Mesh
+		{
+			string_dat mesh_dir = "Y" : converter(mesh_dir), display(Rays direction);
+		}
+		class Intensites
+		{
+			bool_dat lights_intensity_on = TRUE : display(Color is affected by dynamic lights hdr intensity);
+			bool_dat sun_intensity_on = TRUE : display(Color is affected by sun hdr intensity);
+		}
+	}
+
+
+    templatebody()
+    {
+		platform("*", "none; instancing");
+
+		tech("trn0")
+        {
+			Cull(NONE);
+			DepthFunc(LEQUAL, FALSE);
+
+			BlendFunc(ONE, ONE, ZERO, ONE);
+
+			Input I_POS_MS = new InputFloat4("POSITION");
+			Input I_CLR_USR = new InputFloat4("COLOR_USER");
+			Input I_UV_1 = new InputFloat2("TEXCOORD1");
+
+			X_CLR = SetTexcoord4("FLOAT");
+
+			Output O_CLR = new OutputFLOAT4("COLOR0");
+
+			C_RAY_WIDTH_FACTOR = SetConst(-ray_width_factor, ray_width_factor);
+
+			if(fade_near_on | fade_far_on | fade_angle_on)
+			{
+				X_CAM_DIR = SetTexcoord3("FLOAT");
+				if(fade_near_on)
+				{
+					float_dat fade_near_mul = 1.0 / fade_near_range;
+					float_dat fade_near_add = -fade_near_offset * fade_near_mul;
+					Define("D_FADE_NEAR_MUL_ON", 1);
+					C_FADE_NEAR_MUL = SetConst(fade_near_mul);
+					C_FADE_NEAR_ADD = SetConst(fade_near_add);
+				}
+				if(fade_far_on)
+				{
+					float_dat fade_far_mul = -1.0 / fade_far_range;
+					float_dat fade_far_add = -fade_far_offset * fade_far_mul + 1.0;
+					Define("D_FADE_FAR_MUL_ON", 1);
+					C_FADE_FAR_MUL = SetConst(fade_far_mul);
+					C_FADE_FAR_ADD = SetConst(fade_far_add);
+				}
+				if(fade_angle_on)
+				{
+					Define("D_FADE_ANGLE_ON", 1);
+					float_dat fade_angle_neg_mul = 1.0 / (fade_angle_neg_max - fade_angle_neg_min);
+					float_dat fade_angle_neg_add = -fade_angle_neg_min * fade_angle_neg_mul;
+					float_dat fade_angle_pos_mul = 1.0 / (fade_angle_pos_max - fade_angle_pos_min);
+					float_dat fade_angle_pos_add = -fade_angle_pos_min * fade_angle_pos_mul;
+					C_FADE_ANGLE_FADE_FACTORS = SetConst(fade_angle_neg_mul, -fade_angle_pos_mul, fade_angle_neg_add, fade_angle_pos_add);
+					X_NRM = SetTexcoord3("FLOAT");
+				}
+			}
+
+			use PP_DEPTH_TMU();
+			if(fade_depth_distance > 0.0)
+			{
+				X_DPT = SetTexcoord("FLOAT");
+                Define("D_DEPTH_BLEND_FACTOR_ON", 1);
+				if(fade_depth_u_factor > 0.0)
+				{
+					Define("D_DEPTH_BLEND_U_FACTOR_ON", 1);
+					X_U = SetTexcoord("FLOAT");
+					C_DEPTH_BLEND_DISTANCE = SetConst(fade_depth_distance);
+					C_DEPTH_BLEND_U_FACTOR = SetConst(fade_depth_u_factor);
+				}
+				else
+				{
+					C_DEPTH_BLEND_DISTANCE_1BY = SetConst(1.0 / fade_depth_distance);
+				}
+			}
+
+			if(clr_0_tex != "")
+			{
+				S_CLR_0 = SetTexture2D(clr_0_tex, LINEAR_MIP_LINEAR, CLAMP, CLAMP, TRUE);
+				X_UV_1 = SetTexcoord2("FLOAT");
+				if(dust_shadows_on | spot_projection_on)
+				{
+					X_DEPTH_N = SetTexcoord("FLOAT");
+					if(dust_shadows_on)
+					{
+						Define("D_DUST_SHADOWS_ON", 1);
+					}
+					if(spot_projection_on)
+					{
+						Define("D_SPOT_PROJECTION_ON", 1);
+					}
+				}
+			}
+
+			if(msk_0_tex != "")
+			{
+				S_MSK_0 = SetTexture2D(msk_0_tex, LINEAR_MIP_LINEAR, CLAMP, CLAMP, TRUE);
+				X_UV_0 = SetTexcoord2("FLOAT");
+			}
+			else { X_MASK = SetTexcoord2("FLOAT"); }
+
+			if(rotation_speed > 0.0)
+			{
+				Define("D_ROTATION_ON", 1);
+				extern float_dat TIME;
+				C_ROTATION_XFORM = SetConst(rotate(0.0, 0.0, rotation_speed * TIME));
+			}
+			if(follow_sun_dir) { Define("D_FOLLOW_SUN_DIR_ON", 1); }
+
+			if(mesh_dir == "X")
+			{
+				Define("D_ORIENTATION_PLANE", "zy");
+				Define("D_ORIENTATION_WIDTH", "z");
+				Define("D_ORIENTATION_HEIGHT", "x");
+				Define("D_ORIENTATION_UV", "zx");
+				Define("D_ORIENTATION_DIR", "float3(-1.0, 0.0, 0.0)");
+			}
+
+			if(mesh_dir == "Y")
+			{
+				Define("D_ORIENTATION_PLANE", "xz");
+				Define("D_ORIENTATION_WIDTH", "x");
+				Define("D_ORIENTATION_HEIGHT", "y");
+				Define("D_ORIENTATION_UV", "xy");
+				Define("D_ORIENTATION_DIR", "float3(0.0, -1.0, 0.0)");
+			}
+
+			if(mesh_dir == "Z")
+			{
+				Define("D_ORIENTATION_PLANE", "xy");
+				Define("D_ORIENTATION_WIDTH", "x");
+				Define("D_ORIENTATION_HEIGHT", "z");
+				Define("D_ORIENTATION_UV", "xz");
+				Define("D_ORIENTATION_DIR", "float3(0.0, 0.0, -1.0)");
+			}
+			if(lights_intensity_on |  sun_intensity_on)
+			{
+				extern vec3_dat v_pp_shading_sun_color_clouds_off;
+				extern float_dat f_pp_hdr_intensity_shading_lights;
+				C_INTENSITIES = SetConst(v_pp_shading_sun_color_clouds_off, f_pp_hdr_intensity_shading_lights);
+				if(lights_intensity_on)
+				{
+					Define("D_LIGHTS_INTENSITY_ON", 1);
+				}
+				if(sun_intensity_on)
+				{
+					Define("D_SUN_INTENSITY_ON", 1);
+				}
+			}
+
+			VertexShader()
+			{
+				hlsl(s_hlsl_profile_def)
+				{
+					#include <master_new.hlsl>
+					#include <colorops.hlsl>
+					#include <fog.hlsl>
+
+					#if defined(D_FOLLOW_SUN_DIR_ON)
+						float3 v_pp_sun_face_dir;
+					#endif
+
+					// float3 CAMERA_DIR_WS;
+
+					// float4 HSM_XFORM_ES_0[4];
+					// float4 HSM_XFORM_ES_1[4];
+					// float4 HSM_XFORM_ES_2[4];
+
+					void main()
+					{
+						float4 inv_model_xfm[3];
+						InvertMTX(MODEL_XFORM_4x3, inv_model_xfm);
+
+						I_POS_MS = Decode_Pos(I_POS_MS);
+						float4 pos_ms = I_POS_MS;
+
+						float2 cam_pos_2d_ms = Mul_Pos(CAMERA_POS_WS, inv_model_xfm).D_ORIENTATION_PLANE;
+
+						float2 axis_pos_ms = Decode_UV(I_UV_1);
+						axis_pos_ms.y -= 1.0; //uv bug correction
+
+						#if defined(D_ROTATION_ON)
+							float2 pos4rot = axis_pos_ms;
+							axis_pos_ms.x = dot(pos4rot, C_ROTATION_XFORM[0].xy);
+							axis_pos_ms.y = dot(pos4rot, C_ROTATION_XFORM[1].xy);
+						#endif
+
+						#if defined(D_FOLLOW_SUN_DIR_ON)
+							float3 sun_dir_ms = Mul33(v_pp_sun_face_dir, inv_model_xfm);
+							float2 sun_dir_offset = normalize(sun_dir_ms.D_ORIENTATION_PLANE);
+							axis_pos_ms -= (pos_ms.D_ORIENTATION_HEIGHT > 0.5) ? sun_dir_offset : 0.0;
+						#endif
+
+						#if defined(X_DEPTH_N)
+							X_DEPTH_N = pos_ms.D_ORIENTATION_HEIGHT;
+						#endif
+
+						float2 nrm_2d_ms = axis_pos_ms - cam_pos_2d_ms;
+						float2 nrm_2d_n_ms = normalize(nrm_2d_ms);
+
+						float2 ort_2d_dir = nrm_2d_n_ms.yx * C_RAY_WIDTH_FACTOR;
+
+						pos_ms.D_ORIENTATION_PLANE = axis_pos_ms + ort_2d_dir * I_POS_MS.D_ORIENTATION_WIDTH;
+
+						float4 pos_ws = Mul_Pos(pos_ms, MODEL_XFORM_4x3);
+						V_POS_OUT_TC = Pos_Out_WS(pos_ws);
+
+						float4 usr_0 = Decode_Usr(I_CLR_USR);
+						X_CLR.xyz = pow(usr_0.xyz, float3(2.2, 2.2, 2.2));
+						#if defined(D_LIGHTS_INTENSITY_ON) && defined(D_SUN_INTENSITY_ON)
+							X_CLR.xyz *= lerp(C_INTENSITIES.www, C_INTENSITIES.xyz, usr_0.w);
+						#elif defined(D_LIGHTS_INTENSITY_ON)
+							X_CLR.xyz *= C_INTENSITIES.www;
+						#elif defined(D_SUN_INTENSITY_ON)
+							X_CLR.xyz *= C_INTENSITIES.xyz;
+						#endif
+
+						X_CLR.w = Luminance(X_CLR.xyz);
+
+						float3 cam_dir = CAMERA_POS_WS.xyz - pos_ws.xyz;
+						float3 ext = Scattering_Ext(length(cam_dir));
+						float ext_opacity = Luminance(ext);
+						X_CLR *= FLOAT4(ext, ext_opacity);
+
+						#if defined(X_CAM_DIR)
+							X_CAM_DIR = cam_dir;
+						#endif
+
+						#if defined(X_DPT)
+							#if defined(D_DEPTH_BLEND_U_FACTOR_ON)
+								X_U = pos_ms.D_ORIENTATION_PLANE.x * C_DEPTH_BLEND_U_FACTOR;
+								X_DPT = V_POS_OUT_TC.w;
+							#else
+								X_DPT = V_POS_OUT_TC.w * C_DEPTH_BLEND_DISTANCE_1BY;
+							#endif
+						#endif
+
+						#if defined(X_UV_0)
+							X_UV_0 = I_POS_MS.D_ORIENTATION_UV * float2(0.5, -1.0) + float2(0.5, 1.0);
+						#else
+							X_MASK = I_POS_MS.D_ORIENTATION_UV;
+						#endif
+
+						#if defined(X_UV_1)
+							X_UV_1 = pos_ms.D_ORIENTATION_PLANE;
+							#if !defined(D_SPOT_PROJECTION_ON)
+								X_UV_1 = X_UV_1 * 0.5 + 0.5;
+							#endif
+						#endif
+
+						#if defined(X_NRM)
+							X_NRM = Mul33(D_ORIENTATION_DIR, MODEL_XFORM_4x3);
+						#endif
+					}
+				}
+			}
+
+			PixelShader()
+			{
+				hlsl(s_hlsl_profile_def)
+				{
+
+					#include <master_new.hlsl>
+					#include <depth_sample.hlsl>
+					#include <colorops.hlsl>
+
+					void main()
+					{
+						O_CLR = X_CLR;
+
+						#if defined(S_MSK_0)
+							O_CLR *= Sample(S_MSK_0, X_UV_0);
+						#elif defined(X_MASK)
+							FLOAT mask = saturate(dot(X_MASK, X_MASK));
+							mask = 1.0 - mask;
+							mask *= mask;
+							O_CLR *= mask;
+						#endif
+
+						#if defined(S_CLR_0)
+							FLOAT2 uv_1 = X_UV_1;
+							#if defined(D_SPOT_PROJECTION_ON)
+								float depth_1by = (X_DEPTH_N > 0.0) ? 1.0 / X_DEPTH_N : 1.0;
+								uv_1 *= depth_1by;
+								uv_1 = uv_1 * SwizzleXX(0.5) + SwizzleXX(0.5);
+							#endif
+							FLOAT4 clr = Sample(S_CLR_0, uv_1);
+							O_CLR.xyz *= clr.xyz;
+							#if defined(D_DUST_SHADOWS_ON)
+								FLOAT dust_shadow = 1.0 - saturate(X_DEPTH_N - clr.w * clr.w);
+								O_CLR.xyz *= dust_shadow;
+							#endif
+						#endif
+
+						#if defined(D_FADE_NEAR_MUL_ON) || defined(D_FADE_FAR_MUL_ON) || defined(D_DEPTH_BLEND_FACTOR_ON) || defined(D_FADE_ANGLE_ON)
+							FLOAT fade = 1.0;
+							#if defined(D_FADE_NEAR_MUL_ON) || defined(D_FADE_FAR_MUL_ON)
+								FLOAT dist2cam = length(X_CAM_DIR);
+								#if defined(D_FADE_NEAR_MUL_ON)
+									fade *= saturate(dist2cam * C_FADE_NEAR_MUL + C_FADE_NEAR_ADD);
+								#endif
+								#if defined(D_FADE_FAR_MUL_ON)
+									fade *= saturate(dist2cam * C_FADE_FAR_MUL + C_FADE_FAR_ADD);
+								#endif
+							#endif
+							#if defined(D_DEPTH_BLEND_FACTOR_ON)
+								FLOAT2 uv_screen = UV_Screen(V_POS_SS_TC);
+								FLOAT depth = Depth_Sample(uv_screen);
+								#if defined(D_DEPTH_BLEND_U_FACTOR_ON)
+									float depth_blend_mask = depth - X_DPT;
+									float depth_blend_distance = C_DEPTH_BLEND_DISTANCE + X_U * X_U;
+									float depth_blend_distance_1by = 1.0 / depth_blend_distance;
+									depth_blend_mask = (depth_blend_distance > 0.0) ? saturate(depth_blend_mask * depth_blend_distance_1by) : 0.0;
+								#else
+									FLOAT depth_blend_mask = saturate(depth * C_DEPTH_BLEND_DISTANCE_1BY - X_DPT);
+								#endif
+								fade *= depth_blend_mask;
+							#endif
+							#if defined(D_FADE_ANGLE_ON)
+								FLOAT3 nrm_n = normalize(X_NRM);
+								FLOAT3 cam_n = normalize(X_CAM_DIR);
+								FLOAT fresnel = dot(cam_n, nrm_n);
+								FLOAT2 fades_angle = saturate( SwizzleXX(fresnel) * C_FADE_ANGLE_FADE_FACTORS.xy + C_FADE_ANGLE_FADE_FACTORS.zw);
+								fades_angle = SwizzleXX(1.0) - fades_angle;
+								FLOAT fade_angle = fades_angle.x * fades_angle.y;
+								fade *= fade_angle;
+							#endif
+							fade = smoothstep(0.0, 1.0, fade);
+							O_CLR *= fade;
+						#endif
+					}
+				}
+			}
+        }
+    }
+}

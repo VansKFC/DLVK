@@ -1,0 +1,147 @@
+//new
+
+using engineflags;
+using settemplates;
+using tmu;
+
+template
+{
+	category Main
+	{
+		string_dat s_normal_map = s_tex_def;
+		string_dat s_noise_map = s_tex_def;
+		float_dat f_noise_strength  = 1.0;
+		float_dat f_noise_speed     = 1.0;
+		float_dat f_refr_strength   = 1.0;
+	}
+
+    category Advanced
+    {
+        class Geometry
+        {
+            bool_dat static_on = true;
+        }
+    }
+
+    templatebody()
+    {
+		tech("opq2")
+        {
+			Cull(CCW);
+            DepthFunc(LEQUAL, TRUE);
+
+			Input I_POS_MS = new InputFloat4("POSITION");
+			Input I_CLR_0 = new InputFloat4("COLOR0");
+			Input I_UV_0 = new InputFloat2("TEXCOORD0");
+			Input I_UV_1 = new InputFloat3("TEXCOORD1");
+
+			Output O_SPC = new OutputFLOAT4("COLOR0");
+			Output O_DIF = new OutputFLOAT4("COLOR1");
+			Output O_NRM = new OutputFLOAT4("COLOR2");
+
+			C_PARAM_NOISE_STR = SetConst(f_noise_strength);
+			C_PARAM_NOISE_SPD = SetConst(0.1 * f_noise_speed);
+			C_PARAM_REFR_STR = SetConst(f_refr_strength * 0.1);
+
+			X_UV_0 = SetTexcoord2();
+
+			X_CLR_VRT =  SetTexcoord4();
+			X_UV_1 = SetTexcoord2();
+			X_UV_2 = SetTexcoord2();
+			X_DISTANCE = SetTexcoord();
+
+			S_NOISE = SetTexture(s_noise_map, e_tex_filter_def, MIRROR, MIRROR, false);
+			S_NRM = SetTexture(s_normal_map, e_tex_filter_def, CLAMP, CLAMP, false);
+			S_RFR = SetTexture(15, LINEAR_NO_MIP, WRAP, WRAP, false);
+
+            if(!static_on)
+            {
+                MarkStencilDynamic();
+            }
+
+			VertexShader()
+			{
+				hlsl()
+				{
+					#include <master_new.hlsl>
+
+					void main()
+					{
+						V_POS_OUT_TC = Pos_Out(I_POS_MS);
+						X_UV_0 =    I_UV_0;
+						X_UV_1 =    I_UV_1.xy;
+						X_UV_1.x *= -1;
+						X_UV_2 =    2.0 * I_UV_0 + (TIME * C_PARAM_NOISE_SPD);
+
+						X_CLR_VRT.rgba = I_CLR_0.rgba;
+						X_CLR_VRT.a = 1.0 - (X_CLR_VRT.a - 0.01);
+
+						X_DISTANCE = 0.75 * (1.0 - saturate(abs(I_POS_MS.z) * 0.001));
+					}
+				}
+
+			}
+
+			PixelShader()
+			{
+				hlsl()
+				{
+					#if defined(SHADER_PATH_ORBIS)
+						// #pragma PSSL_target_output_format (target 1 FMT_UNORM16_ABGR)
+					#endif
+
+					#include <master_new.hlsl>
+					#include <colorops.hlsl>
+					#include <gamma.hlsl>
+
+					void main()
+					{
+						float f_disp = Sample_h2(S_NOISE, X_UV_2).g;
+						f_disp = f_disp * 2.0 - 1.0;
+
+						float2 uvs_0 = X_UV_0 + C_PARAM_NOISE_STR * f_disp;
+
+						float4 v_nrm = Sample_h4(S_NRM, uvs_0);
+
+						v_nrm.ga *= 1.0 + 2.0 *(X_CLR_VRT.a);
+						v_nrm.ga -= X_CLR_VRT.a;
+
+						float2 v_mask = (1.0 - abs(v_nrm.ga * 2.0 - 1.0)) - (X_CLR_VRT.a);
+						v_mask = step(0, v_mask);
+
+						clip( v_mask.x * v_mask.y - 0.1);
+
+						// rotate normals
+						float4 v_decoded_nrm = v_nrm * 2.0 - 1.0;
+						float tmpx = v_decoded_nrm.y * X_UV_1.y - v_decoded_nrm.w * X_UV_1.x;
+						float tmpy = v_decoded_nrm.y * X_UV_1.x + v_decoded_nrm.w * X_UV_1.y;
+						v_nrm.y = tmpx * 0.5 + 0.5;
+						v_nrm.w = tmpy * 0.5 + 0.5;
+
+						v_nrm.zw = 1.0 - v_nrm.zw;
+						O_NRM.xyz = v_nrm.ywz;
+						O_NRM.w = 1.0;
+
+						float2 v_uv = UV_Screen(V_POS_SS_TC) + C_PARAM_REFR_STR * v_nrm.yw ;
+						float3 v_clr_rfr = Sample(S_RFR, v_uv).rgb;
+
+						v_clr_rfr *= 4.0;
+						v_clr_rfr = saturate( v_clr_rfr * v_clr_rfr * v_clr_rfr);
+						v_clr_rfr *= X_CLR_VRT.rgb;
+
+						FLOAT3 v_clr_out = X_CLR_VRT.rgb;
+						v_clr_out *= v_clr_rfr;
+						v_clr_out += v_clr_rfr;
+
+						O_SPC.rgb = v_clr_out;
+						O_SPC.a = 0.0;
+						O_DIF = O_SPC;
+						O_SPC.xyz = SwizzleXXX( Linear2Gamma(Luminance(O_SPC.xyz) * 0.5) );
+					}
+				}
+			}
+        }
+    }
+}
+
+

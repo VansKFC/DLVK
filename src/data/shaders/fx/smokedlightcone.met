@@ -1,0 +1,163 @@
+//new
+
+using engineflags;
+using settemplates;
+using tmu;
+
+template
+{   
+	public static int_dat e_slc_cull_none = 0;
+	public static int_dat e_slc_cull_cw = 1;
+	public static int_dat e_slc_cull_ccw = 2;
+
+	category Main
+	{
+		string_dat s_base_tex = s_tex_def;
+		string_dat s_smoke_tex = s_tex_def;
+		float_dat f_smoke_scale = 1.0;
+		float_dat f_smoke_speed = 1.0;
+		float_dat f_intensity = 10.0;
+		float_dat f_smoke_intensity = 1.0;
+		float_dat f_fade_distance = 3000.0;
+		float_dat f_fade_range = 2000.0;
+		float_dat f_blend = 30.0;
+		int_dat e_scl_cull = e_slc_cull_none;
+		bool_dat b_ps3_color_correction_on = FALSE;
+		vec3_dat v_ps3_color_correction_mul = vec(1.0, 1.0, 1.0);
+	}
+	
+    templatebody()
+    {
+		platform("*", "none; instancing");
+
+		tech("trn")
+        {
+			if(e_scl_cull == e_slc_cull_none) { Cull(NONE); }
+		    if(e_scl_cull == e_slc_cull_cw) { Cull(CW); }
+			if(e_scl_cull == e_slc_cull_ccw) { Cull(CCW); }  
+				 
+			DepthFunc(ALWAYS, FALSE);
+			BlendFunc(ONE, ONE, ZERO, ONE);
+			
+			Input I_POS_MS = new InputFloat4("POSITION");
+			Input I_UV_0 = new InputFloat2("TEXCOORD0");
+			Input I_NRM_MS = new InputFloat3("NORMAL0");
+			Input I_CLR_USR = new InputFloat4("COLOR_USER");
+			
+			Output O_CLR = new OutputFLOAT4("COLOR0");
+
+			X_UV_0 = SetTexcoord2();			
+			X_UV_1 = SetTexcoord2();			
+			X_UV_2 = SetTexcoord2();			
+			X_CLR_0 = SetTexcoord4();
+			
+			
+			extern float_dat f_pp_hdr_intensity_emissive;
+            extern float_dat TIME;
+			
+			extern int_dat SHADER_PATH;  
+			
+			if(SHADER_PATH == SM32 & b_ps3_color_correction_on)
+			{
+				Define("PS3_COLOR_CORRECTION_ON", 1);
+			}
+			
+			C_SMOKE_SCALE = SetConst(0.1 / f_smoke_scale);
+			C_SMOKE_SPEED = SetConst(f_smoke_speed * TIME);
+			C_SMOKE_INTENSITY = SetConst(f_smoke_intensity);
+			C_INTENSITY = SetConst(f_pp_hdr_intensity_emissive * f_intensity * 0.4);
+			C_PS3_COLOR_MUL = SetConst(v_ps3_color_correction_mul);
+			C_BLENDING_DEPTH = SetConst(If(f_blend > 0.0, 1.0/f_blend, 1.0));
+			C_FADE_SCALE = SetConst(1.0/f_fade_range);
+			C_FADE_BIAS = SetConst(-f_fade_distance/f_fade_range);
+			
+			if(f_blend > 0.0)
+			{
+				X_DEPTH = SetTexcoord();
+				use PP_DEPTH_TMU();				
+			}
+			
+			S_CONE_BASE = SetTexture(s_base_tex, e_tex_filter_def, CLAMP, CLAMP, true);
+			S_SMOKE = SetTexture(s_smoke_tex);
+
+			VertexShader()
+			{
+				use Instancing();
+				hlsl(s_hlsl_profile_def)
+				{
+					#include <master_new.hlsl>
+					
+					CONST_FLOAT3 CAMERA_DIR_WS;
+					
+					void main()
+					{
+						float4 v_pos_ws = Mul_Pos(Decode_Pos(I_POS_MS), MODEL_XFORM_4x3);
+						float3 v_nrm = Mul33(I_NRM_MS, MODEL_XFORM_4x3);
+						
+						float3 v_cam_dir_ws = CAMERA_POS_WS.xyz - v_pos_ws.xyz;
+						float3 to_cam_ws = -(normalize(v_cam_dir_ws));
+						float dt = saturate(abs(dot(v_nrm.xyz, to_cam_ws.xyz)) * 1.2 - 0.2);
+						
+						dt *= 1.0 - saturate(length(v_cam_dir_ws.xz) * C_FADE_SCALE + C_FADE_BIAS);
+						
+						float4 usr_0 = Decode_Usr(I_CLR_USR);
+						
+						usr_0.xyz = pow(abs(usr_0.xyz * SwizzleXXX(C_INTENSITY) ), SwizzleXXX(2.2));
+
+						X_CLR_0 = usr_0;
+						X_CLR_0 *= saturate(dt * dt - 0.01);
+						
+						#if defined (PS3_COLOR_CORRECTION_ON)
+						   X_CLR_0 *= C_PS3_COLOR_MUL;
+						#endif 
+						
+						#if defined(X_DEPTH)  
+							X_DEPTH = dot(v_pos_ws, VIEWPROJ_XFORM[3]) * C_BLENDING_DEPTH;
+						#endif
+						
+						
+						V_POS_OUT_TC = Pos_Out_WS(v_pos_ws);
+
+						float usr_sum = dot(usr_0.xyz, SwizzleXXX(1.0));
+
+						V_POS_OUT_TC = (usr_sum <= 0.0) ? float4(0.0, 0.0, 0.0, 1.0) : V_POS_OUT_TC;
+
+						X_UV_0 = Decode_UV(I_UV_0);
+						X_UV_1 = v_pos_ws.xy * C_SMOKE_SCALE + C_SMOKE_SPEED;
+						X_UV_2 = v_pos_ws.yz * C_SMOKE_SCALE + C_SMOKE_SPEED;
+					}
+				}
+
+			}
+
+			PixelShader()
+			{
+				hlsl(s_hlsl_profile_def)
+				{				
+					#include <master_new.hlsl>
+					#include <depth_sample.hlsl>
+					
+					void main()
+					{
+						FLOAT f_mask = Sample_h2( S_CONE_BASE, X_UV_0 ).g;
+
+						FLOAT f_smoke = Sample_h2( S_SMOKE, X_UV_1 ).g * Sample_h2( S_SMOKE, X_UV_2 ).g;
+						f_mask *= saturate(f_smoke * C_SMOKE_INTENSITY + 1.0 - C_SMOKE_INTENSITY);
+
+						#if defined(X_DEPTH)
+							float2 v_uv = UV_Screen(V_POS_SS_TC); 
+							float f_depth = Depth_Sample(v_uv);
+							float f_diff = saturate(f_depth * C_BLENDING_DEPTH - X_DEPTH);
+							FLOAT diff2 = f_diff * f_diff;
+							f_mask *= diff2;
+						#endif
+
+						O_CLR = X_CLR_0 * SwizzleXXXX(f_mask);
+					}
+				}
+			}
+        }
+    }
+}
+
+  

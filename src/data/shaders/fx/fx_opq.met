@@ -1,0 +1,235 @@
+//new
+
+using engineflags;
+using settemplates;
+using tmu;
+using attribs;
+
+public class FXMatID_Variants : StringVariantConv
+{
+    public static object[] Data = { "mat_dielectric", "mat_dielectric_sss", "mat_leaves" };
+    public override object[] GetData() {return Data;}
+}
+
+public class FXType_Variants : StringVariantConv
+{
+    public static object[] Data = { "e_type_fx_ws", "e_type_fx_cs" };
+    public override object[] GetData() {return Data;}
+}
+
+public class FXNrm_Variants : StringVariantConv
+{
+	public static object[] Data = { "\"Camera\"", "\"Emitter\"", "\"Cloud Center\""};
+	public override object[] GetData() {return Data;}
+}
+
+template
+{
+	public string TemplateCategory() { return "FX"; }
+
+	category Basic
+	{
+		class Main
+		{
+			string_dat clr_0_tex = s_tex_def : editor(ImageFileNameEditor), display(Color texture);
+			string_dat nrm_0_tex = "" : editor(ImageFileNameEditor), display(Normal texture);
+			int_dat mat_id = mat_dielectric : converter(FXMatID_Variants), display(Material ID);
+			bool_dat alpha_test_on = TRUE : display(Alpha Test);
+			float_dat alpha_ref_value = 0.5 : display(Alpha reference value);
+			int_dat fx_type = e_type_fx_cs : converter(FXType_Variants), display(Type);
+			string_dat nrm_type = "Camera" : converter(FXNrm_Variants), display(Nrm type);
+			float_dat nrm_factor = 0.5 : display(Nrm factor);
+			float_dat rgh = 1.0 : display(Roughness);
+
+		}
+		class Sampling
+		{
+			int_dat tex_tile = WRAP : converter(TexTile_Variants), display(Tile);
+			int_dat tex_filtering = LINEAR_MIP_POINT : converter(Filter_Variants), display(Filtering);
+		}
+		class Miscellaneous
+		{
+			int_dat culling = CCW : converter(CullMode_Variants), display(Culling);
+		}
+	}
+
+    category Advanced
+    {
+        class Geometry
+        {
+            bool_dat static_on = true;
+        }
+    }
+
+    templatebody()
+    {
+		platform("*", "none; instancing");
+
+		tech("opq2")
+        {
+			Cull(culling);
+			DepthFunc(LEQUAL, TRUE);
+
+			if(alpha_test_on)
+			{
+				Define("ALPHA_TEST_ON", 1);
+				C_ALPHA_REF = SetConst(alpha_ref_value);
+			}
+
+			Input I_POS_MS = new InputFloat4("POSITION");
+			Input I_UV_0 = new InputFloat2("TEXCOORD0");
+			Input I_CLR_0 = new InputFloat4("COLOR0");
+
+			Output O_SPC = new OutputFLOAT4("COLOR0");
+			Output O_DIF = new OutputFLOAT4("COLOR1");
+			Output O_NRM = new OutputFLOAT4("COLOR2");
+
+			X_CLR_VRT = SetTexcoord4();
+			X_UV_0 = SetTexcoord2();
+			X_NRM_GEN_CS = SetTexcoord3();
+
+			S_CLR = SetTexture(clr_0_tex, tex_filtering, tex_tile, tex_tile, false);
+
+			float_dat mat_id_sss_dielectric = ((float_dat)sss_dielectric) / 255.0;
+			float_dat mat_id_sss_leaves = ((float_dat)sss_leaves) / 255.0;
+			float_dat mid_base = ((float_dat)sss_off) / 255.0; //sss off
+			mid_base = (mat_id == mat_dielectric_sss) ? mat_id_sss_dielectric : mid_base;
+			mid_base = (mat_id == mat_leaves) ? mat_id_sss_leaves : mid_base;
+			
+            C_MAT_ID = SetConst(mid_base);
+			C_RGH = SetConst(rgh);
+
+			if(fx_type == e_type_fx_ws) { Define("FX_WORLD_ON", 1); }
+			if(fx_type == e_type_fx_cs) { Define("FX_CAMERA_ON", 1); }
+
+			if(nrm_type == "Camera") { Define("NRM_CAMERA_ON", 1); }
+			if(nrm_type == "Emitter") { Define("NRM_EMITTER_ON", 1); }
+			if(nrm_type == "Cloud Center") { Define("NRM_CLOUD_CENTER_ON", 1); }
+
+			if(nrm_0_tex != "")
+			{
+				Input I_BNR_CS = new InputFloat3("TEXCOORD1");
+				S_NRM = SetTexture(nrm_0_tex, tex_filtering, tex_tile, tex_tile, false);
+
+				X_BNR_CS = SetTexcoord3();
+				X_TNG_CS = SetTexcoord3();
+				X_NRM_CS = SetTexcoord3();
+
+                C_NRM_FACTOR = SetConst(nrm_factor);
+			}
+
+            if(!static_on)
+            {
+                MarkStencilDynamic();
+            }
+
+			VertexShader()
+			{
+				hlsl()
+				{
+					#include <master_new.hlsl>
+
+					uniform float4 CONST_2;
+
+					void main()
+					{
+						V_POS_OUT_TC = Pos_Out(I_POS_MS);
+						X_UV_0 = I_UV_0;
+
+						X_CLR_VRT.rgb = pow(abs(I_CLR_0.rgb), float3(2.2, 2.2, 2.2));
+						X_CLR_VRT.a = I_CLR_0.a;
+
+
+						float3 nrm = I_POS_MS.xyz;
+
+						#if defined(NRM_CAMERA_ON)
+							#if defined(FX_WORLD_ON)
+								nrm = CAMERA_POS_WS.xyz - nrm;
+							#else
+								nrm = -nrm;
+							#endif
+						#endif
+
+						#if defined(NRM_EMITTER_ON)
+							float3 v_ref_point = CONST_1.xyz;
+						#elif defined(NRM_CLOUD_CENTER_ON)
+							float3 v_ref_point = CONST_2.xyz;
+						#endif
+
+						#if defined(NRM_EMITTER_ON) || defined(NRM_CLOUD_CENTER_ON)
+							#if defined(FX_CAMERA_ON)
+								v_ref_point = Mul43( float4(v_ref_point, 1.0), VIEW_XFORM);
+							#endif
+							nrm -= v_ref_point;
+						#endif
+
+						nrm = normalize(nrm);
+
+						#if defined(X_BNR_CS)
+							X_BNR_CS = I_BNR_CS;
+							X_TNG_CS = FLOAT3(I_BNR_CS.y, -I_BNR_CS.x, 0.0);
+							X_NRM_CS = cross(X_TNG_CS, X_BNR_CS);
+
+							X_NRM_GEN_CS = nrm;
+						#else
+							X_NRM_GEN_CS = nrm * 0.5 + 0.5;
+						#endif
+					}
+				}
+
+			}
+
+			PixelShader()
+			{
+				hlsl()
+				{
+					#if defined(SHADER_PATH_ORBIS)
+						// #pragma PSSL_target_output_format (target 1 FMT_UNORM16_ABGR)
+					#endif
+
+					#include <master_new.hlsl>
+					#include <colorops.hlsl>
+					#include <gamma.hlsl>
+
+					void main()
+					{
+						FLOAT4 v_tex = Sample_h4(S_CLR, X_UV_0);
+
+						O_SPC = v_tex * X_CLR_VRT;
+
+						#if defined(ALPHA_TEST_ON)
+                            clip(O_SPC.w - C_ALPHA_REF);
+						#endif
+
+						O_SPC.w = C_RGH;
+						O_DIF = O_SPC;
+						O_SPC.xyz = SwizzleXXX(Linear2Gamma(Luminance(O_SPC.xyz) * 0.5));
+
+						FLOAT3 nrm_n_cs = X_NRM_GEN_CS;
+
+						#if defined(S_NRM)
+							float3 E2T_XFORM[3];
+							E2T_XFORM[0] = X_TNG_CS;
+							E2T_XFORM[1] = X_BNR_CS;
+							E2T_XFORM[2] = X_NRM_CS;
+
+							FLOAT3 nrm_ts = FLOAT3(0.0, 0.0, 1.0);
+							nrm_ts.xy = Sample(S_NRM, X_UV_0).ag * 2.0 - 1.0;
+
+							FLOAT3 nrm_cs = Mul33T(nrm_ts, E2T_XFORM);
+                            nrm_n_cs += nrm_cs * C_NRM_FACTOR;
+							nrm_n_cs = normalize(nrm_n_cs) * 0.5 + 0.5;
+						#endif
+
+						O_NRM.xyz = nrm_n_cs;
+                        O_NRM.w = C_MAT_ID;
+
+
+					}
+				}
+			}
+        }
+    }
+}
+
+
