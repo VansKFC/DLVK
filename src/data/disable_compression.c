@@ -40,4 +40,4 @@ res("zombie_man_a"){pos_compression(50);}
 res("survivor_woman_a"){pos_compression(50);}
 res("reporter_woman"){pos_compression(50);}
 res("zombie_woman"){pos_compression(50);}
-res("zuman_woman"){pos_compression(50);}}
+res("zuman_woman"){pos_compression(50);} return 0;}
