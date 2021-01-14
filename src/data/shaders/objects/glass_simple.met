@@ -1,0 +1,266 @@
+//new
+
+using engineflags;
+using settemplates;
+using attribs;
+
+template
+{
+	category Basic
+	{
+		class Main
+		{
+			string_dat nrm_0_tex = "" : editor(ImageFileNameEditor), display(Base normal texture);
+			string_dat msk_0_tex = "" : editor(ImageFileNameEditor), display(Base masks texture);
+		}
+		class Opacity
+		{
+			float_dat opacity = 1.0 : display(Opacity);
+			bool_dat usr_0_on = FALSE : display(User opacity enabled);
+		}
+		class Order
+		{
+			bool_dat render_first_on = FALSE : display(Render first);
+			bool_dat render_last_on = FALSE : display(Render last);
+		}
+	}
+
+	category Advanced
+	{
+		class Factors
+		{
+			float_dat nrm_0_factor = 1.0 : display(Normal scale);
+		}
+		class Sampling
+		{
+			int_dat tex_tile = WRAP : converter(TexTile_Variants);
+		}
+		class Env
+		{
+			bool_dat env_on = TRUE : display(Env enabled);
+			string_dat env_tex = "" : editor(ImageFileNameEditor), display(Alternative enviroment texture);
+			vec3_dat env_factor = vec(1.0, 1.0, 1.0) : editor(ColorRGBEditor), display(Env Factor);
+			float_dat env_fresnel_min = -0.5 : display(Env Fresnel Mask Minimum);
+			float_dat env_fresnel_max = 0.5 : display(Env Fresnel Mask Maximum);
+			bool_dat env_fresnel_pow_on = TRUE : display(Env Fresnel Mask Powered);
+		}
+        class Quality and performance
+        {
+			bool_dat sh_pp_on = FALSE : display(Spherical Harmonix Per Pixel Calculation Enabled);
+			bool_dat env_clr_on = FALSE : display(Cubemap Color Enabled);
+		}
+	}
+
+	templatebody()
+	{
+		string_dat technique = If(render_last_on, "trn2", "trn0");
+		technique = If(render_first_on, "trn_first", technique);
+		bool_dat nrm_0_on = (nrm_0_tex != "");
+		bool_dat msk_0_on = (msk_0_tex != "");
+		tech(technique)
+		{
+			Cull(CW);
+			// BlendFunc(ONE, SRC_ALPHA, ZERO, ONE);
+			BlendFunc(SRC_ALPHA, INV_SRC_ALPHA, ZERO, ONE);
+			DepthFunc(LEQUAL, FALSE);
+
+			AddLine("StencilMarker();");
+
+			Input I_POS_MS = new InputFloat4("POSITION");
+			Input I_NRM_MS = new InputFloat3("NORMAL0");
+
+			X_SCATTERING_EXT__OPACITY = SetTexcoord4();
+			X_SCATTERING_INS__ZERO = SetTexcoord4();
+			X_CAM_DIR_WS = SetTexcoord3();
+			X_NRM_WS = SetTexcoord3("FLOAT");
+
+			Output O_CLR = new OutputFLOAT4("COLOR0");
+
+			extern vec3_dat v_pp_sun_scattering_dir;
+			C_SUN_SCATTERING_DIR = SetConst(-v_pp_sun_scattering_dir);
+			C_OPACITY = SetConst(opacity);
+			C_ENV_FACTOR = SetConst(env_factor);
+
+			float_dat env_fresnel_scale = 1.0 / (env_fresnel_max - env_fresnel_min);
+			float_dat env_fresnel_bias = -env_fresnel_min * env_fresnel_scale;
+			C_ENV_FRESNEL_SCALE = SetConst(env_fresnel_scale);
+			C_ENV_FRESNEL_BIAS = SetConst(env_fresnel_bias);
+			if(env_fresnel_pow_on)
+			{
+				Define("D_ENV_FRESNEL_POW_ON", 1);
+			}
+
+			if(sh_pp_on & nrm_0_on)
+			{
+				Define("D_SH_PP_ON", 1);
+			}
+
+
+			if(usr_0_on)
+			{
+				Define("D_USR_OPACITY_ON", 1);
+				Input I_CLR_USR = new InputFloat4("COLOR_USER");
+			}
+
+			if(nrm_0_on | msk_0_on)
+			{
+				Input I_UV_0 = new InputFloat2("TEXCOORD0");
+				X_UV_0 = SetTexcoord2("FLOAT");
+			}
+
+			if(env_tex != "")
+			{
+				S_ENV = SetTextureCUBE(env_tex, LINEAR_NO_MIP, CLAMP, CLAMP, TRUE);
+			}
+			else
+			{
+				S_ENV = SetTextureCUBE(i_um_env, LINEAR_NO_MIP, CLAMP, CLAMP, TRUE);
+			}
+			if(env_clr_on)
+			{
+				Define("D_ENV_CLR_ON", 1);
+			}
+
+			if(nrm_0_on)
+			{
+				Input I_TNG_MS = new InputFloat4("TANGENT0");
+				X_TNG_WS = SetTexcoord3("FLOAT");
+				X_BNR_WS = SetTexcoord3("FLOAT");
+				S_NRM_0 = SetTexture2D(nrm_0_tex, LINEAR_MIP_LINEAR, tex_tile, tex_tile, FALSE);
+				C_NRM_0_SCALE = SetConst(nrm_0_factor * 2.0, 0.0, -nrm_0_factor, 1.0);
+			}
+			else
+			{
+				X_RFL_WS = SetTexcoord3("FLOAT");
+			}
+			if(msk_0_on)
+			{
+				S_MSK_0 = SetTexture2D(msk_0_tex, LINEAR_MIP_LINEAR, tex_tile, tex_tile, TRUE);
+			}
+
+			VertexShader()
+			{
+				use Instancing();
+
+				hlsl()
+				{
+					#include <master_new.hlsl>
+					#include <fog.hlsl>
+					#if !defined(D_SH_PP_ON)
+						#include <sh_lighting.hlsl>
+						CONST_FLOAT4 GLOBAL_ENVPROBE[7];
+					#endif
+
+					void main()
+					{
+						float4 pos_ms = Decode_Pos(I_POS_MS);
+
+						float4 pos_ws = Mul_Pos(pos_ms, MODEL_XFORM_4x3);
+
+						V_POS_OUT_TC = Pos_Out_WS(pos_ws);
+
+						#if defined(X_UV_0)
+							X_UV_0 = Decode_UV(I_UV_0);
+						#endif
+
+						float3 nrm_ws = Mul33(I_NRM_MS, MODEL_XFORM_4x3);
+						float3 nrm_n_ws = normalize(nrm_ws);
+						X_NRM_WS = nrm_n_ws;
+
+						#if defined(X_TNG_WS)
+							float3 tng_ws = Mul33(I_TNG_MS.xyz, MODEL_XFORM_4x3);
+							float3 tng_n_ws = normalize(tng_ws);
+							X_TNG_WS = tng_n_ws;
+
+							float3 bnr_n_ws = cross(nrm_n_ws, tng_n_ws);
+							bnr_n_ws *= I_TNG_MS.w;
+							X_BNR_WS = bnr_n_ws;
+						#endif
+
+						X_CAM_DIR_WS = pos_ws.xyz - CAMERA_POS_WS.xyz;
+						float3 ext = Scattering_Ext(length(X_CAM_DIR_WS));
+						X_SCATTERING_INS__ZERO.xyz = Scattering_Ins(ext, normalize(X_CAM_DIR_WS), C_SUN_SCATTERING_DIR);
+						X_SCATTERING_INS__ZERO.w = 0.0;
+
+						X_SCATTERING_EXT__OPACITY.xyz = ext * C_ENV_FACTOR;
+						#if defined(X_RFL_WS) || !defined(D_SH_PP_ON)
+							float3 rfl_ws = reflect(X_CAM_DIR_WS, nrm_n_ws);
+							#if defined(X_RFL_WS)
+								X_RFL_WS = rfl_ws;
+							#endif
+							#if !defined(D_SH_PP_ON)
+								float3 rfl_n_ws = normalize(rfl_ws);
+								float3 sh = ShadeIrad(GLOBAL_ENVPROBE, rfl_n_ws);
+								X_SCATTERING_EXT__OPACITY.xyz *= sh;
+							#endif
+						#endif
+
+						X_SCATTERING_EXT__OPACITY.w = C_OPACITY;
+						#if defined(D_USR_OPACITY_ON)
+							X_SCATTERING_EXT__OPACITY.w *= Decode_Usr(I_CLR_USR).w;
+						#endif
+					}
+				}
+			}
+
+			PixelShader()
+			{
+				hlsl()
+				{
+					#include <master_new.hlsl>
+
+					#if defined(D_SH_PP_ON)
+						#include <sh_lighting.hlsl>
+						CONST_FLOAT4 GLOBAL_ENVPROBE[7];
+					#endif
+
+					void main()
+					{
+						#if defined(S_NRM_0)
+							FLOAT2 nrm_tex = Sample(S_NRM_0, X_UV_0).ag;
+							FLOAT3 nrm_ts = nrm_tex.xyx * C_NRM_0_SCALE.xxy + C_NRM_0_SCALE.zzw;
+
+							float3 W2T_XFORM[3];
+							W2T_XFORM[0] = X_TNG_WS;
+							W2T_XFORM[1] = X_BNR_WS;
+							W2T_XFORM[2] = X_NRM_WS;
+							FLOAT3 nrm_ws = Mul33T(nrm_ts, W2T_XFORM);
+							FLOAT3 nrm_n_ws = normalize(nrm_ws);
+						#else
+							FLOAT3 nrm_n_ws = normalize(X_NRM_WS);
+						#endif
+
+						#if defined(X_RFL_WS)
+							FLOAT3 rfl_ws = X_RFL_WS;
+						#else
+							FLOAT3 rfl_ws = reflect(X_CAM_DIR_WS, nrm_n_ws);
+						#endif
+
+						O_CLR.xyz = SampleCUBE_h3(S_ENV, rfl_ws, 0.0);
+						#if !defined(D_ENV_CLR_ON)
+							O_CLR.xyz = O_CLR.yyy;
+						#endif
+
+						FLOAT3 cam_dir_ws_n = normalize(X_CAM_DIR_WS);
+						FLOAT fresnel = saturate(1.0 - dot(-nrm_n_ws, cam_dir_ws_n));
+						fresnel = saturate(fresnel * C_ENV_FRESNEL_SCALE + C_ENV_FRESNEL_BIAS);
+						#if defined(D_ENV_FRESNEL_POW_ON)
+							fresnel *= fresnel;
+						#endif
+						O_CLR.w = fresnel;
+
+						#if defined(S_MSK_0)
+							O_CLR *= Sample_h2(S_MSK_0, X_UV_0).gggg;
+						#endif
+
+						#if defined(D_SH_PP_ON)
+							FLOAT3 rfl_n_ws = normalize(rfl_ws);
+							O_CLR.xyz *= ShadeIrad(GLOBAL_ENVPROBE, rfl_n_ws);
+						#endif
+						O_CLR = O_CLR * X_SCATTERING_EXT__OPACITY + X_SCATTERING_INS__ZERO;
+					}
+				}
+			}
+		}
+	}
+}

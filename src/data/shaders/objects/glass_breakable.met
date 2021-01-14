@@ -1,0 +1,310 @@
+//new
+
+using engineflags;
+using settemplates;
+
+template
+{
+	category Main
+	{
+		class Basic
+		{
+			string_dat clr_tex = s_tex_def : editor(ImageFileNameEditor), display(Color);
+			string_dat msk_tex = s_tex_def : editor(ImageFileNameEditor), display(MSK);
+			string_dat nrm_tex = s_tex_def : editor(ImageFileNameEditor), display(Normal);
+			string_dat env_tex = s_tex_def : editor(ImageFileNameEditor), display(Env);
+			float_dat f_nrm_scale = 1.0 : editor(FloatSpinEditor), display(Normal Scale);
+			vec4_dat color = vec(1.0, 1.0, 1.0, 1.0) : editor(ColorRGBAEditor), display(COLOR);
+			bool_dat test = FALSE;
+			float_dat test_t = 0.1 ;
+		}
+	}
+
+	templatebody()
+	{
+		tech("rfr2")
+		{
+			extern int_dat SHADER_PATH;
+			use SetupMaterial();
+			Cull(NONE);
+			DepthFunc(LEQUAL, TRUE);
+
+			Input I_POS_0 = new InputFloat4("POSITION");
+			Input I_UV_0 = new InputFloat2("TEXCOORD0");
+			Input I_NRM_0 = new InputFloat3("NORMAL0");
+			Input I_CLR_USR = new InputFloat4("COLOR_USER");
+
+			Output O_CLR = new OutputFLOAT4("COLOR0");
+
+			X_NRM = SetTexcoord3();
+			X_V_CLR = SetTexcoord2();
+			X_UV_L = SetTexcoord();
+			X_A_MSK = SetTexcoord();
+			X_CLP = SetTexcoord();
+			X_RFL_WS = SetTexcoord3("FLOAT");
+			X_POS_CS = SetTexcoord3("FLOAT");
+
+			S_RFR = SetTexture(8, LINEAR_NO_MIP, CLAMP, CLAMP, FALSE);
+			S_ENV = SetTextureCUBE(env_tex);
+			C_CLR = SetConst(color);
+			if(test)
+			{
+				Define ("D_TEST", 1);
+				Define ("D_TEST_T", test_t);
+			}
+
+			if(clr_tex != s_tex_def)
+			{
+				S_CLR = SetTexture(clr_tex);
+				Define ("D_CLR_ON", 1);
+			}
+
+			if(msk_tex != s_tex_def)
+			{
+				X_V_POS = SetTexcoord3();
+				S_MSK = SetTexture(msk_tex);
+				Define ("D_MSK_ON", 1);
+			}
+
+			if(nrm_tex != s_tex_def)
+			{
+				Define("D_NRM_ON", 1);
+				Input I_TNG_0 = new InputFloat4("TANGENT");
+				X_BNR = SetTexcoord3();
+				X_TNG = SetTexcoord3();
+				S_NRM = SetTexture(nrm_tex);
+				C_NRM_SCALE = SetConst(f_nrm_scale);
+			}
+
+			if((nrm_tex != s_tex_def)|(msk_tex != s_tex_def)|(clr_tex != s_tex_def))
+			{
+				Define("D_UV_ON", 1);
+				Input I_UV_1 = new InputFloat2("TEXCOORD1");
+				X_UV_1 = SetTexcoord2();
+			}
+
+			VertexShader()
+			{
+				use Instancing();
+				hlsl()
+				{
+
+					#include <master_new.hlsl>
+
+					void main()
+					{
+						float4 usr_1 ;
+						float4 usr_0 = Decode_Usr(I_CLR_USR, usr_1);
+						X_A_MSK =((usr_0.a > 0.00390625) ?  1.0: 0.0 ) ; // wylaczanie normalmapki spekan
+
+						#if defined (D_TEST)
+							float time_f =saturate( frac(TIME*D_TEST_T)- 0.00390625);
+						 #else
+							float time_f =saturate( usr_0.a- 0.00390625);
+						#endif
+
+						float2 uv_0 = Decode_UV(I_UV_0);
+
+						#if defined(D_UV_ON)
+							X_UV_1 = Decode_UV(I_UV_1);
+						#endif
+
+						float4 pos_ms = Decode_Pos(I_POS_0);
+						float3 pos_v_in_ms = float3(usr_1.rg ,0.0);
+						pos_v_in_ms.xy *= 2.0 ;
+						pos_v_in_ms.xy -= 1.0 ;
+// wyliczanie promienia kolka
+float fi_x = (( pos_v_in_ms.x)<  0) ?  1.0: -1.0  ;
+float fi_y = (( pos_v_in_ms.y)<  0) ?  1.0: -1.0  ;
+float fi_l = length(pos_v_in_ms.xy - float2(fi_x,fi_y));
+pos_ms.xy *=fi_l*0.5;
+
+						float3 pos_uv_ms;
+						pos_uv_ms.xy =   (uv_0 - float2(0.0,1.0))* float2(1.0,-1.0) ;
+						pos_uv_ms.z = 0.0;
+						float3 punch_vec = usr_0.rgb * 2.0 - 1.0;
+						float punch_f = length(punch_vec);
+						punch_vec = normalize(punch_vec);
+						float glass_v_pos_length = length(pos_uv_ms.xy ) * 0.5;
+
+						float3 punch_vec_ms = Mul33T(punch_vec, MODEL_XFORM_4x3);
+						float punch_sign = (  punch_vec_ms.z> 0) ?  1.0: -1.0 ;
+
+float punch_fi = usr_1.b;
+float punch_cur = 0.2; // wartosc zakrzywienia krzywej uderzenia
+float punch_val = punch_cur / (punch_fi + 0.1);
+float punch_msk_0 =  - (glass_v_pos_length - punch_fi + 0.15  )* 1.2 +1.2;  //  l funkcja iniowa
+float punch_msk_1 =  - ( glass_v_pos_length * punch_val ) * ( glass_v_pos_length * punch_val ) + 1.0; // odwrocona parabola
+float punch_msk_2 = ((  glass_v_pos_length)< ( punch_fi* 0.95+0.05)) ?  1.0: 0.0 ; // odciacie
+
+float anim_msk_0 = max(0,punch_msk_1 - 1.0 + time_f * 2) * punch_msk_2;
+float anim_msk_1 = max(0,punch_msk_0*0.7 - 0.70 + time_f * 2) * (1.0-punch_msk_2);
+
+						float3 dis_vec = lerp(SwizzleXXX(0.0), punch_vec,punch_msk_1) *anim_msk_0*punch_f*8;
+						dis_vec.y -= anim_msk_0*anim_msk_0*15 - pos_uv_ms.y *anim_msk_0*5.0 ;
+						dis_vec.y -= anim_msk_1*anim_msk_1*15  ;
+
+						dis_vec.xz *= ((time_f  - 1)*(time_f  - 1) +1) ;
+						dis_vec.xz += normalize (float2 (  frac(glass_v_pos_length*22.5)*2-1, frac(glass_v_pos_length*17.6)*2-1 )) * frac(glass_v_pos_length*186.36) * (anim_msk_0*3.0 + anim_msk_1 ) ;
+
+
+						float rot_f1 = anim_msk_0*10  *((1-glass_v_pos_length)*10)*punch_sign * frac(glass_v_pos_length*2216.5764) ;
+
+						float rot_f2_sign = (pos_uv_ms.x<0)? 1.0 : -1.0 ;
+						float rot_f2 = anim_msk_1 *(1.42-glass_v_pos_length) *  rot_f2_sign * 2  ;
+
+						rot_f1 += anim_msk_1*3 *( frac(glass_v_pos_length*20)*2-1);
+
+
+						pos_ms.xyz +=pos_v_in_ms;
+						X_V_CLR.xy = pos_ms.xy ;
+						float3 vec_tempshit;
+						 vec_tempshit =   pos_uv_ms + pos_v_in_ms ;
+						vec_tempshit.z =   0;
+
+						float3 pos_uv_ms_n =  normalize( pos_uv_ms );
+						pos_ms.xyz -= vec_tempshit;
+
+						#if defined(D_MSK_ON)
+							X_V_POS = normalize(pos_ms.xyz);
+						#endif
+
+						float3 pos_ms_new_0 ;
+						pos_ms_new_0.x = dot( pos_ms.xy,pos_uv_ms_n.xy * float2(1.0, 1.0));
+						pos_ms_new_0.y = dot( pos_ms.xy,pos_uv_ms_n.yx * float2(-1.0, 1.0));
+						pos_ms_new_0.z = pos_ms.z;
+
+						float3 pos_ms_new_1 ;
+						 float2 rot_f1_vec = normalize (float2(cos(rot_f1), sin(rot_f1)));
+						pos_ms_new_1.x = dot( pos_ms_new_0.xz,rot_f1_vec.xy * float2(1.0, 1.0));
+						pos_ms_new_1.z = dot( pos_ms_new_0.xz,rot_f1_vec.yx * float2(-1.0, 1.0));
+						pos_ms_new_1.y = pos_ms_new_0.y;
+
+						float3 pos_ms_new_2 ;
+						float2 rot_f2_vec = normalize (float2(cos(rot_f2), sin(rot_f2)));
+						pos_ms_new_2.x = dot( pos_ms_new_1.xy,rot_f2_vec.xy * float2(1.0, 1.0));
+						pos_ms_new_2.y = dot( pos_ms_new_1.xy,rot_f2_vec.yx * float2(-1.0, 1.0));
+						pos_ms_new_2.z = pos_ms_new_1.z;
+
+						float3 pos_ms_new_3 ;
+						pos_ms_new_3.x = dot( pos_ms_new_2.xy,pos_uv_ms_n.xy * float2(1.0, -1.0));
+						pos_ms_new_3.y = dot( pos_ms_new_2.xy,pos_uv_ms_n.yx * float2(1.0, 1.0));
+						pos_ms_new_3.z = pos_ms_new_2.z;
+
+
+
+						pos_ms.xyz = pos_ms_new_3;
+						pos_ms.xyz +=vec_tempshit;
+
+						float4 pos_ws = Mul_Pos(pos_ms, MODEL_XFORM_4x3);
+//g
+
+
+						float cut_pos = pos_ms.y+  usr_1.a * 10.0 ;
+						X_CLP =  (( dis_vec.y)>  - cut_pos) ?  1.0: 0.0  ;
+
+						pos_ws.xyz += dis_vec;
+						V_POS_OUT_TC = Pos_Out_WS(pos_ws);
+
+						float3 nrm_ms_new_1 ;
+						nrm_ms_new_1.x = dot( I_NRM_0.xz,rot_f1_vec.xy * float2(1.0, 1.0));
+						nrm_ms_new_1.z = dot( I_NRM_0.xz,rot_f1_vec.yx * float2(-1.0, 1.0));
+						nrm_ms_new_1.y = I_NRM_0.y;
+
+						float3 nrm_ms_new_2 ;
+						nrm_ms_new_2.x = dot( nrm_ms_new_1.xy,pos_uv_ms_n.xy * float2(1.0, -1.0));
+						nrm_ms_new_2.y = dot( nrm_ms_new_1.xy,pos_uv_ms_n.yx * float2(1.0, 1.0));
+						nrm_ms_new_2.z = nrm_ms_new_1.z;
+
+						float3 nrm_ws = Mul33(nrm_ms_new_2, MODEL_XFORM_4x3);
+						float3 nrm_es = Mul33(nrm_ws, VIEW_XFORM);
+						float3 nrm_n_es = normalize(nrm_es);
+
+						X_NRM = nrm_n_es;
+						X_UV_L =saturate(anim_msk_0) ;
+						X_POS_CS = Mul_Pos(pos_ws, VIEW_XFORM).xyz;
+						#if defined (D_NRM_ON)
+
+							float3 tng_ws = Mul33(I_TNG_0.xyz, MODEL_XFORM_4x3); //
+							float3 tng_es = Mul33(tng_ws, VIEW_XFORM); //
+							float3 tng_n_es = normalize(tng_es);
+							X_TNG = tng_n_es;
+
+							float3 bnr_n_es = cross(nrm_n_es, tng_n_es); //
+							bnr_n_es *= I_TNG_0.w;
+							X_BNR = bnr_n_es;
+
+						#endif
+
+						float3 cam_dir_ws = pos_ws.xyz - CAMERA_POS_WS.xyz;
+						float3 nrm_n_ws = normalize(nrm_ws);
+						X_RFL_WS = reflect(cam_dir_ws, nrm_n_ws);
+					}
+				}
+			}
+
+			PixelShader()
+			{
+				hlsl()
+				{
+					#include <master_new.hlsl>
+					void main()
+					{
+						float3 x_v_pos_X_a_msk_tmp = X_V_POS;
+						float3 x_nrm_X_uv_l_tmp = X_NRM;
+							
+						#if defined(S_MSK)
+							float msk = Sample(S_MSK, X_UV_1).g ;
+													
+							x_v_pos_X_a_msk_tmp *=  msk ;
+							x_nrm_X_uv_l_tmp += x_v_pos_X_a_msk_tmp * X_A_MSK;
+							x_nrm_X_uv_l_tmp = normalize(x_nrm_X_uv_l_tmp);
+						#else
+							float msk = 0.0;
+						#endif
+
+						#if defined(D_NRM_ON)
+							FLOAT3 nrm = 1;
+							FLOAT3 M_ES2TS[3];
+							M_ES2TS[0] = X_TNG;
+							M_ES2TS[1] = X_BNR;
+							M_ES2TS[2] = x_nrm_X_uv_l_tmp;
+							nrm.xy = Sample(S_NRM, X_UV_1).ag * 2.0 - 1.0;
+							nrm.xy *= C_NRM_SCALE;
+							FLOAT3 nrm_es = Mul33T(nrm, M_ES2TS);
+						#else
+							FLOAT3 nrm_es = x_nrm_X_uv_l_tmp;
+						#endif
+
+						FLOAT3 rfl_ws = X_RFL_WS;
+						FLOAT3 cam_dir_n = normalize(X_POS_CS);
+
+						FLOAT fresnel = saturate(1.0 - abs(dot(nrm_es, cam_dir_n)));
+
+						float clip_msk = (( abs(X_V_CLR.x)< 1.0) ?  1.0: 0.0 ) * (( abs(X_V_CLR.y)< 1.0) ?  1.0: 0.0 )*X_CLP;
+						clip(clip_msk -0.25);
+
+						float msk_max = 0.485;
+						float msk_min = 0.48;
+
+						float msk_scale = 1.0 / (msk_max - msk_min);
+						float msk_bias = - msk_min * msk_scale ;
+
+						msk = saturate (msk * msk_scale + msk_bias);
+
+						float2 v_uv = UV_Screen(V_POS_SS_TC);
+						float2 uv_dist = float2(x_nrm_X_uv_l_tmp.rg*((0.05+X_UV_L)*fresnel + msk *  X_A_MSK));
+						FLOAT3 clr = Sample(S_RFR, v_uv+ uv_dist ).xyz;
+
+						FLOAT3 v_env = SampleCUBE(S_ENV, rfl_ws, 0.0).xyz;
+						FLOAT4 v_env_2 = float4(v_env, 1.0);
+						O_CLR.w = 0.0;
+						O_CLR.xyz = clr;
+						O_CLR *= C_CLR;
+						O_CLR = lerp(O_CLR, v_env_2, fresnel);
+					}
+				}
+			}
+		}
+	}
+}

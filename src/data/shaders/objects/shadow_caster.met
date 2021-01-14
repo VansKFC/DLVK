@@ -1,0 +1,230 @@
+//new
+
+using engineflags;
+using settemplates;
+using depth_pass;
+using attribs;
+
+
+template
+{   
+	public string TemplateCategory() { return "Objects special"; }
+	
+	variants
+    {
+
+		bool_dat b_hl : display(hl);
+        bool_dat b_hide_zz : display(zz);
+		bool_dat b_green : display(gr);
+		bool_dat b_freeze : display(fr);
+		bool_dat b_purulence : display(pu);
+		bool_dat b_freeze_zz : display(fr_zz);
+		bool_dat b_purulence_zz : display(pu_zz);
+		bool_dat b_green_zz : display(gr_zz);
+    }
+	
+	category Basic
+	{
+		class Main
+		{
+			string_dat clr_0_tex = "" : editor(ImageFileNameEditor), display(Color texture);
+			int_dat tex_tile = WRAP : converter(TexTile_Variants);
+			int_dat culling = -1 : converter(CullMode_Variants), display(Culling);
+		}
+		class Wind
+		{
+			bool_dat wind_bend_on = FALSE;
+			float_dat wind_noise_scale = 1.0;
+			float_dat wind_noise_speed = 0.0;
+			float_dat wind_noise_size = 0.0;
+		}		
+	}
+	category Damage
+	{
+		class Cutting
+		{
+			bool_dat cutting_on = FALSE : display(Cutting enabled);
+		}	
+		class Disappearance
+		{
+			bool_dat zz_on = FALSE : display(ZZ Enabled);
+			string_dat zz_tex_2 = "" : editor(ImageFileNameEditor), display(ZZ Noise Out);
+			vec3_dat zz_pos = vec(0.0, 0.9, 0.0) : editor(ColorRGBEditor), display(ZZ Pos);
+			float_dat zz_radius = 1.0 : editor(ColorRGBEditor), display(ZZ radius);
+			float_dat zz_range_2 = 0.5 : editor(ColorRGBEditor), display(ZZ range);
+		}	
+	}	
+
+    category Advanced
+	{
+        class Vertex Transform
+        {
+            bool_dat vertex_deform_on = false : display(Vertex deformation enabled);
+            mtx_dat mtx_vertex_deform = scale(1.0) : display(Vertex deformation matrix);
+            string_dat __vertex_deform_msk = __none : display(Vertex deformation mask), converter(VertexDeform_Variants);
+			
+			bool_dat vertex_deform_on_1 = false : display(Vertex deformation 1 enabled);
+            mtx_dat mtx_vertex_deform_1 = scale(1.0) : display(Vertex deformation 1 matrix);
+            string_dat __vertex_deform_msk_1 = __none : display(Vertex deformation 1 mask), converter(VertexDeform_Variants);
+			
+			bool_dat vertex_deform_on_2 = false : display(Vertex deformation 2 enabled);
+            mtx_dat mtx_vertex_deform_2 = scale(1.0) : display(Vertex deformation 2 matrix);
+            string_dat __vertex_deform_msk_2 = __none : display(Vertex deformation 2 mask), converter(VertexDeform_Variants);
+			
+			bool_dat vertex_deform_on_3 = false : display(Vertex deformation 3 enabled);
+            mtx_dat mtx_vertex_deform_3 = scale(1.0) : display(Vertex deformation 3 matrix);
+            string_dat __vertex_deform_msk_3 = __none : display(Vertex deformation 3 mask), converter(VertexDeform_Variants);
+        }			
+    }
+	category Wind
+	{
+		class Wind
+		{
+			bool_dat wind_global_on = FALSE : display(Wind ON);
+			bool_dat wind_mask_uv_source = FALSE : display(Wind mask uv source);
+			float_dat f_wind_noise_factor = 0.3 : editor(FloatSpinEditor), display(Wind Noise Factor);
+			float_dat f_wind_noise_scale = 1.0 : editor(FloatSpinEditor), display(Wind Noise Scale);
+			float_dat f_wind_time_scale = 1.0 : editor(FloatSpinEditor), display(Wind Noise Time Scale);
+			float_dat f_wind_gravity_factor = 0.0 : editor(FloatSpinEditor), display(Gravity Factor);
+			float_dat f_normal_blend = 1.0 : editor(FloatSpinEditor), display(Normal/Noise Blend);
+			float_dat f_wind_dir_factor = 0.3 : editor(FloatSpinEditor), display(Wind Direct Factor);
+			float_dat f_wind_dir_factor_max = -1.0 : editor(FloatSpinEditor), display(Wind max ....);
+			float_dat f_wind_direct_time = 0.0 : editor(FloatSpinEditor), display(Time Direct Scale);
+			float_dat f_wind_phase_delay = 1.0 : editor(FloatSpinEditor), display(Phase Delay);
+		}
+
+		class Wind Pivots
+		{
+			bool_dat wind_pivot1_on = FALSE : display(Pivot 1 On);
+			vec3_dat wind_pivot1_pos = vec(0.0, 0.0, 0.0) : editor(ColorRGBEditor), display(Pivot 1 Center Position);
+			vec3_dat wind_pivot1_axis = vec(1.0, 0.0, 0.0) : editor(ColorRGBEditor), display(Pivot 1 Axis);
+			bool_dat wind_pivot3_on = FALSE : display(Pivot 3 On);
+			float_dat wind_pivot3_factor = 0.2 : editor(FloatSpinEditor), display(Pivot 3 Factor);
+			bool_dat wind_pivot3_pow = FALSE : display(Pivot 3 pow On);
+			vec3_dat wind_pivot3_pos = vec(0.0, 0.0, 0.0) : editor(ColorRGBEditor), display(Pivot 3 Position);
+			bool_dat wind_pivot3_saturate = FALSE : display(Pivot 3 Saturate);
+		}
+		class Wind Flag
+		{
+			bool_dat b_flag_animation = FALSE : display(Flag Animation);
+			float_dat f_flag_speed_factor = 20.0 : display(Speed);
+			float_dat f_flag_dist_size = 1.0 : display(Scale);
+			float_dat f_flag_dist_factor = 0.6 : display(Distorsion);
+			float_dat f_flag_dir_factor = 1.0 : display(Direction factor);
+			string_dat flag_nrm_tex = "" : editor(ImageFileNameEditor), display(Normal);
+			float_dat f_flag_nrm_scale = 1.0 : editor(FloatSpinEditor), display(Normal Scale);
+			float_dat f_flag_time_factor = 1.0 : editor(FloatSpinEditor), display(Normal time factor);
+			float_dat f_flag_uv_factor = 0.1 : editor(FloatSpinEditor), display(Normal UV factor);
+			bool_dat b_flag_dir_ms = FALSE : display(Wind direction model space);
+			vec3_dat v_flag_dir_vec = vec(1.0, 0.0, 0.0) : editor(ColorRGBEditor), display(Wind direction model space);
+		}
+		class Wind Leaves
+		{
+			bool_dat b_wind_noise_0_on = FALSE : display(Wind Noise 0 );
+			float_dat f_wind_0_factor = 0.5 : display(Wind Noise 0 factor );
+			float_dat f_object_h = 10.0 : display(Object height );
+			bool_dat b_wind_noise_1_on = FALSE : display(Wind Noise 1 );
+			float_dat f_wind_1_factor = 0.3 : display(Wind Noise 1 factor );
+			float_dat f_wind_1_scale = 0.2 : display(Wind Noise 1 scale );
+			float_dat f_wind_1_time = 0.2 : display(Wind Noise 1 time factor );
+			float_dat f_wind_msk_h = 3.0 :  display(Wind Noise 1 pivot height );
+			bool_dat b_wind_noise_2_on = FALSE : display(Wind Noise 2 );
+			float_dat f_wind_2_factor = 0.1: display(Wind Noise 2 factor );
+			float_dat f_wind_2_m_factor = 5.0: display(Wind Noise 2 displace factor );
+			float_dat f_wind_2_scale = 50.0: display(Wind Noise 2 scale );
+			float_dat f_wind_2_time = 1.0: display(Wind Noise 2 time factor);
+		}
+		class Wind Omni Saturate
+		{
+			float_dat f_wind_omni_saturate = 1.1: display(Wind Omni Saturate);
+
+		}
+	}
+
+	
+	templatebody()
+	{
+			att_standard shadow_params = new att_standard();
+
+			shadow_params.clr_0_tex = clr_0_tex;
+			shadow_params.culling = culling;
+			shadow_params.cutting_on = cutting_on;
+			shadow_params.tex_tile = tex_tile;
+			shadow_params.wind_bend_on = wind_bend_on;
+			shadow_params.wind_noise_scale = wind_noise_scale;
+			shadow_params.wind_noise_speed = wind_noise_speed;
+			shadow_params.wind_noise_size = wind_noise_size;
+			
+			shadow_params.vertex_deform_on = vertex_deform_on;
+			shadow_params.vertex_deform_on_1 = vertex_deform_on_1;
+			shadow_params.vertex_deform_on_2 = vertex_deform_on_2;
+			shadow_params.vertex_deform_on_3 = vertex_deform_on_3;          
+			
+			shadow_params.mtx_vertex_deform = mtx_vertex_deform;
+			shadow_params.mtx_vertex_deform_1 = mtx_vertex_deform_1;
+			shadow_params.mtx_vertex_deform_2 = mtx_vertex_deform_2;
+			shadow_params.mtx_vertex_deform_3 = mtx_vertex_deform_3;
+			
+			shadow_params.__vertex_deform_msk = __vertex_deform_msk;
+			shadow_params.__vertex_deform_msk_1 = __vertex_deform_msk_1;
+			shadow_params.__vertex_deform_msk_2 = __vertex_deform_msk_2;
+			shadow_params.__vertex_deform_msk_3 = __vertex_deform_msk_3;
+			
+			shadow_params.zz_on = zz_on | b_hide_zz | b_green_zz | b_purulence_zz | b_freeze_zz;      
+            shadow_params.zz_tex_2 = zz_tex_2;
+
+		shadow_params.wind_global_on = wind_global_on;
+		shadow_params.f_wind_omni_saturate = f_wind_omni_saturate;
+		shadow_params.wind_mask_uv_source = wind_mask_uv_source;
+		shadow_params.f_wind_noise_factor = f_wind_noise_factor;
+		shadow_params.f_wind_noise_scale = f_wind_noise_scale;
+		shadow_params.f_wind_time_scale = f_wind_time_scale;
+		shadow_params.f_wind_gravity_factor = f_wind_gravity_factor;
+		shadow_params.f_normal_blend = f_normal_blend;
+		shadow_params.f_wind_dir_factor = f_wind_dir_factor;
+		shadow_params.f_wind_dir_factor_max = f_wind_dir_factor_max;
+		shadow_params.f_wind_direct_time = f_wind_direct_time;
+
+		shadow_params.wind_pivot1_on = wind_pivot1_on;
+		shadow_params.wind_pivot1_pos = wind_pivot1_pos;
+		shadow_params.wind_pivot1_axis = wind_pivot1_axis;
+		shadow_params.wind_pivot3_on = wind_pivot3_on;
+		shadow_params.wind_pivot3_pow= wind_pivot3_pow;
+		shadow_params.wind_pivot3_saturate= wind_pivot3_saturate;
+		shadow_params.wind_pivot3_factor = wind_pivot3_factor;
+		shadow_params.wind_pivot3_pos = wind_pivot3_pos;
+		shadow_params.f_wind_phase_delay = f_wind_phase_delay;
+
+		shadow_params.b_flag_animation = b_flag_animation;
+		shadow_params.f_flag_speed_factor =f_flag_speed_factor;
+		shadow_params.f_flag_dist_size = f_flag_dist_size;
+		shadow_params.f_flag_dist_factor = f_flag_dist_factor;
+		shadow_params.f_flag_dir_factor =f_flag_dir_factor;
+		shadow_params.flag_nrm_tex =flag_nrm_tex;
+		shadow_params.f_flag_nrm_scale = f_flag_nrm_scale;
+		shadow_params.f_flag_time_factor =f_flag_time_factor;
+		shadow_params.f_flag_uv_factor = f_flag_uv_factor;
+		shadow_params.b_flag_dir_ms = b_flag_dir_ms;
+		shadow_params.v_flag_dir_vec = v_flag_dir_vec;
+
+		shadow_params.b_wind_noise_0_on = b_wind_noise_0_on;
+		shadow_params.f_wind_0_factor = f_wind_0_factor;
+		shadow_params.f_object_h = f_object_h;
+		shadow_params.b_wind_noise_1_on = b_wind_noise_1_on;
+		shadow_params.f_wind_1_factor = f_wind_1_factor;
+		shadow_params.f_wind_1_scale = f_wind_1_scale;
+		shadow_params.f_wind_1_time = f_wind_1_time;
+		shadow_params.f_wind_msk_h = f_wind_msk_h;
+		shadow_params.b_wind_noise_2_on = b_wind_noise_2_on;
+		shadow_params.f_wind_2_factor = f_wind_2_factor;
+		shadow_params.f_wind_2_m_factor = f_wind_2_m_factor;
+		shadow_params.f_wind_2_scale = f_wind_2_scale;
+		shadow_params.f_wind_2_time = f_wind_2_time;
+		
+			
+			shadow_params.technique = "zfill";
+
+			depth_pass dpt = new depth_pass(this);
+			dpt.setup(shadow_params);
+	}
+}

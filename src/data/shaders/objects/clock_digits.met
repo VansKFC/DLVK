@@ -1,0 +1,158 @@
+//new
+
+using engineflags;
+using settemplates;
+
+template
+{
+	category Basic
+	{
+		class Main
+		{
+			string_dat clr_tex = "tech_art_digits.dds" : editor(ImageFileNameEditor), display(Color texture);
+			int_dat chars_per_tex = 16: display(Number of all characters on texture);
+			bool_dat time_global_on = TRUE: display(Use global time);
+			vec4_dat ems_clr = vec(1.0, 1.0, 1.0, 1.0) : editor(ColorRGBAEditor), display(Emissive factor);
+			bool_dat ems_on = TRUE : display(Emissive Enabled);
+			bool_dat usr_clr_on = TRUE : display(User coloring Enabled);
+		}
+	}
+
+	templatebody()
+	{
+		string_dat technique = If(ems_on, "ems", "opq_clr");
+		tech(technique)
+		{
+			Cull(CW);
+			AlphaFunc(GREATER, 0.0);
+			DepthFunc(LEQUAL, FALSE);
+
+			Input I_POS_MS = new InputFloat4("POSITION");
+			Input I_UV_0 = new InputFloat2("TEXCOORD0");
+			Input I_UV_1 = new InputFloat2("TEXCOORD1");
+
+			X_UV_0 = SetTexcoord2();
+
+			Output O_CLR = new OutputFLOAT4("COLOR0");
+
+			S_CLR = SetTexture(clr_tex, ANISOTROPIC_MIP_LINEAR, WRAP, WRAP, ems_on);
+			C_CHAR_WIDTH = SetConst(1.0/((float_dat)chars_per_tex));
+
+			if(ems_on)
+			{
+				Define("D_EMS_ON", 1);
+				BlendFunc(ONE, ONE, ONE, ONE);
+				extern float_dat f_pp_hdr_intensity_emissive;
+				vec3_dat ems_clr_lin = pow(ems_clr.xyz * ems_clr.w, 2.2);
+				C_EMISSIVE_INTENSITY = SetConst(ems_clr_lin * f_pp_hdr_intensity_emissive);
+				X_CLR = SetTexcoord3("FLOAT");
+			}
+			else
+			{
+				Output O_DIF = new OutputFLOAT4("COLOR1");
+				BlendFunc(SRC_ALPHA, INV_SRC_ALPHA, ZERO, ONE);
+				BlendFunc(SRC_ALPHA, INV_SRC_ALPHA, ZERO, ONE, 1);
+				X_CLR = SetTexcoord4("FLOAT");
+			}
+
+			if(!time_global_on | usr_clr_on)
+			{
+				Input I_CLR_USR = new InputFloat4("COLOR_USER");
+				if(usr_clr_on)
+				{
+					Define("D_USR_CLR_ON", 1);
+				}
+			}
+
+			if(time_global_on)
+			{
+				Define("D_TIME_GLOBAL_ON", 1);
+				extern float_dat f_pp_time_day_h;
+				extern float_dat f_pp_time_day_m;
+				C_TIME_GLOBAL = SetConst(f_pp_time_day_h * 0.1, f_pp_time_day_m * 0.1);
+			}
+
+			VertexShader()
+			{
+				use Instancing();
+
+				hlsl()
+				{
+					#include <master_new.hlsl>
+					#if defined(D_EMS_ON)
+						#include <fog.hlsl>
+					#endif
+
+					void main()
+					{
+						float4 pos_ms = Decode_Pos(I_POS_MS);
+						float4 pos_ws = Mul_Pos(pos_ms, MODEL_XFORM_4x3);
+
+						V_POS_OUT_TC = Pos_Out_WS(pos_ws);
+
+						#if defined(D_USR_CLR_ON) || !defined(D_TIME_GLOBAL_ON)
+							float4 usr_1;
+							float4 usr_0 = Decode_Usr(I_CLR_USR, usr_1);
+						#endif
+
+						#if defined(D_USR_CLR_ON)
+							float4 clr = usr_0;
+						#else
+							float4 clr = SwizzleXXXX(1.0);
+						#endif
+
+						#if defined(D_EMS_ON)
+							X_CLR = pow(clr.xyz, float3(2.2, 2.2, 2.2));
+							X_CLR *= C_EMISSIVE_INTENSITY;
+							X_CLR *= Scattering_Ext(length(pos_ws.xyz - CAMERA_POS_WS.xyz));
+						#else
+							X_CLR = clr;
+						#endif
+
+						#if defined(D_TIME_GLOBAL_ON)
+							float4 times = C_TIME_GLOBAL.xxyy;
+						#else
+							float4 times = usr_1.xxyy * 25.5;
+						#endif
+						
+						times.yw = frac(times.yw) * 10.0;
+						times.xz = floor(times.xz);
+						float2 uv_1 = Decode_UV(I_UV_1);
+
+						float4 offsets4 = times * C_CHAR_WIDTH;
+						float2 offsets2 = (uv_1.x > 0.0) ? offsets4.zw : offsets4.xy;
+						float offset = (abs(uv_1.x) > 0.5) ? offsets2.x : offsets2.y;
+
+						float2 uv_0 = Decode_UV(I_UV_0);
+
+						uv_0.x = uv_0.x * C_CHAR_WIDTH + offset;
+
+						X_UV_0 = uv_0;
+					}
+				}
+			}
+
+			PixelShader()
+			{
+				hlsl()
+				{
+					#include <master_new.hlsl>
+					#include <colorops.hlsl>
+
+					void main()
+					{
+						O_CLR = Sample(S_CLR, X_UV_0);
+						#if defined(D_EMS_ON)
+							O_CLR.xyz *= X_CLR;
+							O_CLR.w = saturate(Luminance(O_CLR.xyz));
+						#else
+							O_CLR *= X_CLR;
+							O_DIF = O_CLR;
+							O_CLR.xyz = SwizzleXXX(Luminance(O_CLR.xyz) * 0.5);
+						#endif
+					}
+				}
+			}
+		}
+	}
+}

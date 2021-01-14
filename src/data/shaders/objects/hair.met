@@ -1,0 +1,1174 @@
+//new
+
+using engineflags;
+using settemplates;
+using depth_pass;
+using attribs;
+using tmu;
+// using highlight_a;
+
+template
+{
+	public string TemplateCategory() { return "Objects charactes"; }
+
+    variants
+    {
+		bool_dat b_hl : display(hl);
+        bool_dat b_hide_zz : display(zz);
+		bool_dat b_green : display(gr);
+		bool_dat b_freeze : display(fr);
+		bool_dat b_purulence : display(pu);
+		bool_dat b_freeze_zz : display(fr_zz);
+		bool_dat b_purulence_zz : display(pu_zz);
+		bool_dat b_green_zz : display(gr_zz);
+    }
+
+	category Basic
+	{
+		class Main
+		{
+			string_dat dif_0_tex = "" : editor(ImageFileNameEditor), display(Base color texture);
+			string_dat nrm_0_tex = "" : editor(ImageFileNameEditor), display(Base normal texture);
+			string_dat dye_tex = "" : editor(ImageFileNameEditor), display(Dye texture);
+		}
+		class Tint
+		{
+			string_dat grd_tex = "" : editor(ImageFileNameEditor), display(Gradient texture);
+			string_dat msk_0_tex = "" : editor(ImageFileNameEditor), display(Base masks texture);
+		}
+		class Transparency
+		{
+			bool_dat clip_on = TRUE : display(Alphatest enabled);
+			bool_dat sss_on = FALSE : display(Sub-surface scattering enabled);
+		}
+		class Self illumination
+		{
+			bool_dat ems_on = FALSE : display(Emissive enabled);
+			bool_dat ems_clr_on = FALSE : display(Emissive factor enabled);
+		}
+	}
+
+	category Advanced
+	{
+		class Factors
+		{
+			vec3_dat clr_0_factor = vec(1.0, 1.0, 1.0) : editor(ColorRGBEditor), display(Color);
+			float_dat srf_0_factor = 1.0 : display(Surface);
+			float_dat nrm_0_factor = 1.0 : display(Normal scale);
+			vec4_dat ems_clr = vec(1.0, 1.0, 1.0, 1.0) : editor(ColorRGBAEditor), display(Emissive);
+		}
+		class Dynamic Factors
+		{
+			bool_dat ems_clr_dynamic_on = FALSE : display(Animated emissive color enabled);
+		}
+		class Sampling
+		{
+			int_dat tex_tile = WRAP : converter(TexTile_Variants);
+			int_dat filter_clr = ANISOTROPIC_MIP_POINT : converter(Filter_Variants);
+		}
+		class Env
+		{
+			string_dat env_tex = "" : editor(ImageFileNameEditor), display(Alternative enviroment texture);
+			vec3_dat env_factor = vec(1.0, 1.0, 1.0) : editor(ColorRGBEditor), display(Env Factor);
+			float_dat env_mask_min = 0.25 : display(Env Mask Minimum);
+			float_dat env_mask_max = 1.0 : display(Env Mask Maximum);
+			float_dat env_fresnel_min = 0.0 : display(Env Fresnel Mask Minimum);
+			float_dat env_fresnel_max = 1.0 : display(Env Fresnel Mask Maximum);
+			bool_dat env_fresnel_pow_on = FALSE : display(Env Fresnel Mask Powered);
+			float_dat env_nrm_scale = 1.0 : display(Env Normal Scale);
+		}
+		class Highlight
+		{
+			// bool_dat highlight_on = FALSE : display(Highlight enabled);
+			bool_dat highlight_on = FALSE : display(Highlight enabled);
+			bool_dat highlight_enemy_on = TRUE : display(Highlight Enemy enabled);
+		}
+		class Shadows
+		{
+			bool_dat cast_shadows_on = TRUE : display(Cast shadows enabled);
+		}
+        class Geometry
+        {
+            bool_dat static_on = FALSE;
+        }
+        class Gamma
+        {
+        	bool_dat gamma_correct_on = false;
+        }
+
+        class Normals
+        {
+            bool_dat disable_flip_normal = false : display(Disable normal flipping);
+        }
+		class Disappearance
+		{
+			bool_dat zz_on = FALSE : display(ZZ Enabled);
+			string_dat zz_tex_1 = "" : editor(ImageFileNameEditor), display(ZZ Noise In);
+			string_dat zz_tex_2 = "" : editor(ImageFileNameEditor), display(ZZ Noise Out);
+			vec3_dat zz_color = vec(0.0, 0.0, 0.0) : editor(ColorRGBEditor), display(ZZ Color);
+			vec3_dat zz_pos = vec(0.0, 0.9, 0.0) : editor(ColorRGBEditor), display(ZZ Pos);
+			float_dat zz_radius = 1.0 : editor(ColorRGBEditor), display(ZZ radius);
+			float_dat zz_range_1 = 0.8 : editor(ColorRGBEditor), display(ZZ range 0-1);
+			float_dat zz_range_2 = 0.5 : editor(ColorRGBEditor), display(ZZ range 2-3);
+		}
+		class Soft Alpha-Test
+		{
+			int_dat sample_count = 1 : display(Sample count);
+			string_dat sa_flowmap_tex = "" : editor(ImageFileNameEditor), display(Flowmap);
+			float_dat sa_radius_scale = 0.0 : display(Radius Scale);
+			bool_dat use_omb_on = FALSE : display(use Object Motion Blur);
+		}
+	}
+		category Wind
+	{
+		class Wind
+		{
+			bool_dat wind_global_on = FALSE : display(Wind ON);
+			float_dat f_wind_noise_factor = 0.3 : editor(FloatSpinEditor), display(Wind Noise Factor);
+			float_dat f_wind_noise_scale = 1.0 : editor(FloatSpinEditor), display(Wind Noise Scale);
+			float_dat f_wind_time_scale = 1.0 : editor(FloatSpinEditor), display(Wind Noise Time Scale);
+			float_dat f_wind_gravity_factor = 0.0 : editor(FloatSpinEditor), display(Gravity Factor);
+			float_dat f_normal_blend = 1.0 : editor(FloatSpinEditor), display(Normal/Noise Blend);
+			float_dat f_wind_dir_factor = 0.3 : editor(FloatSpinEditor), display(Wind Direct Factor);
+			float_dat f_wind_direct_time = 1.0 : editor(FloatSpinEditor), display(Time Direct Scale);
+			float_dat f_wind_phase_delay = 1.0 : editor(FloatSpinEditor), display(Phase Delay);
+		}
+
+		class Wind Weave
+		{
+			string_dat wind_weave_msk = "" : editor(ImageFileNameEditor), display(Wind Weave Mask);
+			string_dat wind_weave_tex = "" : editor(ImageFileNameEditor), display(Wind Weave Texture);
+			float_dat f_wind_weave_factor = 0.3 : editor(FloatSpinEditor), display(Weave Noise Factor );
+			float_dat f_wind_weave_distor = 1.0 : editor(FloatSpinEditor), display(Weave Diffuse Deformation);
+			float_dat f_wind_weave_uv_scale = 1.0 : editor(FloatSpinEditor), display(Weave UV Scale);
+			float_dat f_wind_weave_uv_speed = 3.0 : editor(FloatSpinEditor), display(Weave UV speed);
+			float_dat f_wind_weave_nrm_scale = 0.3 : editor(FloatSpinEditor), display(Weave Normal Scale);
+		}
+	}
+
+	templatebody()
+	{
+		bool_dat clr_0_on = ((dif_0_tex != "") & ((clr_0_factor.x + clr_0_factor.y + clr_0_factor.z) > 0.0));
+		bool_dat nrm_0_on = ((nrm_0_tex != "") & (nrm_0_factor > 0.0));
+		bool_dat grd_on = ((msk_0_tex != "") & (grd_tex != ""));
+		bool_dat hl_on = highlight_on | b_hl;
+		clip_on = ((dif_0_tex != "") & clip_on);
+		string_dat technique = If(clip_on, s_tech_opq2, s_tech_opq);
+
+		extern int_dat SHADER_PATH;
+		use_omb_on = use_omb_on & (SHADER_PATH == SM51 | SHADER_PATH == SM50 | SHADER_PATH == SM52);
+
+		bool_dat omb_hair = (use_omb_on & sa_radius_scale > 0.0);
+
+		bool_dat object_blur_on = (wind_global_on | omb_hair) & (SHADER_PATH == SM51 | SHADER_PATH == SM50 | SHADER_PATH == SM52);
+		bool_dat object_blur_on_vel_0 = !(wind_global_on | omb_hair) & (SHADER_PATH == SM51 | SHADER_PATH == SM50 | SHADER_PATH == SM52);
+
+		tech(technique)
+		{
+			int_dat culling = If(clip_on, NONE, CW);
+			culling = If((culling < 0), culling, culling);
+			if(culling == NONE & !disable_flip_normal)
+            {
+                Input I_SIDE = new InputVFACE();
+                Define("D_CULLING_NONE", 1);
+            }
+
+			Cull(culling);
+
+			DepthFunc(LEQUAL, TRUE);
+
+			AddLine("StencilMarker();");
+
+			Input I_POS_MS = new InputFloat4("POSITION");
+			Input I_NRM_MS = new InputFloat3("NORMAL0");
+
+			Output O_SPC = new OutputFLOAT4("COLOR0");
+			Output O_DIF = new OutputFLOAT4("COLOR1");
+			Output O_NRM = new OutputFLOAT4("COLOR2");
+
+			if(hl_on)
+			{
+				Define ("D_HIGHLIGHT_ON", 1);
+				X_CAM_DIR_WS = SetTexcoord3();
+			}
+
+            if(gamma_correct_on)
+            {
+                Define("D_GAMMA_CORRECT", 1);
+            }
+
+
+			int_dat mid = If(sss_on, sss_dielectric, sss_off);
+			float_dat mid_nrm = ((float_dat)mid) / 255.0;
+			Define("D_NRM_FACTORS", "float3(0.5, 0.0, " + mid_nrm + ")"); //X: nrm scale/bias, Y: mid scale(zero), Z: MID
+
+            if(gamma_correct_on)
+            {
+                Define("D_CLR_0_FACTOR", "half4(" + Gamma_Decode(clr_0_factor.x) + ", " + Gamma_Decode(clr_0_factor.y) + ", " + Gamma_Decode(clr_0_factor.z) + ", " + Gamma_Decode(srf_0_factor) + ")");
+            }
+            else
+            {
+                Define("D_CLR_0_FACTOR", "half4(" + clr_0_factor.x + ", " + clr_0_factor.y + ", " + clr_0_factor.z + ", " + srf_0_factor + ")");
+            }
+
+
+			if(highlight_enemy_on)
+			{
+				Define("D_HIGHLIGHT_ENEMY_ON", 1);
+				X_HIGHLIGHT_ENEMY_FADE = SetTexcoord("FLOAT");
+				extern vec3_dat v_pp_game_enemy_highlight_color;
+
+				C_HIGHLIGHT_ENEMY_COLOR = SetConst(If(gamma_correct_on, Gamma_Decode(v_pp_game_enemy_highlight_color), v_pp_game_enemy_highlight_color ) );
+			}
+
+			if(grd_on | zz_on | b_hide_zz | b_green_zz | b_freeze_zz | b_purulence_zz )
+			{
+				Input I_CLR_USR = new InputFloat4("COLOR_USER");
+
+			}
+
+			if(grd_on)
+			{
+				S_GRD = SetTexture2D(grd_tex, LINEAR_NO_MIP, WRAP, WRAP, gamma_correct_on);
+//					vec3_dat grd_inv_size = SH_TEX_INV_SIZE(S_GRD);
+//TODO: pobierac to z tekstury gdy bedzie dzialac w enginie
+vec3_dat grd_inv_size = vec(1.0 / 16.0, 1.0 / 32.0, 1.0);
+				C_GRD_UV_MUL_ADD = SetConst(((1.0 / grd_inv_size.x) - 1.0) * grd_inv_size.x, 255.0 * grd_inv_size.y, 0.5 * grd_inv_size.x, 0.5 * grd_inv_size.y);
+
+				X_GRD_V = SetTexcoord("FLOAT");
+				S_MSK_0 = SetTexture2D(msk_0_tex, LINEAR_MIP_LINEAR, tex_tile, tex_tile, FALSE);
+			}
+
+
+
+			if(dye_tex != "")
+			{
+				Input I_UV_1 = new InputFloat2("TEXCOORD1");
+				X_UV_1 = SetTexcoord2("FLOAT");
+				S_DYE = SetTexture2D(dye_tex, LINEAR_MIP_POINT, WRAP, WRAP, gamma_correct_on);
+			}
+
+
+			if(nrm_0_on | (culling == NONE)) { X_NRM_CS = SetTexcoord3("FLOAT"); }
+			else { X_NRM_OUT = SetTexcoord4("FLOAT"); }
+
+			ems_clr = vec(ems_clr.xyz * ems_clr.w, 1.0 - ems_clr.w);
+
+			C_EMS_CLR = SetConst(If(gamma_correct_on, Gamma_Decode(ems_clr), ems_clr ) );
+
+			if((ems_clr_on | ems_clr_dynamic_on) & ems_on)
+			{
+				if(ems_clr_dynamic_on) { Define("D_EMS_CLR_ON", 1); }
+				else
+                {
+                    if(gamma_correct_on)
+                    {
+                        Define("D_EMS_CLR", "half4(" + Gamma_Decode(ems_clr.x) + ", " + Gamma_Decode(ems_clr.y) + ", " + Gamma_Decode(ems_clr.z) + ", " + Gamma_Decode(ems_clr.w) + ")");
+                    }
+                    else
+                    {
+                        Define("D_EMS_CLR", "half4(" + ems_clr.x + ", " + ems_clr.y + ", " + ems_clr.z + ", " + ems_clr.w + ")");
+                    }
+                }
+			}
+			if(nrm_0_on | (sa_radius_scale > 0.0 & use_omb_on))
+			{
+				Input I_TNG_MS = new InputFloat4("TANGENT0");
+				X_TNG_CS = SetTexcoord3("FLOAT");
+				X_BNR_CS = SetTexcoord3("FLOAT");
+			}
+
+
+			if(clr_0_on | nrm_0_on | grd_on)
+			{
+				Input I_UV_0 = new InputFloat2("TEXCOORD0");
+				X_UV_0 = SetTexcoord2("FLOAT");
+
+				if(clr_0_on)
+				{
+					S_CLR_0 = SetTexture2D(dif_0_tex, filter_clr, tex_tile, tex_tile, gamma_correct_on);
+
+					if(clip_on) { Define("D_CLIP_ON", 1); }
+				}
+
+				if(nrm_0_on)
+				{
+					S_NRM_0 = SetTexture2D(nrm_0_tex, LINEAR_MIP_LINEAR, tex_tile, tex_tile, FALSE);
+					Define("D_NRM_0_SCALE", nrm_0_factor);
+				}
+			}
+
+			if(sa_radius_scale > 0.0 & use_omb_on)
+			{
+				float_dat hack_ratio = 0.1; //aby blur byl taki tam jak w przypadku dx10 bez uzycia omb
+				C_RADIUS_SCALE = SetConst(sa_radius_scale * hack_ratio);
+				Define("OMB_HAIR_ON", 1);
+				if(sa_flowmap_tex != "")
+				{
+					S_FLOWMAP = SetTexture(sa_flowmap_tex, LINEAR_NO_MIP, CLAMP, CLAMP, FALSE);
+				}
+			}
+
+			bool_dat hair_omb_flowmap = (sa_radius_scale > 0.0) & use_omb_on;
+
+			if(hair_omb_flowmap)
+			{
+				X_POS_CS = SetTexcoord3("FLOAT");
+			}
+
+			float_dat env_mask_scale = 1.0 / (env_mask_max - env_mask_min);
+			float_dat env_mask_bias = -env_mask_min * env_mask_scale;
+
+			if((env_tex != "") & ((env_mask_scale + env_mask_bias) > 0.0) & (max(env_fresnel_max, env_fresnel_min) > 0.0) & ((env_factor.x + env_factor.y + env_factor.z) > 0.0))
+			{
+				S_ENV = SetTextureCUBE(env_tex, LINEAR_NO_MIP, CLAMP, CLAMP, gamma_correct_on);
+
+				bool_dat fresnel_on = (min(env_fresnel_max, env_fresnel_min) < 1.0) & (abs(env_fresnel_max - env_fresnel_min) > 0.0);
+
+				bool_dat env_nrm_on = (nrm_0_on & (env_nrm_scale > 0.0));
+
+				if(fresnel_on | env_nrm_on)
+				{
+					if(!hair_omb_flowmap)
+					{
+						X_POS_CS = SetTexcoord3("FLOAT");
+					}
+					if(env_nrm_on & (env_nrm_scale < 1.0)) { Define("D_ENV_NRM_SCALE", env_nrm_scale); }
+					if(fresnel_on)
+					{
+						float_dat env_fresnel_scale = 1.0 / (env_fresnel_max - env_fresnel_min);
+						float_dat env_fresnel_bias = -env_fresnel_min * env_fresnel_scale;
+
+						float_dat env_fresnel_pow = If(env_fresnel_pow_on, 2.0, 1.0);
+
+						Define("D_ENV_FRESNEL_SCALE", env_fresnel_scale);
+						Define("D_ENV_FRESNEL_BIAS", env_fresnel_bias);
+						Define("D_ENV_FRESNEL_POW", env_fresnel_pow);
+						if(!nrm_0_on & (culling == CW)) { X_NRM_CS = SetTexcoord3("FLOAT"); }
+					}
+				}
+				if(!env_nrm_on) { X_RFL_WS = SetTexcoord3("FLOAT"); }
+
+				Define("D_ENV_MASK_SCALE", env_mask_scale);
+				Define("D_ENV_MASK_BIAS", env_mask_bias);
+
+
+				if(gamma_correct_on)
+                {
+				    Define("D_ENV_FACTOR", "half3(" + Gamma_Decode(env_factor.x) + ", " + Gamma_Decode(env_factor.y) + ", " + Gamma_Decode(env_factor.z) + ")");
+                }
+                else
+                {
+                    Define("D_ENV_FACTOR", "half3(" + env_factor.x + ", " + env_factor.y + ", " + env_factor.z + ")");
+                }
+			}
+
+			extern float_dat f_pp_wind_offset;
+			extern float_dat f_pp_omni_offset;
+			extern float_dat f_pp_wind_noise;
+			extern float_dat f_pp_wind_offset_blur;
+			extern float_dat f_pp_omni_offset_blur;
+			extern float_dat f_pp_wind_noise_blur;
+
+			if(wind_global_on)
+			{
+				Input I_UV_1 = new InputFloat2("TEXCOORD1");
+				Define ("D_WIND_ON", 1);
+				Define ("D_WIND_NOISE_ON", 1);
+				Define ("D_WIND_DIRECT_ON", 1);
+				Define ("D_WIND_DIRECT_TIME", f_wind_direct_time);
+				Define("D_WIND_GRAVITY_FACTOR", f_wind_gravity_factor);
+				Define("D_WIND_BLEND_NORMAL", f_normal_blend);
+			}
+
+			if((wind_global_on) | (wind_weave_tex != ""))
+			{
+				Define ("D_WIND_NOISE_FACTOR", f_wind_noise_factor);
+				Define ("D_WIND_NOISE_SCALE", f_wind_noise_scale);
+				Define ("D_WIND_DIRECT_FACTOR", f_wind_dir_factor);
+				C_TIME_SCALE_0 = SetConst(f_pp_wind_offset * f_wind_time_scale);
+				C_TIME_SCALE_1 = SetConst(f_pp_omni_offset * f_wind_time_scale );
+				C_WIND_NOISE =  SetConst(f_pp_wind_noise);
+			}
+
+			if(object_blur_on)
+			{
+				X_VEL = SetTexcoord2();
+				if(SHADER_PATH == SM51)
+				{
+					Output O_VEL = new OutputFLOAT2("COLOR3");
+				}
+				else
+				{
+					Output O_VEL = new OutputFLOAT4("COLOR3");
+				}
+				C_TIME_SCALE_0_BLUR = SetConst(f_pp_wind_offset_blur * f_wind_time_scale);
+				C_TIME_SCALE_1_BLUR = SetConst(f_pp_omni_offset_blur * f_wind_time_scale );
+				C_WIND_NOISE_BLUR =  SetConst(f_pp_wind_noise_blur);
+				Define ("D_OBJECT_BLUR_ON", 1.0);
+			}
+
+			if(object_blur_on_vel_0)
+			{
+				Define ("D_VEL_0", 1.0);
+				if(SHADER_PATH == SM51)
+				{
+					Output O_VEL = new OutputFLOAT2("COLOR3");
+				}
+				else
+				{
+					Output O_VEL = new OutputFLOAT4("COLOR3");
+				}
+			}
+
+
+			if(wind_weave_tex != "")
+			{
+				S_WEAVE = SetTexture(wind_weave_tex);
+				Define ("D_WIND_WEAVE_FACTOR", f_wind_weave_factor);
+				Define ("D_WIND_WEAVE_DIST", f_wind_weave_distor);
+				Define ("D_WIND_WEAVE_UV_SCALE", f_wind_weave_uv_scale);
+				C_WIND_WEAVE_UV_SPEED = SetConst( - f_pp_wind_offset * f_wind_weave_uv_speed);
+				Define ("D_WIND_WEAVE_UV_SPEED", f_wind_weave_uv_speed);
+				Define ("D_WIND_WEAVE_NRM_FACTOR", f_wind_weave_nrm_scale);
+				Define ("D_WIND_WEAVE_ON", 1);
+				X_WEAVE_VEC = SetTexcoord2();
+				X_WEAVE_MSK = SetTexcoord();
+				X_UV_SOL = SetTexcoord2();
+			}
+
+			if((wind_weave_tex != "") & (wind_weave_msk != ""))
+			{
+				Define ("D_WIND_WEAVE_MSK", 1);
+				S_WEAVE_MSK = SetTexture(wind_weave_msk);
+			}
+
+
+            if(!static_on)
+            {
+                MarkStencilDynamic();
+            }
+
+			if(zz_on | b_hide_zz | b_green_zz | b_freeze_zz | b_purulence_zz)
+			{
+				X_ZZ_MSK_1 = SetTexcoord();
+				X_ZZ_MSK_2 = SetTexcoord();
+				X_TIME_F0 = SetTexcoord();
+
+				Define("D_ZZ_COLOR", "half4(" + zz_color.x + ", " + zz_color.y + ", " + zz_color.z + ", 0.0)");
+				Define("D_ZZ_POS", "half3(" + zz_pos.x + ", " + zz_pos.y + ", " + zz_pos.z + ")");
+				Define ("D_ZZ_ON", 1);
+
+				C_ZZ_RAD = SetConst(zz_radius * 2.5);
+				C_RANGE_1 = SetConst(zz_range_1);
+				C_RANGE_2 = SetConst(zz_range_2);
+
+				if(zz_tex_1 != "")
+				{
+					S_ZZ_1 = SetTexture(zz_tex_1);
+					Define ("D_ZZ_1_ON", 1);
+					X_UV_1 = SetTexcoord2();
+				}
+
+				if(zz_tex_2 != "")
+				{
+					S_ZZ_2 = SetTexture(zz_tex_2);
+					Define ("D_ZZ_2_ON", 1);
+					X_UV_2 = SetTexcoord2();
+				}
+			}
+
+
+
+			VertexShader()
+			{
+				hlsl()
+				{
+					#include <master_new.hlsl>
+
+					CONST_FLOAT f_wind_power;
+					CONST_FLOAT f_wind_omni_power;
+					CONST_FLOAT4 v_pp_wind_2d_xform;
+					CONST_FLOAT4 v_pp_wind_params_2;
+					CONST_FLOAT4 v_pp_wind_params_3;
+
+					// #if defined(D_WIND_BEND_ON)
+						// #include <wind.hlsl>
+					// #endif
+
+					#if defined(X_HIGHLIGHT_ENEMY_FADE)
+						uniform float3 v_pp_game_enemy_highlight_factors;
+					#endif
+
+					void main()
+					{
+						float3 nrm_ws = Mul33(I_NRM_MS, MODEL_XFORM_4x3);
+						#if defined(D_ZZ_ON)
+							float4 usr_1;
+							float4 usr_0 = Decode_Usr(I_CLR_USR, usr_1);
+						#endif
+
+						float4 pos_ms = Decode_Pos(I_POS_MS);
+						float4 pos_ws = Mul_Pos(pos_ms, MODEL_XFORM_4x3);
+
+						#if defined(D_WIND_ON) || defined(D_WIND_WEAVE_ON)
+							#if defined(D_OBJECT_BLUR_ON)
+								float4 pos_ws_blur =pos_ws;
+							#endif
+							float o_f = Decode_UV(I_UV_1).x ;
+							float o_s =   saturate( 1 - Decode_UV(I_UV_1).y   );
+							o_s *= o_s;
+// pivot mesza
+							float3 v_pivot_pos_ws = float3(MODEL_XFORM_4x3[0].w, MODEL_XFORM_4x3[1].w, MODEL_XFORM_4x3[2].w);
+
+							//omnik
+							float3 wind_omni_dir_ws = (v_pivot_pos_ws.xyz * v_pp_wind_params_3.www + v_pp_wind_params_3.xyz) * float3(1.0,0.0,1.0);
+							float wind_omni_dir_length = dot(wind_omni_dir_ws, wind_omni_dir_ws);
+							float3 wind_omni_dir_n_ws = normalize(wind_omni_dir_ws * float3(1,0,1)) ;
+							float wind_omni_mask = max(0,v_pp_wind_params_2.z - wind_omni_dir_length * v_pp_wind_params_2.z);
+							float wind_omni_mask_inv = saturate( 1.0 - wind_omni_mask) ;
+							float wind_power_msk = lerp(C_WIND_NOISE*f_wind_power,f_wind_omni_power , saturate(wind_omni_mask));
+
+							float3 pos_noise = pos_ws.xyz-v_pivot_pos_ws;
+							#if defined(D_OBJECT_BLUR_ON)
+								float wind_power_msk_blur = lerp(C_WIND_NOISE_BLUR*f_wind_power,v_pp_wind_params_2.z , saturate(wind_omni_mask));
+								float3 pos_noise_blur = pos_ws_blur.xyz;
+
+							#endif
+	// przeszktalcenia dla noisa wzgledem pivota / wierzcholka
+
+							float3 wind_direction_vec =normalize( lerp(v_pp_wind_2d_xform.xwy, wind_omni_dir_ws, wind_omni_mask) * float3(1,0,1));  //.xwy = X, 0.0, Z
+							float3 wind_direct_ws = wind_direction_vec * D_WIND_DIRECT_FACTOR * o_s  * wind_power_msk ;
+
+							#if defined(D_OBJECT_BLUR_ON)
+								float3 wind_direct_ws_blur = wind_direction_vec * D_WIND_DIRECT_FACTOR * o_s  * wind_power_msk_blur ;
+							 #endif
+
+						#endif
+
+						#if defined(D_WIND_ON) || (D_WIND_WEAVE_ON)
+
+							float time_o = C_TIME_SCALE_1  * (o_f * 0.5 + 0.5)  -  o_f ;
+							float time_x = C_TIME_SCALE_0  * (o_f * 0.5 + 0.5) -  o_f ;
+							#if defined(D_OBJECT_BLUR_ON)
+								float time_o_blur = C_TIME_SCALE_1_BLUR  * (o_f * 0.5 + 0.5)  -  o_f ;
+								float time_x_blur = C_TIME_SCALE_0_BLUR   * (o_f * 0.5 + 0.5) -  o_f ;
+							#endif
+							float wind_noise_scale = D_WIND_NOISE_SCALE;
+							float wind_msk =  D_WIND_NOISE_FACTOR * o_s;
+
+							float3 noise_params_0 = float3(0.232,0.232,0.193);
+							float3 noise_params_1 = float3(0.255,0.255,0.273);
+							float3 noise_params_2 = float3(0.13,0.13,0.11);
+
+							float3 noise_params_3 = float3(0.23,0.23,0.27);
+							float3 noise_params_4 = float3(0.37,0.31,0.27);
+							float3 noise_params_5 = float3(0.13,0.13,0.11);
+
+							float3 noise_params_6 = float3(0.12,0.12,0.21);
+							float3 noise_params_7 = float3(0.31,0.32,0.33);
+
+							float3 noise_vec_ws = float3(0.0, 0.0, 0.0);
+
+							float3  noise_delay = (smoothstep ( 1.0, 0.0, abs(frac( time_x * noise_params_0 + pos_noise.xyz * wind_noise_scale * noise_params_1 + pos_noise.zzx * wind_noise_scale * noise_params_2 ) - 0.5) * 2.0) * 2.0 - 1.0) ;
+							noise_vec_ws  = ( smoothstep ( 1.0, 0.0, abs(frac( time_x - pos_noise.xyz * wind_noise_scale * noise_params_3 + noise_delay.zzx * noise_params_4 ) - 0.5) * 2.0 ) * 2.0 - 1.0) ;
+							noise_vec_ws.x += ( smoothstep ( 1.0, 0.0, abs(frac(time_x - pos_noise.xyz * wind_noise_scale * noise_params_6 + noise_delay.yxy * noise_params_7 ) - 0.5) * 2.0 ) * 2.0 - 1.0) ;
+
+							float3  noise_delay_o = (smoothstep ( 1.0, 0.0, abs(frac( time_o * noise_params_0 + pos_noise.xyz * wind_noise_scale * noise_params_1 + pos_noise.zzx * wind_noise_scale * noise_params_2 ) - 0.5) * 2.0) * 2.0 - 1.0) ;
+							float3 noise_vec_ws_o  = ( smoothstep ( 1.0, 0.0, abs(frac( time_o - pos_noise.xyz * wind_noise_scale * noise_params_3 + noise_delay_o.zzx * noise_params_4 ) - 0.5) * 2.0 ) * 2.0 - 1.0) ;
+							noise_vec_ws_o.x += ( smoothstep ( 1.0, 0.0, abs(frac(time_o - pos_noise.xyz * wind_noise_scale * noise_params_6 + noise_delay_o.yxy * noise_params_7 ) - 0.5) * 2.0 ) * 2.0 - 1.0) ;
+
+							noise_vec_ws = lerp(noise_vec_ws, noise_vec_ws_o, saturate(wind_omni_mask));
+
+							#if defined(D_OBJECT_BLUR_ON)
+								float3 noise_vec_ws_blur = float3(0.0, 0.0, 0.0);
+								float3  noise_delay_blur = (smoothstep ( 1.0, 0.0, abs(frac( time_x_blur * noise_params_0 + pos_noise_blur.xyz * wind_noise_scale * noise_params_1 + pos_noise_blur.zzx * wind_noise_scale * noise_params_2 ) - 0.5) * 2.0) * 2.0 - 1.0) ;
+								noise_vec_ws_blur  = ( smoothstep ( 1.0, 0.0, abs(frac( time_x_blur - pos_noise_blur.xyz * wind_noise_scale * noise_params_3 + noise_delay_blur.zzx * noise_params_4 ) - 0.5) * 2.0 ) * 2.0 - 1.0) ;
+								noise_vec_ws_blur.x += ( smoothstep ( 1.0, 0.0, abs(frac(time_x_blur - pos_noise_blur.xyz * wind_noise_scale * noise_params_6 + noise_delay_blur.yxy * noise_params_7 ) - 0.5) * 2.0 ) * 2.0 - 1.0) ;
+
+								float3  noise_delay_o_blur = (smoothstep ( 1.0, 0.0, abs(frac( time_o_blur * noise_params_0 + pos_noise_blur.xyz * wind_noise_scale * noise_params_1 + pos_noise_blur.zzx * wind_noise_scale * noise_params_2 ) - 0.5) * 2.0) * 2.0 - 1.0) ;
+								float3 noise_vec_ws_o_blur  = ( smoothstep ( 1.0, 0.0, abs(frac( time_o_blur - pos_noise_blur.xyz * wind_noise_scale * noise_params_3 + noise_delay_o_blur.zzx * noise_params_4 ) - 0.5) * 2.0 ) * 2.0 - 1.0) ;
+								noise_vec_ws_o_blur.x += ( smoothstep ( 1.0, 0.0, abs(frac(time_o_blur - pos_noise_blur.xyz * wind_noise_scale * noise_params_6 + noise_delay_o_blur.yxy * noise_params_7 ) - 0.5) * 2.0 ) * 2.0 - 1.0) ;
+
+								noise_vec_ws_blur = lerp(noise_vec_ws_blur, noise_vec_ws_o_blur, saturate(wind_omni_mask));
+							#endif
+						#endif
+
+
+	// wektor wiatru noisowego
+						#if defined(D_WIND_ON)
+							float3 wind_noise_ws = noise_vec_ws * wind_msk* wind_power_msk ;
+							#if defined(D_OBJECT_BLUR_ON)
+								float3 wind_noise_ws_blur = noise_vec_ws_blur * wind_msk* wind_power_msk_blur ;
+							#endif
+						#else
+							float3 wind_noise_ws = SwizzleXXX(0.0);
+						#endif
+
+						#if defined(D_WIND_ON)
+							float3 wind_vec = wind_noise_ws + wind_direct_ws * wind_power_msk;
+							#if defined(D_OBJECT_BLUR_ON)
+								float3 wind_vec_blur = wind_noise_ws_blur + wind_direct_ws_blur * wind_power_msk_blur;
+							#endif
+						#endif
+
+						#if defined(D_WIND_ON)
+							float3 pos_neutral = SwizzleXXX(0.0);
+							float3 blend_normal_noise = lerp(nrm_ws.xyz, float3(1.0, 1.0, 1.0), D_WIND_BLEND_NORMAL);
+							float3 new_pos = blend_normal_noise * wind_vec  ;
+							pos_ws.y -=  o_s * D_WIND_GRAVITY_FACTOR *  saturate (1.0 - wind_power_msk);
+							#if defined(D_OBJECT_BLUR_ON)
+								float3 new_pos_blur = blend_normal_noise * wind_vec_blur  ;
+								pos_ws_blur.y -=  o_s * D_WIND_GRAVITY_FACTOR *  saturate (1.0 - wind_power_msk_blur);
+							#endif
+
+							pos_ws.xyz += lerp( pos_neutral, new_pos, C_WIND_NOISE );
+							#if defined(D_OBJECT_BLUR_ON)
+								pos_ws_blur.xyz += lerp( pos_neutral, new_pos_blur, C_WIND_NOISE_BLUR );
+
+								float4 v_pos_out = Pos_Out_WS(pos_ws);
+								float4 v_pos_out_prv = Pos_Out_WS(pos_ws_blur);
+
+								float2 uv_curr = v_pos_out.xy / v_pos_out.w;
+								float2 uv_prv = v_pos_out_prv.xy / v_pos_out_prv.w;
+
+								X_VEL = uv_curr - uv_prv;
+								X_VEL *= 0.5;
+							#endif
+						#endif
+
+						#if defined(D_WIND_WEAVE_ON)
+							X_WEAVE_VEC = wind_direction_vec.xz ;
+							float2 wind_dir_space;
+							wind_dir_space.x = dot(-pos_ws.xz, wind_direction_vec.xz) + lerp(C_TIME_SCALE_0, C_TIME_SCALE_1,  saturate(wind_omni_mask)) * D_WIND_WEAVE_UV_SPEED ;
+							wind_dir_space.y = dot(-pos_ws.xz, wind_direction_vec.yx);
+							wind_dir_space *= D_WIND_WEAVE_UV_SCALE;
+
+							X_UV_SOL = wind_dir_space + noise_vec_ws.xz * D_WIND_WEAVE_FACTOR  * wind_power_msk;
+							X_WEAVE_MSK = o_s  ;
+
+						#endif
+// koniec wiatru
+
+						#if defined(D_ZZ_ON)
+//							float ti_var = frac(TIME*0.1); // debug
+							float ti_var =usr_1.g;
+							float ti_min_0 = 0.0;
+							float ti_max_0 = C_RANGE_1;
+							float ti_min_1 = ti_max_0;
+							float ti_max_1 = C_RANGE_2;
+							float ti_min_2 = ti_max_1;
+							float ti_max_2 = 1.0;
+							float ti_3_delta = 0.05;
+							float ti_min_3 = ti_min_2 + ti_3_delta;
+							float ti_max_3 = ti_max_2 + ti_3_delta ;
+
+							float ti_faktor_0 = saturate( ti_var * (1.0 / (ti_max_0 - ti_min_0))-(ti_min_0 / (ti_max_0 - ti_min_0)));
+//							float ti_faktor_1 = saturate( ti_var * (1.0 / (ti_max_1 - ti_min_1))-(ti_min_1 / (ti_max_1 - ti_min_1)));
+							float ti_faktor_2 = saturate( ti_var * (1.0 / (ti_max_2 - ti_min_2))-(ti_min_2 / (ti_max_2 - ti_min_2)));
+							float ti_faktor_3 = saturate( ti_var * (1.0 / (ti_max_3 - ti_min_3))-(ti_min_3 / (ti_max_3 - ti_min_3)));
+
+							X_TIME_F0 = ti_faktor_0;
+
+							float zz_1_msk_ms = saturate(1.0 - dot(abs((pos_ms.xyz - D_ZZ_POS )/ C_ZZ_RAD), SwizzleXXX(1.0)));
+							X_ZZ_MSK_1 = zz_1_msk_ms;
+							X_ZZ_MSK_2 = 1.0 - saturate( zz_1_msk_ms * 2.0   - ti_faktor_3 * 2.0);
+
+							float zz_msk_1 =  1.0 - saturate( zz_1_msk_ms * 5.0 - ti_faktor_2 * 5.0);
+							pos_ws.y += - zz_msk_1 ;
+							#if defined(D_ZZ_1_ON)
+								X_UV_1 = pos_ws.xz ;
+							#endif
+
+							#if defined(D_ZZ_2_ON)
+								X_UV_2 = pos_ws.xz * 20.0;
+							#endif
+						#endif
+
+						V_POS_OUT_TC = Pos_Out_WS(pos_ws);
+
+						#if defined(X_HIGHLIGHT_ENEMY_FADE)
+							X_HIGHLIGHT_ENEMY_FADE = saturate(V_POS_OUT_TC.w * v_pp_game_enemy_highlight_factors.x + v_pp_game_enemy_highlight_factors.y) * v_pp_game_enemy_highlight_factors.z;
+						#endif
+
+						#if defined(S_CLR_0) || defined(S_NRM_0) || defined(S_MSK_0)
+							X_UV_0 = Decode_UV(I_UV_0);
+						#endif
+
+						#if defined(S_DYE)
+							X_UV_1 = Decode_UV(I_UV_1);
+						#endif
+
+						float3 nrm_cs = Mul33(nrm_ws, VIEW_XFORM);
+						float3 nrm_n_cs = normalize(nrm_cs);
+						#if defined(X_NRM_OUT)
+							X_NRM_OUT = nrm_n_cs.xyzx * D_NRM_FACTORS.xxxy + D_NRM_FACTORS.xxxz;
+						#endif
+						#if defined(X_NRM_CS)
+							X_NRM_CS = nrm_n_cs;
+						#endif
+						#if defined(S_NRM_0)
+							float3 tng_ws = Mul33(I_TNG_MS.xyz, MODEL_XFORM_4x3);
+							float3 tng_cs = Mul33(tng_ws, VIEW_XFORM);
+							float3 tng_n_cs = normalize(tng_cs);
+							X_TNG_CS = tng_n_cs;
+
+							float3 bnr_n_cs = cross(nrm_n_cs, tng_n_cs);
+							bnr_n_cs *= I_TNG_MS.w;
+							X_BNR_CS = bnr_n_cs;
+						#endif
+
+						#if defined(S_ENV) || defined(D_HIGHLIGHT_ON)
+							#if defined(X_RFL_WS)|| defined(D_HIGHLIGHT_ON)
+								float3 cam_dir_ws = pos_ws.xyz - CAMERA_POS_WS.xyz;
+								#if defined(D_HIGHLIGHT_ON)
+									X_CAM_DIR_WS = cam_dir_ws;
+								#endif
+							#endif
+						#endif
+
+
+						#if defined(S_ENV)
+							#if defined(X_RFL_WS)
+								float3 nrm_n_ws = normalize(nrm_ws);
+								X_RFL_WS = reflect(cam_dir_ws, nrm_n_ws);
+							#endif
+						#endif
+
+						#if defined(X_POS_CS)
+							X_POS_CS = Mul_Pos(pos_ws, VIEW_XFORM).xyz;
+						#endif
+
+						#if defined(X_GRD_V)
+							X_GRD_V = Decode_Usr(I_CLR_USR).w;
+						#endif
+					}
+				}
+			}
+
+			PixelShader()
+			{
+				hlsl()
+				{
+ 					#if defined(SHADER_PATH_ORBIS)
+						// #pragma PSSL_target_output_format (target 1 FMT_UNORM16_ABGR)
+					#endif
+
+					#include <master_new.hlsl>
+
+					void main()
+					{
+						#if defined(X_UV_0)
+							FLOAT2 uv_0 = X_UV_0;
+						#endif
+
+						#if defined(D_WIND_WEAVE_ON)
+							FLOAT nrm_weave_tex = Sample(S_WEAVE, X_UV_SOL  ).g;
+							FLOAT2 nrm_weave = SwizzleXX(nrm_weave_tex) * 2.0 - SwizzleXX(1.0);
+							#if defined(D_WIND_WEAVE_MSK)
+								FLOAT wind_weave_msk = Sample(S_WEAVE_MSK, uv_0).g;
+								uv_0 +=(((nrm_weave * 2.0 - 1.0) * D_WIND_WEAVE_DIST * 0.01 * X_WEAVE_MSK * wind_weave_msk ) *  2.0 - 1.0) ;
+							#else
+								uv_0 +=(((nrm_weave * 2.0 - 1.0) * D_WIND_WEAVE_DIST * 0.01 * X_WEAVE_MSK ) *  2.0 - 1.0) ;
+							#endif
+						#endif
+
+						#if defined(S_CLR_0)
+							FLOAT4 clr_0 = Sample(S_CLR_0, uv_0);
+							#if defined(D_CLIP_ON)
+								clip(clr_0.w - 0.25);
+							#endif
+						#endif
+
+						#if defined(X_TNG_CS)
+							float3 E2T_XFORM[3];
+							E2T_XFORM[0] = X_TNG_CS;
+							E2T_XFORM[1] = X_BNR_CS;
+							E2T_XFORM[2] = X_NRM_CS;
+						#endif
+
+						#if defined(OMB_HAIR_ON)
+							#if defined(S_FLOWMAP)
+								FLOAT3 flowmap_ts = FLOAT3(0.0, 0.0, 0.0);
+								flowmap_ts.yx = Sample(S_FLOWMAP, uv_0).ag * 2.0 - 1.0;
+								FLOAT3 flowmap_cs = Mul33T(flowmap_ts, E2T_XFORM);
+								FLOAT3 flowmap_n_cs = normalize(flowmap_cs);
+							#else
+								FLOAT3 flowmap_n_cs = X_TNG_CS;
+							#endif
+
+							float4 pos_cs_0 = float4(X_POS_CS, 1.0);
+							pos_cs_0.xyz += flowmap_n_cs * C_RADIUS_SCALE;
+
+							float4 pos_cs_1 = float4(X_POS_CS, 1.0);
+							pos_cs_1.xyz -= flowmap_n_cs * C_RADIUS_SCALE;
+
+							float4 pos_ss_0 = Mul44(pos_cs_0, PROJECTION_XFORM);
+							float4 pos_ss_1 = Mul44(pos_cs_1, PROJECTION_XFORM);
+
+							float2 ss_uv_0 = pos_ss_0.xy / pos_ss_0.w;
+							float2 ss_uv_1 = pos_ss_1.xy / pos_ss_1.w;
+
+							float2 uv_step = (ss_uv_1 - ss_uv_0);
+
+							X_VEL = uv_step;
+						#endif
+
+
+						#if defined(X_NRM_OUT)
+							O_NRM = X_NRM_OUT;
+						#else
+							#if defined(S_NRM_0)
+								FLOAT3 nrm_ts = FLOAT3(0.0, 0.0, 1.0);
+								nrm_ts.xy = Sample(S_NRM_0, uv_0).ag * 2.0 - 1.0;
+								nrm_ts.xy *= D_NRM_0_SCALE;
+
+								FLOAT3 nrm_cs = Mul33T(nrm_ts, E2T_XFORM);
+								FLOAT3 nrm_n_cs = normalize(nrm_cs);
+							#else
+								FLOAT3 nrm_n_cs = X_NRM_CS; //isn't normalized
+							#endif
+
+							#if defined(D_CULLING_NONE)
+								nrm_n_cs = I_SIDE ? nrm_n_cs : -nrm_n_cs;
+							#endif
+
+							#if defined(D_WIND_WEAVE_ON)
+								#if defined(D_WIND_WEAVE_MSK)
+									nrm_n_cs.xy += X_WEAVE_VEC * nrm_weave * D_WIND_WEAVE_NRM_FACTOR * wind_weave_msk;
+								#else
+									nrm_n_cs.xy += X_WEAVE_VEC * nrm_weave* D_WIND_WEAVE_NRM_FACTOR;
+								#endif
+							#endif
+
+							O_NRM = nrm_n_cs.xyzx * D_NRM_FACTORS.xxxy + D_NRM_FACTORS.xxxz;
+						#endif
+
+						O_DIF = D_CLR_0_FACTOR;
+
+						#if defined(S_CLR_0)
+							clr_0.w = saturate(clr_0.w * 2.0 - 1.0);
+							O_DIF *= clr_0;
+						#endif
+
+						#if defined(X_GRD_V)
+							FLOAT grd_u = Sample(S_MSK_0, uv_0).g;
+							FLOAT2 grd_uv = FLOAT2(grd_u, X_GRD_V) * C_GRD_UV_MUL_ADD.xy + C_GRD_UV_MUL_ADD.zw;
+							FLOAT4 grd = Sample(S_GRD, grd_uv, 0.0);
+							O_DIF.xyz *= grd.xyz;
+						#endif
+
+						#if defined(S_DYE)
+							FLOAT3 dye = Sample_h3(S_DYE, X_UV_1);
+						#endif
+
+						#if defined(S_ENV)
+							#if defined(X_POS_CS)
+								#if defined(S_NRM_0)
+									FLOAT3 nrm_n_cs_4_rfl = nrm_n_cs;
+									#if defined(D_ENV_NRM_SCALE)
+										nrm_n_cs_4_rfl = lerp(X_NRM_CS.xyz, nrm_n_cs_4_rfl, D_ENV_NRM_SCALE);
+										nrm_n_cs_4_rfl = normalize(nrm_n_cs_4_rfl);
+									#endif
+								#else
+									FLOAT3 nrm_n_cs_4_rfl = normalize(X_NRM_CS);
+								#endif
+
+								#if defined(D_ENV_FRESNEL_SCALE) && defined(D_ENV_FRESNEL_BIAS)
+									FLOAT3 cam_dir_n = normalize(X_POS_CS);
+									FLOAT fresnel = saturate(1.0 - dot(-nrm_n_cs_4_rfl, cam_dir_n));
+									fresnel = saturate(fresnel * D_ENV_FRESNEL_SCALE + D_ENV_FRESNEL_BIAS);
+									fresnel = pow(fresnel, D_ENV_FRESNEL_POW);
+								#endif
+							#endif
+
+							#if defined(X_RFL_WS)
+								FLOAT3 rfl_ws = X_RFL_WS;
+							#else
+								FLOAT3 rfl_cs = reflect(X_POS_CS, nrm_n_cs_4_rfl);
+								FLOAT3 rfl_ws = Mul33(rfl_cs, INVVIEW_XFORM);
+							#endif
+
+							FLOAT3 v_env = SampleCUBE_h3(S_ENV, rfl_ws, 0.0);
+							v_env *= D_ENV_FACTOR;
+
+							FLOAT3 env_mask = SwizzleXXX( saturate(O_DIF.w * D_ENV_MASK_SCALE + D_ENV_MASK_BIAS) );
+
+							#if defined(D_ENV_FRESNEL_SCALE) && defined(D_ENV_FRESNEL_BIAS)
+								env_mask *= fresnel;
+							#endif
+
+							#if defined(S_DYE)
+								env_mask *= dye;
+							#endif
+
+							O_DIF.xyz = lerp(O_DIF.xyz, v_env, env_mask);
+						#endif
+
+						#if defined(D_EMS_CLR) || defined(D_EMS_CLR_ON)
+							#if defined(D_EMS_CLR)
+								FLOAT4 ems_clr = D_EMS_CLR;
+							#else
+								FLOAT4 ems_clr = C_EMS_CLR;
+							#endif
+							FLOAT3 clr_n_ems = saturate(O_DIF.xyz * ems_clr.w + ems_clr.xyz);  //lerp
+							O_DIF.xyz = lerp(O_DIF.xyz, clr_n_ems, O_DIF.w);
+						#endif
+
+						#if defined(S_DYE)
+							O_DIF *= dye.xyzy;
+						#endif
+
+
+
+						#if defined (D_ZZ_ON)
+							#if defined (D_ZZ_1_ON)
+								FLOAT4 zz_tex_1_msk = Sample(S_ZZ_1, X_UV_1) ;
+								FLOAT zz_msk_1 = saturate((X_TIME_F0* 2.0 - zz_tex_1_msk.y - X_ZZ_MSK_1 )*100);
+							#else
+								FLOAT zz_msk_1 = saturate((X_TIME_F0 - X_ZZ_MSK_1)*100);
+							#endif
+
+							#if defined (D_ZZ_2_ON)
+								FLOAT4 zz_tex_2_msk = Sample(S_ZZ_2, X_UV_2) ;
+								FLOAT zz_msk_2 = saturate( zz_tex_2_msk.y * 40.0  - X_ZZ_MSK_2 * 51.0  );
+							#else
+								FLOAT zz_msk_2 = 1.0 - saturate( X_ZZ_MSK_2*1.8);
+							#endif
+							#if defined (D_CUTTING_ON)
+								clip( cut_clip * (zz_msk_2 - 0.25) );
+							#else
+								clip(zz_msk_2 - 0.25) ;
+							#endif
+							clip(zz_msk_2 - 0.25) ;
+							O_DIF = lerp(O_DIF, D_ZZ_COLOR,  zz_msk_1  );
+						#endif
+
+						#if defined(D_HIGHLIGHT_ON)
+							float hl_msk = saturate( ( length (X_CAM_DIR_WS) )*0.5 - 0.2);
+							FLOAT hl = saturate(sin( TIME*10)) ;
+							#if defined(D_GAMMA_CORRECT)
+                                hl = Gamma_Decode(hl);
+                            #endif
+							O_DIF.xyz += ( SwizzleXXX(hl) * 0.2 + 0.1 )* hl_msk;	
+                        #endif
+
+						#if defined(D_HIGHLIGHT_ENEMY_ON)
+							FLOAT3 highlight = O_NRM.zzz * O_NRM.zzz;
+							highlight = saturate(highlight * highlight * 2.0);
+							highlight = saturate(X_HIGHLIGHT_ENEMY_FADE - X_HIGHLIGHT_ENEMY_FADE * highlight); // (1.0 - highlight) * X_HIGHLIGHT_ENEMY_FADE
+							O_DIF.xyz = lerp(O_DIF.xyz, C_HIGHLIGHT_ENEMY_COLOR, highlight);
+						#endif
+
+                        #if defined(D_GAMMA_CORRECT)
+                            O_DIF.xyz = Gamma_Encode(O_DIF.xyz);
+                        #endif
+
+						#if defined(D_OBJECT_BLUR_ON)
+							#if defined(SHADER_PATH_ORBIS)
+								O_VEL = X_VEL;
+							#else
+								O_VEL = FLOAT4(X_VEL, 0.0, 0.0);
+							#endif
+						#endif
+						#if defined(D_VEL_0)
+							O_VEL = 0.0;
+						#endif
+						
+						O_SPC = O_DIF * float4(0.0, 0.0, 0.0, 1.0);
+
+					}
+				}
+			}
+		}
+		if(sample_count > 1 & sa_radius_scale > 0.0 & !use_omb_on)
+		{
+			tech("rfr")
+			{
+				int_dat culling = If(clip_on, NONE, CW);
+				culling = If((culling < 0), culling, culling);
+
+				Cull(culling);
+				DepthFunc(LEQUAL, FALSE);
+
+				BlendFunc(SRC_ALPHA, INV_SRC_ALPHA, ZERO, ONE);
+
+				Input I_POS_MS = new InputFloat4("POSITION");
+
+				Output O_CLR = new OutputFLOAT4("COLOR0");
+
+				S_BKG = SetTexture(8, LINEAR_NO_MIP, CLAMP, CLAMP, true);
+				Input I_TNG_MS = new InputFloat4("TANGENT0");
+				Input I_NRM_MS = new InputFloat4("NORMAL0");
+
+				if(sa_flowmap_tex != "")
+				{
+					S_FLOWMAP = SetTexture(sa_flowmap_tex, LINEAR_NO_MIP, CLAMP, CLAMP, FALSE);
+					X_TNG_CS = SetTexcoord3("FLOAT");
+					X_BNR_CS = SetTexcoord3("FLOAT");
+					X_NRM_CS = SetTexcoord3("FLOAT");
+					X_POS_CS = SetTexcoord4();
+				}
+				else
+				{
+					X_UVS = SetTexcoord2Array(sample_count);
+				}
+
+				if(clr_0_on)
+				{
+					S_CLR_0 = SetTexture2D(dif_0_tex, filter_clr, tex_tile, tex_tile, FALSE);
+				}
+
+				if(clr_0_on | sa_flowmap_tex != "")
+				{
+					Input I_UV_0 = new InputFloat2("TEXCOORD0");
+					X_UV_0 = SetTexcoord2("FLOAT");
+				}
+
+				Define("I_SAMPLE_COUNT", sample_count);
+				Define("SAMPLE_COUNT_INV", 1.0 / sample_count);
+
+				C_RADIUS_SCALE = SetConst(sa_radius_scale);
+
+				VertexShader()
+				{
+					hlsl()
+					{
+						#include <master_new.hlsl>
+
+						void main()
+						{
+							float4 pos_ms = Decode_Pos(I_POS_MS);
+							float4 pos_ws = Mul_Pos(pos_ms, MODEL_XFORM_4x3);
+
+							#if defined(X_POS_CS)
+								X_POS_CS = Mul_Pos(pos_ws, VIEW_XFORM);
+							#endif
+
+							V_POS_OUT_TC = Pos_Out_WS(pos_ws);
+
+							#if defined(X_TNG_CS)
+								float3 nrm_ws = Mul33(I_NRM_MS, MODEL_XFORM_4x3);
+								float3 nrm_cs = Mul33(nrm_ws, VIEW_XFORM);
+								float3 nrm_n_cs = normalize(nrm_cs);
+
+								X_NRM_CS = nrm_n_cs;
+
+								float3 tng_ws = Mul33(I_TNG_MS.xyz, MODEL_XFORM_4x3);
+								float3 tng_cs = Mul33(tng_ws, VIEW_XFORM);
+								float3 tng_n_cs = normalize(tng_cs);
+								X_TNG_CS = tng_n_cs;
+
+								float3 bnr_n_cs = cross(nrm_n_cs, tng_n_cs);
+								bnr_n_cs *= I_TNG_MS.w;
+								X_BNR_CS = bnr_n_cs;
+							#else
+								float3 bnr = cross(I_NRM_MS.xyz, I_TNG_MS.xyz) * I_TNG_MS.w;
+
+								float4 pos_ms_0 = pos_ms;
+								float4 pos_ms_1 = pos_ms;
+								pos_ms_0.xyz += bnr.xyz * C_RADIUS_SCALE;
+								pos_ms_1.xyz -= bnr.xyz * C_RADIUS_SCALE;
+
+								float4 pos_ws_0 = Mul_Pos(pos_ms_0, MODEL_XFORM_4x3);
+								float4 pos_ws_1 = Mul_Pos(pos_ms_1, MODEL_XFORM_4x3);
+
+								float4 pos_ss_0 = Pos_Out_WS(pos_ws_0);
+								float4 pos_ss_1 = Pos_Out_WS(pos_ws_1);
+
+								float2 uv_0 = pos_ss_0.xy / pos_ss_0.w * float2(0.5, -0.5) + 0.5;
+								float2 uv_1 = pos_ss_1.xy / pos_ss_1.w * float2(0.5, -0.5) + 0.5;
+
+								float2 uv_step = (uv_1 - uv_0) * SAMPLE_COUNT_INV;
+								for(int i = 0; i < I_SAMPLE_COUNT; i++)
+								{
+									X_UVS[i] = uv_0 + uv_step * i;
+								}
+							#endif
+
+
+							#if defined(X_UV_0)
+								X_UV_0 = Decode_UV(I_UV_0);
+							#endif
+						}
+					}
+				}
+				PixelShader()
+				{
+					hlsl()
+					{
+						#include <master_new.hlsl>
+						#include <position_cs.hlsl>
+
+						void main()
+						{
+							FLOAT hair_mask = 1.0;
+							#if defined(S_CLR_0)
+								hair_mask = Sample(S_CLR_0, X_UV_0).a;
+								clip(hair_mask - 1.0 / 255.0);
+							#endif
+
+							FLOAT3 clr = SwizzleXXX(0.0);
+							#if defined(S_FLOWMAP)
+								float3 E2T_XFORM[3];
+								E2T_XFORM[0] = X_TNG_CS;
+								E2T_XFORM[1] = X_BNR_CS;
+								E2T_XFORM[2] = X_NRM_CS;
+								FLOAT3 flowmap_ts = FLOAT3(0.0, 0.0, 0.0);
+								flowmap_ts.xy = Sample(S_FLOWMAP, X_UV_0).ag * 2.0 - 1.0;
+
+								FLOAT3 flowmap_cs = Mul33T(flowmap_ts, E2T_XFORM);
+								FLOAT3 flowmap_n_cs = normalize(flowmap_cs);
+
+								float4 pos_cs_0 = X_POS_CS;
+								pos_cs_0.xyz += flowmap_n_cs * C_RADIUS_SCALE;
+
+								float4 pos_cs_1 = X_POS_CS;
+								pos_cs_1.xyz -= flowmap_n_cs * C_RADIUS_SCALE;
+
+								float4 pos_ss_0 = Mul44(pos_cs_0, PROJECTION_XFORM);
+								float4 pos_ss_1 = Mul44(pos_cs_1, PROJECTION_XFORM);
+
+								float2 uv_0 = pos_ss_0.xy / pos_ss_0.w * float2(0.5, -0.5) + 0.5;
+								float2 uv_1 = pos_ss_1.xy / pos_ss_1.w * float2(0.5, -0.5) + 0.5;
+
+								float2 uv_step = (uv_1 - uv_0) * SAMPLE_COUNT_INV;
+
+								for(int i = 0; i < I_SAMPLE_COUNT; i++)
+								{
+									clr += Sample_h3(S_BKG, uv_0 + uv_step * i, 0.0);
+								}
+							#else
+								for(int i = 0; i < I_SAMPLE_COUNT; i++)
+								{
+									clr += Sample_h3(S_BKG, X_UVS[i], 0.0);
+								}
+							#endif
+
+							O_CLR.xyz = clr * SAMPLE_COUNT_INV;
+							O_CLR.w = saturate(hair_mask * 2.0);
+						}
+					}
+				}
+			}
+		}
+		// temporary fix
+		// if(cast_shadows_on)
+		// {
+			// att_standard shadow_params = new att_standard();
+
+			// shadow_params.clr_0_tex = If(clip_on, dif_0_tex, "");
+			// shadow_params.tex_tile = tex_tile;
+			// shadow_params.zz_on = zz_on | b_hide_zz | b_green_zz | b_freeze_zz | b_purulence_zz;
+			// shadow_params.wind_bend_on = wind_bend_on;
+			// shadow_params.wind_noise_scale = wind_noise_scale;
+			// shadow_params.wind_noise_speed = wind_noise_speed;
+			// shadow_params.wind_noise_size = wind_noise_size;
+
+			// depth_pass dpt = new depth_pass(this);
+
+			// shadow_params.technique = "zfill";
+			// dpt.setup(shadow_params);
+		// }
+	}
+}

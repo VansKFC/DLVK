@@ -1,0 +1,95 @@
+//new
+using engineflags;
+using settemplates;
+
+
+template
+{
+	
+	category Main
+	{
+		class Basic
+		{
+			string_dat clr_tex = "trail.dds" : editor(ImageFileNameEditor), display(Color);
+			float_dat ems_f = 1.0 : display(ems factor);
+		}
+	}
+
+	
+	templatebody()
+	{
+
+		tech("ems")
+		{
+			use SetupMaterial();
+			Cull(NONE);
+			BlendFunc(ONE, ONE, ONE, ONE);
+			DepthFunc(LEQUAL, FALSE);
+			
+			Input I_POS_0 = new InputFloat4("POSITION");
+			Input I_UV_0 = new InputFloat2("TEXCOORD0");
+			Input I_CLR_0 = new InputFloat4("COLOR0");
+			
+			Output O_CLR = new OutputFLOAT4("COLOR0");
+			
+			X_UV_0 = SetTexcoord2();		
+			X_CLR_0 = SetTexcoord4();		
+			X_EXT = SetTexcoord3();
+
+			extern float_dat f_pp_hdr_intensity_emissive;
+			C_EMISSIVE_INTENSITY = SetConst( f_pp_hdr_intensity_emissive);
+			C_EMISSIVE_FACTOR = SetConst( ems_f);
+			
+			if(clr_tex != "")
+			{
+				S_CLR = SetTexture(clr_tex, LINEAR_MIP_LINEAR, CLAMP, CLAMP, FALSE);
+			}
+			VertexShader()
+			{
+				use Instancing();
+				hlsl()
+				{
+					
+					#include <master_new.hlsl>
+					#include <fog.hlsl>
+
+					void main()
+					{
+						X_UV_0 = Decode_UV(I_UV_0);
+						
+						float4 pos_ms = Decode_Pos(I_POS_0);
+						float4 pos_ws = Mul_Pos(pos_ms, MODEL_XFORM_4x3);
+						V_POS_OUT_TC = Pos_Out_WS(pos_ws);
+						
+						X_CLR_0 = I_CLR_0;
+						X_EXT = Scattering_Ext(length(pos_ws.xyz - CAMERA_POS_WS.xyz));
+						X_EXT *= C_EMISSIVE_INTENSITY;
+					}
+				}
+			}				
+			PixelShader()
+			{
+				hlsl()
+				{
+					
+					#include <master_new.hlsl>	
+					
+					void main()
+					{
+						O_CLR = SwizzleXXXX(1.0);
+						O_CLR.xyz *= X_CLR_0.xyz;
+						
+						#if defined(S_CLR)				
+							FLOAT3 clr = Sample(S_CLR, X_UV_0).rgb;
+							O_CLR.xyz *= clr;
+
+						#endif
+						
+						O_CLR.xyz *= C_EMISSIVE_FACTOR ;
+						O_CLR.xyz *= X_EXT ;
+					}
+				}
+			}
+		}
+	}
+}

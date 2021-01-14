@@ -130,14 +130,17 @@ template
 					}
 				}
 			}
+
 			PixelShader()
 			{
 				hlsl()
 				{
 					#include <master_new.hlsl>
 					#include <fog.hlsl>
+
 					void main()
 					{
+
 						float3 E2T_XFORM[3];
 						E2T_XFORM[0] = X_TNG_CS;
 						E2T_XFORM[1] = X_BNR_CS;

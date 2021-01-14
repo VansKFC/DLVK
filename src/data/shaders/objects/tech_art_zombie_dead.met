@@ -1,0 +1,315 @@
+//new
+
+using engineflags;
+using settemplates;
+
+template
+{
+	category Main
+	{
+		class Basic
+		{
+			string_dat clr_tex = s_tex_def : editor(ImageFileNameEditor), display(Color);
+
+			string_dat base_nrm_tex = s_tex_def : editor(ImageFileNameEditor), display(Normal);
+			float_dat f_nrm_scale = 1.0 : editor(FloatSpinEditor), display(Normal Scale);
+
+
+		}
+		class Bulgot
+		{
+			string_dat nrm_tex = s_tex_def : editor(ImageFileNameEditor), display(bulgot normal );
+			string_dat msk_tex = s_tex_def : editor(ImageFileNameEditor), display(bulgot mask);
+			string_dat prog_tex = s_tex_def : editor(ImageFileNameEditor), display(bulgot progress);
+			float_dat f_blg_scale = 1.5 : editor(FloatSpinEditor), display(Bulgot nrm scale);
+			float_dat f_blg_uv_scale = 6.0 : editor(FloatSpinEditor), display(Bulgot uv scale);
+			float_dat f_blg_t = 1.0 : editor(FloatSpinEditor), display(Bulgot speed);
+		}
+		class Bulgot Range
+		{
+			float_dat f_blg_range_1 = 0.4 : editor(FloatSpinEditor), display(Bulgot range 1);
+			float_dat f_blg_range_2 = 0.8 : editor(FloatSpinEditor), display(Bulgot range 2);
+		}
+		class Bulgot Range 0
+		{
+			string_dat adf_msk_r0 = s_tex_def : editor(ImageFileNameEditor), display(Bulgot blood msk);
+		}
+		class Bulgot Range 1
+		{
+			float_dat f_blg_r1_noise = 6.0 : editor(FloatSpinEditor), display(Bulgot noise scale);
+			float_dat f_blg_r1_factor = 6.0 : editor(FloatSpinEditor), display(Bulgot noise factor);
+			float_dat f_blg_r1_speed = 6.0 : editor(FloatSpinEditor), display(Bulgot noise speed);
+		}
+		class Bulgot Range 2
+		{
+			string_dat adf_msk_r2 = s_tex_def : editor(ImageFileNameEditor), display(Bulgot blood msk);
+			float_dat f_blg_r2_val = 1.0 : editor(FloatSpinEditor), display(Bulgot BOOM factor);
+		}
+
+
+	}
+
+	templatebody()
+	{
+		tech(s_tech_opq)
+		{
+			use SetupMaterial();
+			Cull(NONE);
+			DepthFunc(LEQUAL, TRUE);
+
+			extern float_dat TIME;
+
+			Input I_POS_0 = new InputFloat4("POSITION");
+			Input I_NRM_0 = new InputFloat3("NORMAL0");
+
+			Output O_SPC = new OutputFLOAT4("COLOR0");
+			Output O_DIF = new OutputFLOAT4("COLOR1");
+			Output O_NRM = new OutputFLOAT4("COLOR2");
+
+			X_NRM = SetTexcoord3();
+			C_NRM_SCALE = SetConst(f_nrm_scale);
+			C_BLG_SCALE = SetConst(f_blg_scale);
+			C_BLG_UV_SCALE = SetConst(f_blg_uv_scale);
+			C_BLG_BOOM = SetConst(f_blg_r2_val);
+			C_R1 = SetConst(f_blg_range_1);
+			C_R2 = SetConst(f_blg_range_2);
+			C_BLG_SPEED = SetConst( f_blg_t* TIME);
+
+
+			if(((msk_tex != s_tex_def ) & (prog_tex != s_tex_def) & (nrm_tex != s_tex_def) & (adf_msk_r0 != s_tex_def)) | (clr_tex != s_tex_def) | (base_nrm_tex != s_tex_def))
+			{
+				Input I_UV_0 = new InputFloat2("TEXCOORD0");
+				X_UV_0 = SetTexcoord2();
+				if(clr_tex != s_tex_def)
+				{
+					S_CLR = SetTexture(clr_tex);
+					Define ("D_CLR_ON", 1);
+				}
+
+				if(base_nrm_tex != s_tex_def)
+				{
+					S_NRM_BASE = SetTexture(base_nrm_tex);
+					Define ("D_NRM_ON", 1);
+				}
+
+				if((msk_tex != s_tex_def ) & (prog_tex != s_tex_def) & (nrm_tex != s_tex_def) & (adf_msk_r0 != s_tex_def)   )
+				{
+					S_MSK = SetTexture(msk_tex);
+					S_PRG = SetTexture(prog_tex);
+					S_NRM = SetTexture(nrm_tex);
+					S_ADF_MSK_R0 = SetTexture(adf_msk_r0);
+					S_ADF_MSK_R2 = SetTexture(adf_msk_r2);
+
+					X_UV_1 = SetTexcoord2();
+	//				X_UV_2 = SetTexcoord2();
+					X_TV_0 = SetTexcoord();
+	//				X_TV_1 = SetTexcoord();
+					X_TV_2 = SetTexcoord();
+					//X_T = SetTexcoord();
+
+					Define ("D_BLG_ON", 1);
+				}
+			}
+			if( ((msk_tex != s_tex_def ) & (prog_tex != s_tex_def) & (nrm_tex != s_tex_def)) | (base_nrm_tex != s_tex_def) )
+			{
+				X_BNR = SetTexcoord3();
+				X_TNG = SetTexcoord3();
+				Input I_TNG_0 = new InputFloat4("TANGENT");
+			}
+
+			VertexShader()
+			{
+				use Instancing();
+				hlsl()
+				{
+
+					#include <master_new.hlsl>
+
+					void main()
+					{
+						float ti_var = frac(TIME*0.5);
+						float ti_min_0 = 0.0;
+						float ti_max_0 = C_R1;
+						// float ti_min_1 = ti_max_0;
+						float ti_max_1 = C_R2;
+						float ti_min_2 = ti_max_1;
+						float ti_max_2 = 1.0;
+
+						float ti_faktor_0 = saturate( ti_var * (1.0 / (ti_max_0 - ti_min_0))-(ti_min_0 / (ti_max_0 - ti_min_0)));
+						float ti_faktor_2 = saturate( ti_var * (1.0 / (ti_max_2 - ti_min_2))-(ti_min_2 / (ti_max_2 - ti_min_2)));
+
+
+						float4 pos_ms = Decode_Pos(I_POS_0);
+						 pos_ms.xyz += I_NRM_0 * 0.001;
+
+						pos_ms.xyz += I_NRM_0 * ti_faktor_2*C_BLG_BOOM;
+
+						float4 pos_ws = Mul_Pos(pos_ms, MODEL_XFORM_4x3);
+						pos_ws.y +=  - ti_faktor_2*ti_faktor_2*C_BLG_BOOM;
+
+						V_POS_OUT_TC = Pos_Out_WS(pos_ws);
+
+						float3 nrm_ws = Mul33(I_NRM_0, MODEL_XFORM_4x3);
+						float3 nrm_es = Mul33(nrm_ws, VIEW_XFORM);
+						float3 nrm_n_es = normalize(nrm_es);
+
+						X_NRM = nrm_n_es;
+
+
+
+						#if (defined (D_BLG_ON))
+							X_TV_0 = ti_faktor_0;
+							X_TV_2 = ti_faktor_2;
+						#endif
+
+						#if (defined (D_NRM_ON) || defined(D_BLG_ON))
+
+							float3 tng_ws = Mul33(I_TNG_0.xyz, MODEL_XFORM_4x3); //
+							float3 tng_es = Mul33(tng_ws, VIEW_XFORM); //
+							float3 tng_n_es = normalize(tng_es);
+							X_TNG = tng_n_es;
+
+							float3 bnr_n_es = cross(nrm_n_es, tng_n_es); //
+							bnr_n_es *= I_TNG_0.w;
+							X_BNR = bnr_n_es;
+
+						#endif
+
+						#if( defined(D_CLR_ON) || defined(D_BLG_ON) || defined(D_NRM_ON))
+							I_UV_0 = Decode_UV(I_UV_0);
+							X_UV_0 = I_UV_0;
+						#endif
+
+
+
+						#if defined(D_BLG_ON)
+							// uvaly do bulgota	 - maska stozkow
+
+							float uv_gurgle_scale = C_BLG_UV_SCALE;
+							float2 uv_gurgle = I_UV_0 * uv_gurgle_scale;
+							X_UV_1 = uv_gurgle;
+
+							// uwaly do bulgota - pasek progresu
+
+						#endif
+					}
+				}
+			}
+
+			PixelShader()
+			{
+				hlsl()
+				{
+					#if defined(SHADER_PATH_ORBIS)
+						// #pragma PSSL_target_output_format (target 1 FMT_UNORM16_ABGR)
+					#endif
+
+					#include <master_new.hlsl>
+
+					void main()
+					{
+						#if defined(D_NRM_ON) ||	defined(D_BLG_ON)
+							FLOAT3 M_ES2TS[3];
+							M_ES2TS[0] = X_TNG;
+							M_ES2TS[1] = X_BNR;
+							M_ES2TS[2] = X_NRM;
+							FLOAT3 nrm = SwizzleXXX(1.0);
+						#endif
+
+						#if defined(D_NRM_ON)
+							FLOAT3 nrm_base = SwizzleXXX(1.0);
+						#endif
+
+						#if defined(D_BLG_ON)
+							FLOAT uv_progres_distorsion = 0.4;
+							FLOAT3 nrm_0 = SwizzleXXX(1.0);
+							FLOAT3 nrm_1 = SwizzleXXX(1.0);
+							FLOAT3 nrm_2 = SwizzleXXX(1.0);
+							FLOAT3 nrm_blg = SwizzleXXX(1.0);
+
+
+							float uv_gurgle_progres_scale = 1.0;
+
+							FLOAT2 delta_1 = float2( 0.4, 0.7);
+							FLOAT2 delta_2 = float2( 0.71, 0.32);
+							FLOAT4 blg_circle_msk_0 = Sample(S_MSK, X_UV_1.xy );
+							FLOAT4 blg_circle_msk_1 = Sample(S_MSK, X_UV_1.xy - delta_1);
+							FLOAT4 blg_circle_msk_2 = Sample(S_MSK, X_UV_1.xy - delta_2);
+
+							float2 uv_gurgle_progress_0 = X_UV_0 * uv_gurgle_progres_scale + float2 (0.0 , C_BLG_SPEED -blg_circle_msk_0.a );
+							float2 uv_gurgle_progress_1 = X_UV_0 * uv_gurgle_progres_scale + float2 (0.0 , C_BLG_SPEED -blg_circle_msk_1.a );
+							float2 uv_gurgle_progress_2 = X_UV_0 * uv_gurgle_progres_scale + float2 (0.0 , C_BLG_SPEED -blg_circle_msk_2.a );
+
+							FLOAT2 uv_prog_0 = uv_gurgle_progress_0 + blg_circle_msk_0.yy * uv_progres_distorsion ;
+							FLOAT2 uv_prog_1 = uv_gurgle_progress_1 + blg_circle_msk_1.yy * uv_progres_distorsion ;
+							FLOAT2 uv_prog_2 = uv_gurgle_progress_2 + blg_circle_msk_2.yy * uv_progres_distorsion ;
+
+							FLOAT4 blg_prog_0 = Sample(S_PRG, uv_prog_0.xy );
+							FLOAT4 blg_prog_1 = Sample(S_PRG, uv_prog_1.xy );
+							FLOAT4 blg_prog_2 = Sample(S_PRG, uv_prog_2.xy );
+
+							nrm_0.xy = Sample(S_NRM, X_UV_1.xy ).ag * ( - blg_prog_0.y * 2.0 + 1.0 )  * blg_circle_msk_0.g  ;
+							nrm_1.xy = Sample(S_NRM, X_UV_1.xy + delta_1).ag * ( - blg_prog_1.y * 2.0 + 1.0 )  * blg_circle_msk_1.g ;
+							nrm_2.xy = Sample(S_NRM, X_UV_1.xy + delta_2).ag * ( - blg_prog_2.y * 2.0 + 1.0 )  * blg_circle_msk_2.g ;
+							nrm_blg.xy =  (nrm_0.xy + nrm_1.xy + nrm_2.xy) ;
+
+							// maska pojawiania
+							FLOAT blg_prog = (blg_prog_0.y*blg_circle_msk_0.y + blg_prog_1.y*blg_circle_msk_1.y +blg_prog_2.y*blg_circle_msk_2.y)*2;
+							FLOAT time_factor_r0 =  X_TV_0*1.1;
+							FLOAT adf_msk = saturate( saturate( 1 - Sample(S_ADF_MSK_R0, X_UV_0.xy ).g*20 + time_factor_r0*20 ) * blg_prog +  saturate( 1 - Sample(S_ADF_MSK_R0, X_UV_0.xy ).g*20 + time_factor_r0*20 - 4) );
+							adf_msk *= saturate(Sample(S_ADF_MSK_R2, X_UV_0.xy * 10 ).g*20 - ( X_TV_2) * 20.0 );
+
+
+
+						#endif
+
+						#if defined(D_NRM_ON) && !defined(D_BLG_ON)
+							nrm_base.xy = Sample(S_NRM_BASE, X_UV_0.xy ).ag * C_NRM_SCALE ;
+							nrm.xy = nrm_base.xy;
+							nrm.xy = nrm.xy * 2.0 - 1.0;
+						#endif
+
+						#if defined(D_BLG_ON) && !defined(D_NRM_ON)
+							nrm.xy = nrm_blg.xy * C_BLG_SCALE;
+						#endif
+
+						#if defined(D_NRM_ON) & defined(D_BLG_ON)
+							nrm_base.xy = Sample(S_NRM_BASE, X_UV_0.xy - nrm_blg.xy* 0.005 * C_BLG_SCALE ).ag  * 2.0 - 1.0 ;
+							nrm.xy = nrm_base.xy*C_NRM_SCALE;
+							nrm.xy += (nrm_blg.xy*C_BLG_SCALE) ;
+
+						#endif
+
+						#if defined(D_NRM_ON) ||	defined(D_BLG_ON)
+							FLOAT3 nrm_es = Mul33T(nrm, M_ES2TS);
+						#else
+							FLOAT3 nrm_es = X_NRM;
+						#endif
+
+						O_NRM.xyz = nrm_es * 0.5 + 0.5;
+						O_NRM.w = 1.0;
+
+						#if defined(D_CLR_ON)
+							#if defined(D_BLG_ON)
+								FLOAT4 clr = Sample(S_CLR, X_UV_0 - nrm_blg.xy * 0.002 * C_BLG_SCALE);
+							#else
+								FLOAT4 clr = Sample(S_CLR, X_UV_0 );
+							#endif
+							O_DIF = clr;
+							// clip(O_DIF.w - 0.25);
+							O_DIF.a = saturate(clr.a * 2 - 1);
+						#else
+
+							O_DIF = FLOAT4(0.5, 0.0, 0.1, 1);
+
+						#endif
+						#if defined(D_BLG_ON)
+							clip(adf_msk - 0.5);
+						#endif
+						O_SPC = O_DIF * float4(0.0, 0.0, 0.0, 1.0);
+					}
+				}
+			}
+		}
+	}
+}

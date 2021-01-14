@@ -1,0 +1,47 @@
+//new
+
+using engineflags;
+using settemplates;
+using depth_pass;
+using attribs;
+
+template
+{
+	public string TemplateCategory() { return "Objects special"; }
+
+	category Basic
+	{
+		class Main
+		{
+			string_dat clr_0_tex = "" : editor(ImageFileNameEditor), display(Color texture);
+			int_dat tex_tile = WRAP : converter(TexTile_Variants);
+		}
+		class Wind
+		{
+			bool_dat wind_bend_on = FALSE;
+			float_dat wind_noise_scale = 1.0;
+			float_dat wind_noise_speed = 0.0;
+			float_dat wind_noise_size = 0.0;
+		}
+		class Order
+		{
+            bool_dat static_on = TRUE;
+		}
+	}
+	templatebody()
+	{
+			att_standard shadow_params = new att_standard();
+
+			shadow_params.clr_0_tex = clr_0_tex;
+			shadow_params.tex_tile = tex_tile;
+			shadow_params.wind_bend_on = wind_bend_on;
+			shadow_params.wind_noise_scale = wind_noise_scale;
+			shadow_params.wind_noise_speed = wind_noise_speed;
+			shadow_params.wind_noise_size = wind_noise_size;
+			shadow_params.static_on = static_on;
+			shadow_params.technique = "dpt";
+
+			depth_pass dpt = new depth_pass(this);
+			dpt.setup(shadow_params);
+	}
+}

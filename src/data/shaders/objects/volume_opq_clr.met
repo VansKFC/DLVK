@@ -1,0 +1,125 @@
+//new
+
+using engineflags;
+using settemplates;
+using attribs;
+using tmu;
+template
+{
+	public bool IsObsolete() { return true; }
+
+	category Basic
+	{
+		class Main
+		{
+			string_dat clr_0_tex = "" : editor(ImageFileNameEditor), display(Base color texture);
+			string_dat nrm_0_tex = "" : editor(ImageFileNameEditor), display(Base normal texture);
+			bool_dat blend_lerp_on = FALSE : display(Lerp blend enabled);
+		}
+	}
+
+	templatebody()
+	{
+		tech("opq_clr")
+		{
+			Cull(CW);
+			DepthFunc(LEQUAL, FALSE);
+			if(blend_lerp_on) { BlendFunc(SRC_ALPHA, INV_SRC_ALPHA, ONE, ONE); }
+			else { BlendFunc(ZERO, SRC_COLOR, ONE, ONE); }
+
+			Input I_POS_MS = new InputFloat4("POSITION");
+			Input I_CLR_USR = new InputFloat4("COLOR_USER");
+
+			X_CLR_USR_0 = SetTexcoord4();
+			X_CLR_USR_1 = SetTexcoord4();
+			X_INVMODELVIEW_XFORM = SetTexcoord4Array(3, "float");
+
+			use PP_DEPTH_TMU();
+
+			Output O_SPC = new OutputFLOAT4("COLOR0");
+			Output O_DIF = new OutputFLOAT4("COLOR1");
+			if(clr_0_tex != "")
+			{
+				S_CLR_0 = SetTexture2D(clr_0_tex, LINEAR_NO_MIP, CLAMP, CLAMP, FALSE);
+			}
+
+			VertexShader()
+			{
+				use Instancing();
+
+				hlsl()
+				{
+
+					#include <master_new.hlsl>
+
+					void main()
+					{
+						float4 pos_ms = Decode_Pos(I_POS_MS);
+
+						float4 pos_ws = Mul_Pos(pos_ms, MODEL_XFORM_4x3);
+
+						V_POS_OUT_TC = Pos_Out_WS(pos_ws);
+
+						float4 usr_1;
+						float4 usr_0 = Decode_Usr(I_CLR_USR, usr_1);
+						X_CLR_USR_0 = usr_0;
+						X_CLR_USR_1 = usr_1;
+
+						float4 m_model[3];
+						m_model[0] = MODEL_XFORM_4x3[0];
+						m_model[1] = MODEL_XFORM_4x3[1];
+						m_model[2] = MODEL_XFORM_4x3[2];
+
+						float4 m_modelview[3];
+						MulMTX(m_model, VIEW_XFORM, m_modelview);
+
+						float4 m_invmodelview[3];
+						InvertMTX(m_modelview, m_invmodelview);
+
+						#if defined(SHADER_PATH_PS3)
+							m_invmodelview[0] *= V_POS_OUT_TC.w;
+							m_invmodelview[1] *= V_POS_OUT_TC.w;
+							m_invmodelview[2] *= V_POS_OUT_TC.w;
+						#endif
+
+						X_INVMODELVIEW_XFORM[0] = m_invmodelview[0];
+						X_INVMODELVIEW_XFORM[1] = m_invmodelview[1];
+						X_INVMODELVIEW_XFORM[2] = m_invmodelview[2];
+					}
+				}
+			}
+
+			PixelShader()
+			{
+				hlsl()
+				{
+
+					#include <master_new.hlsl>
+					#include <depth_sample.hlsl>
+					#include <position_cs.hlsl>
+
+					void main()
+					{
+						FLOAT2 uv_screen = UV_Screen(V_POS_SS_TC);
+						float depth = Depth_Sample(uv_screen);
+
+						float4 pos_cs = Pos_CS(depth, V_POS_SS_TC);
+						float3 pos_ms = Mul43(pos_cs, X_INVMODELVIEW_XFORM);
+
+						FLOAT ext = max(max(abs(pos_ms.x), abs(pos_ms.y)), abs(pos_ms.z));
+						clip(1.0 - ext);
+
+						FLOAT3 pos_n_ms = saturate(pos_ms * 0.5 + 0.5);
+
+						O_DIF = lerp(X_CLR_USR_0, X_CLR_USR_1, pos_n_ms.y);
+
+						#if defined(S_CLR_0)
+							O_DIF *= Sample(S_CLR_0, pos_n_ms.xz);
+						#endif
+						O_SPC = O_DIF * float4(0.0, 0.0, 0.0, 1.0);
+					}
+				}
+			}
+		}
+	}
+}

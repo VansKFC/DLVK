@@ -1,0 +1,317 @@
+//new
+// sterowanie karaluchami
+//usr_0
+// wariant 1
+// usr_0.r - przesuniecie x
+// usr_0.g - przesuniecie y
+// usr_0.b  - chaotyczny ruch
+// usr_0.a - 
+
+// wariant 2
+// usr_0.r - ucieczka razem / po kolei
+// usr_0.g - proien do ktorego uciekaja
+// usr_0.b 
+// usr_0.b - sterowanie czasem
+
+//usr_1
+// usr_1.r - skala karalucha
+// usr_1.g - skupienie stadka
+// usr_1.b  - szybkosc
+// usr_1.a - ilosc raraluchow
+
+
+using engineflags;
+using settemplates;
+
+template
+{
+	category Main
+	{
+		class Basic
+		{
+			string_dat dif_0_tex = s_tex_def : editor(ImageFileNameEditor), display(Color);
+			string_dat nrm_tex = s_tex_def : editor(ImageFileNameEditor), display(Normal);
+			float_dat f_nrm_scale = 1.0 : editor(FloatSpinEditor), display(Normal Scale);
+		}
+		
+		class Cockroach variant 2
+		{
+			bool_dat b_run = FALSE : display(variant 2); 
+			bool_dat b_test = FALSE : display(Test); 
+		}
+	}
+
+    category Advanced
+    {
+        class Geometry
+        {
+            bool_dat static_on = false;
+        }
+    }
+	
+	templatebody()
+	{
+		tech(s_tech_opq)
+		{
+			use SetupMaterial();
+			Cull(CW);
+			DepthFunc(LEQUAL, TRUE);
+			
+			Input I_POS_0 = new InputFloat4("POSITION");
+			Input I_UV_0 = new InputFloat2("TEXCOORD0");
+			Input I_UV_1 = new InputFloat2("TEXCOORD1");
+//			Input I_NRM_0 = new InputFloat3("NORMAL0");
+			Input I_CLR_USR = new InputFloat4("COLOR_USER");
+			Input I_VCLR_0 = new InputFloat4("COLOR0");	
+			
+			Output O_SPC = new OutputFLOAT4("COLOR0");
+			Output O_DIF = new OutputFLOAT4("COLOR1");
+			Output O_NRM = new OutputFLOAT4("COLOR2");
+			
+			X_UV_0 = SetTexcoord2();				
+			X_NRM = SetTexcoord3();
+			X_BNR = __none;	
+			X_TNG = __none;
+			C_NRM_SCALE = SetConst(f_nrm_scale);
+			C_KARALUSZEK_FACTOR = SetConst(f_nrm_scale);			
+			
+			if(dif_0_tex != s_tex_def)
+			{
+				S_DIF = SetTexture(dif_0_tex);
+			}
+			if(b_test)
+			{
+				Define ("D_TEST_ON", 1);
+			}			
+			
+			if(nrm_tex != s_tex_def)
+			{
+				S_NRM = SetTexture(nrm_tex);
+				
+				Input I_TNG_0 = new InputFloat4("TANGENT");			
+
+				X_BNR = SetTexcoord3();					
+				X_TNG = SetTexcoord3();	
+				
+				Define("D_NRM_ON", 1);
+			}
+
+            if(!static_on)
+            {
+                MarkStencilDynamic();
+            }  
+			
+			if(!b_run)
+            {
+                Define("D_VAR1_ON", 1);
+            } 
+			
+			if(b_run)
+            {
+                Define("D_VAR2_ON", 1);
+            }  
+			
+			VertexShader()
+			{
+				use Instancing();
+				hlsl()
+				{
+					
+					#include <master_new.hlsl>
+					
+					void main()
+					{
+						X_UV_0 = Decode_UV(I_UV_0);
+						FLOAT2 uv_1 = Decode_UV(I_UV_1);
+						float4 pos_ms = Decode_Pos(I_POS_0);
+					
+						float4 usr_1 ;
+						float4 usr_0 = Decode_Usr(I_CLR_USR, usr_1);
+
+						float scale_factor = float(5.0 * usr_1.r);
+						float disp_factor = float(2.0 * usr_1.g);
+						float speed_factor = float(3.0 * usr_1.b);
+						#if defined (D_VAR1_ON)						
+							float2 vec_disp = float2((usr_0.r-0.5)*2.0, (usr_0.g-0.5)*2.0);
+
+							float time_factor = ((TIME*speed_factor+(I_VCLR_0.a* 12334.6781))* 0.037214);
+							float time_factor_n = ((TIME*speed_factor+(I_VCLR_0.a* 12334.6781)+ 0.2)* 0.037214);
+
+							float pos_dev_x1 = float(abs(frac(time_factor * 1.365123)* 2.0 - 1.0)); 
+							float pos_dev_x2 = float(abs(frac(time_factor * 2.185123)* 2.0 - 1.0)); 
+							float pos_dev_x3 = float(abs(frac(time_factor * 15.395)* 2.0 - 1.0)); 
+							float pos_dev_x4 = float(abs(frac(time_factor * 32.395)* 2.0 - 1.0)); 
+
+							float pos_dev_x1_n = float(abs(frac(time_factor_n * 1.365123)* 2.0 - 1.0)); 
+							float pos_dev_x2_n = float(abs(frac(time_factor_n * 2.185123)* 2.0 - 1.0 )); 
+							float pos_dev_x3_n = float(abs(frac(time_factor_n * 15.395)* 2.0 - 1.0)); 
+							float pos_dev_x4_n = float(abs(frac(time_factor_n * 32.395)* 2.0 - 1.0)); 
+
+
+							float pos_dev_x = lerp(pos_dev_x2,pos_dev_x1, 0.5) ;
+							pos_dev_x = lerp(pos_dev_x,pos_dev_x3, 0.1* saturate( usr_0.b * 2.0)) ;
+							pos_dev_x = lerp(pos_dev_x,pos_dev_x4, 0.05 * saturate(usr_0.b * 2.0 - 1.0)) ;
+							pos_dev_x = ( pos_dev_x * 2.0 - 1.0) *disp_factor + vec_disp.x; 
+							pos_dev_x = pos_dev_x * 0.5 + 0.5;
+							float pos_dev_x_0 = abs( pos_dev_x) ; 
+							float pos_dev_x_1 = abs( 1.0 - pos_dev_x_0);
+
+							float pos_dev_x_n = lerp(pos_dev_x2_n,pos_dev_x1_n, 0.5) ;
+							pos_dev_x_n = lerp(pos_dev_x_n,pos_dev_x3_n, 0.1* saturate( usr_0.b * 2.0)) ;
+							pos_dev_x_n = lerp(pos_dev_x_n,pos_dev_x4_n, 0.05 * saturate(usr_0.b * 2.0 - 1.0)) ;
+							pos_dev_x_n = ( pos_dev_x_n * 2.0 - 1.0) *disp_factor + vec_disp.x; 
+							pos_dev_x_n = pos_dev_x_n * 0.5 + 0.5;
+							float pos_dev_x_0_n = abs( pos_dev_x_n) ; 
+							float pos_dev_x_1_n = abs( 1.0 - pos_dev_x_0_n);
+
+
+							float pos_dev_z1 = float(abs(frac(time_factor* 0.84513)* 2.0 - 1.0)); 
+							float pos_dev_z2 = float(abs(frac(time_factor* 2.97913)* 2.0 - 1.0)); 
+							float pos_dev_z3 = float(abs(frac(time_factor* 16.6179)* 2.0 - 1.0)); 
+							float pos_dev_z4 = float(abs(frac(time_factor* 35.59)* 2.0 - 1.0)); 
+
+							float pos_dev_z = lerp(pos_dev_z1,  pos_dev_z2 , 0.5) ;
+							pos_dev_z = lerp(pos_dev_z,pos_dev_z3, 0.1* saturate( usr_0.b * 2.0)) ;
+							pos_dev_z = lerp(pos_dev_z,pos_dev_z4, 0.05 * saturate(usr_0.b * 2.0 - 1.0));
+							pos_dev_z = ( pos_dev_z * 2.0 - 1.0)*disp_factor + vec_disp.y; 
+							pos_dev_z = pos_dev_z * 0.5 + 0.5;
+							float pos_dev_z_0 = abs( pos_dev_z) ; 
+							float pos_dev_z_1 = abs(1.0- pos_dev_z_0 );
+
+							float pos_dev_z1_n = float(abs(frac(time_factor_n* 0.84513)* 2.0 - 1.0)); 
+							float pos_dev_z2_n = float(abs(frac(time_factor_n* 2.97913)* 2.0 - 1.0)); 
+							float pos_dev_z3_n = float(abs(frac(time_factor_n* 16.6179)* 2.0 - 1.0)); 
+							float pos_dev_z4_n = float(abs(frac(time_factor_n* 35.59)* 2.0 - 1.0)); 
+
+							float pos_dev_z_n = lerp(pos_dev_z1_n,  pos_dev_z2_n , 0.5) ;
+							pos_dev_z_n = lerp(pos_dev_z_n , pos_dev_z3_n, 0.1* saturate( usr_0.b * 2.0)) ;
+							pos_dev_z_n = lerp(pos_dev_z_n, pos_dev_z4_n, 0.05 * saturate(usr_0.b * 2.0 - 1.0)) ;
+							pos_dev_z_n = ( pos_dev_z_n * 2.0 - 1.0) *disp_factor + vec_disp.y; 
+							pos_dev_z_n = pos_dev_z_n * 0.5 + 0.5;
+							float pos_dev_z_0_n = abs( pos_dev_z_n) ; 
+							float pos_dev_z_1_n = abs(1.0- pos_dev_z_0_n );
+
+
+							float2 vec_karaczan = float2(1.0-pos_dev_x_1, 1.0-pos_dev_z_1) * 2.0 - 1.0;
+							float2 vec_karaczan_n = float2(1.0-pos_dev_x_1_n, 1.0-pos_dev_z_1_n) * 2.0 - 1.0;
+							float2 vec_karaczan_rot = normalize(vec_karaczan_n - vec_karaczan );
+
+							pos_ms.xz *= scale_factor;
+							float2 pos_rot = float2 (  pos_ms.x* (vec_karaczan_rot.x) - pos_ms.z* (vec_karaczan_rot.y) , pos_ms.x* (vec_karaczan_rot.y) + pos_ms.z* (vec_karaczan_rot.x) ) ;
+							pos_ms.xz = pos_rot;
+							pos_ms.xz +=  vec_karaczan;
+						#endif
+
+						#if defined (D_VAR2_ON)								
+							float disp_factor_0 = (usr_0.r);
+							float fi_0 = float (usr_0.g * 2.0);
+
+							#if defined (D_TEST_ON)
+								float time_factor_0 = saturate((frac(TIME* 0.5 * ( 1-usr_0.r*0.5 )) * (1+usr_0.r)+ I_VCLR_0.a * disp_factor_0 - disp_factor_0))*fi_0;
+							#else	
+								float time_factor_0 = saturate((frac(usr_0.b* 0.999  )* (1+usr_0.r)  + I_VCLR_0.a * disp_factor_0 - disp_factor_0))*fi_0;
+							#endif
+							float time_factor_1_n = (((TIME-0.1)*speed_factor+(I_VCLR_0.a*12334.6781))*0.037214);
+
+							float2 vec_dir = float2 ( frac(I_VCLR_0.a*12334.6781)* 2.0 - 1.0, frac(I_VCLR_0.a*654321.6781)* 2.0 - 1.0 );
+							float2 pos_dev_0 = float2(time_factor_0*5* normalize(vec_dir.xy));
+
+							float time_factor_1 = ((TIME*speed_factor+(I_VCLR_0.a* 12334.6781 ))* 0.037214);
+							float pos_dev_x1 = float((abs(frac(time_factor_1*1.365123)*2-1)) * 2.0 - 1.0) * disp_factor; 
+							float pos_dev_x2 = float((abs(frac(time_factor_1*2.185123)*2-1)) * 2.0 - 1.0) * disp_factor; 
+							float pos_dev_z1 = float((abs(frac(time_factor_1*0.84513)*2-1))* 2.0 - 1.0) * disp_factor;  
+							float pos_dev_z2 = float((abs(frac(time_factor_1*2.97913)*2-1))* 2.0 - 1.0) * disp_factor;  
+							float2 pos_dev_1 = float2(lerp(pos_dev_x1,pos_dev_x2,0.5), lerp(pos_dev_z1,pos_dev_z2, 0.5));
+
+							float pos_dev_x1_n = float((abs(frac(time_factor_1_n*1.365123)*2-1)) * 2.0 - 1.0) * disp_factor; 
+							float pos_dev_x2_n = float((abs(frac(time_factor_1_n*2.185123)*2-1)) * 2.0 - 1.0) * disp_factor; 
+							float pos_dev_z1_n = float((abs(frac(time_factor_1_n*0.84513)*2-1))* 2.0 - 1.0) * disp_factor;  
+							float pos_dev_z2_n = float((abs(frac(time_factor_1_n*2.97913)*2-1))* 2.0 - 1.0) * disp_factor;  
+							float2 pos_dev_1_n = float2(lerp(pos_dev_x1_n,pos_dev_x2_n,0.5), lerp(pos_dev_z1_n,pos_dev_z2_n, 0.5));
+
+							pos_ms.xz *= scale_factor ;
+							float2 vec_karaczan_rot = lerp( normalize(pos_dev_1_n - pos_dev_1 ), normalize(vec_dir), saturate(time_factor_0* 10.0));
+							float2 pos_dev_rot = float2 (  pos_ms.x* (vec_karaczan_rot.x) - pos_ms.z* (vec_karaczan_rot.y) , pos_ms.x* (vec_karaczan_rot.y) + pos_ms.z* (vec_karaczan_rot.x) ) ;
+
+							pos_ms.xz = pos_dev_rot ;
+							pos_ms.xz += pos_dev_0 ;
+							pos_ms.xz += pos_dev_1;
+						#endif						
+
+						float new_vclra= float( frac(I_VCLR_0.a* 159.2345));
+						pos_ms.xz = new_vclra  > ( 1.0 - usr_1.a) ? pos_ms.xz : FLOAT2( 0.0 , 0.0 );
+						
+						float4 pos_ws = Mul_Pos(pos_ms, MODEL_XFORM_4x3);
+						V_POS_OUT_TC = Pos_Out_WS(pos_ws);
+						
+						float3 nrm_ms = float3(1.0, 1.0, 1.0);
+						nrm_ms.xz *= uv_1.xy - float2(0.0, 1.0) ; 
+						nrm_ms.xz = float2 (  nrm_ms.x* (vec_karaczan_rot.x) - nrm_ms.z* (vec_karaczan_rot.y) , nrm_ms.x* (vec_karaczan_rot.y) + nrm_ms.z* (vec_karaczan_rot.x) ) ;
+						
+						float3 nrm_ws = Mul33(nrm_ms, MODEL_XFORM_4x3);
+						float3 nrm_es = Mul33(nrm_ws, VIEW_XFORM);
+						float3 nrm_n_es = normalize(nrm_es);
+						
+						X_NRM = nrm_n_es;
+						
+						#if defined (D_NRM_ON)
+						
+							float3 tng_ws = Mul33(I_TNG_0.xyz, MODEL_XFORM_4x3); //
+							float3 tng_es = Mul33(tng_ws, VIEW_XFORM); //
+							float3 tng_n_es = normalize(tng_es);
+							X_TNG = tng_n_es; 
+							
+							float3 bnr_n_es = cross(nrm_n_es, tng_n_es); //
+							bnr_n_es *= I_TNG_0.w;
+							X_BNR = bnr_n_es; 
+
+						#endif
+					}
+				}
+			}
+			
+			PixelShader()
+			{
+				hlsl()
+				{
+ 					#if defined(SHADER_PATH_ORBIS)
+						// #pragma PSSL_target_output_format (target 1 FMT_UNORM16_ABGR)
+					#endif
+					
+					#include <master_new.hlsl>	
+					
+					void main()
+					{
+
+						#if defined(S_DIF)				
+							O_DIF = Sample(S_DIF, X_UV_0);
+							O_DIF.w = saturate(O_DIF.w * 2.0 - 1.0);
+							clip(O_DIF.w - 0.25);
+							O_SPC.xyz = SwizzleXXX(0.0);
+							O_SPC.w = O_DIF.w;
+						#else	
+							O_SPC = FLOAT4(0.015, 0.4, 0.9, 1);
+							O_DIF = O_SPC;
+						#endif
+						
+						#if defined(D_NRM_ON)
+							FLOAT3 nrm = SwizzleXXX(1.0);
+							FLOAT3 M_ES2TS[3];
+							M_ES2TS[0] = X_TNG;
+							M_ES2TS[1] = X_BNR;
+							M_ES2TS[2] = X_NRM;
+							nrm.xy = Sample(S_NRM, X_UV_0).ag * 2.0 - 1.0;
+							nrm.xy *= C_NRM_SCALE;
+							FLOAT3 nrm_es = Mul33T(nrm, M_ES2TS);
+						#else
+							FLOAT3 nrm_es = X_NRM;
+						#endif
+						
+						O_NRM.xyz = nrm_es * 0.5 + 0.5;
+                        O_NRM.w = 1.0;
+					}
+				}
+			}
+		}
+	}
+}

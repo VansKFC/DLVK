@@ -1,0 +1,173 @@
+//new
+
+using engineflags;
+using settemplates;
+using tmu;
+
+template
+{
+	category Main
+	{
+		class Basic
+		{
+			string_dat clr_tex = s_tex_def : editor(ImageFileNameEditor), display(Color);
+			float_dat f_o_f = 0.5 : editor(FloatSpinEditor), display(opacity fresnel  factor);
+			float_dat f_c_f = 1.0 : editor(FloatSpinEditor), display(color  factor);
+			string_dat nrm_tex = s_tex_def : editor(ImageFileNameEditor), display(Normal);
+			float_dat f_nrm_scale = 1.0 : editor(FloatSpinEditor), display(Normal Scale);
+		}
+	}
+
+	templatebody()
+	{
+		tech("trn0")
+		{
+			use SetupMaterial();
+			Cull(CW);
+			DepthFunc(LEQUAL, TRUE);
+			BlendFunc(SRC_ALPHA, ONE, ONE, ONE);
+
+			Input I_POS_0 = new InputFloat4("POSITION");
+			Input I_UV_0 = new InputFloat2("TEXCOORD0");
+			Input I_NRM_0 = new InputFloat3("NORMAL0");
+
+			Output O_CLR = new OutputFLOAT4("COLOR0");
+
+			X_UV_0 = SetTexcoord2();
+			X_NRM = SetTexcoord3();
+			X_EXT = SetTexcoord();
+			X_BNR = __none;
+			X_TNG = __none;
+
+			C_NRM_SCALE = SetConst(f_nrm_scale);
+			X_POS_CS = SetTexcoord3("FLOAT");
+
+			if(clr_tex != s_tex_def)
+			{
+				S_CLR = SetTexture(clr_tex);
+				Define ("D_CLR_ON", 1);
+			}
+
+			if(nrm_tex != s_tex_def)
+			{
+				S_NRM = SetTexture(nrm_tex);
+
+				Input I_TNG_0 = new InputFloat4("TANGENT");
+
+				X_BNR = SetTexcoord3();
+				X_TNG = SetTexcoord3();
+
+				Define("D_NRM_ON", 1);
+			}
+
+			extern int_dat SHADER_PATH;
+
+
+			use PP_DEPTH_TMU();
+			extern float_dat f_pp_hdr_intensity_emissive;
+			C_EMISSIVE_INTENSITY = SetConst( f_pp_hdr_intensity_emissive);
+			C_O_F = SetConst( f_o_f);
+			C_C_F = SetConst( f_c_f);
+			VertexShader()
+			{
+				use Instancing();
+				hlsl()
+				{
+
+					#include <master_new.hlsl>
+					#include <position_cs.hlsl>
+					#include <fog.hlsl>
+
+					void main()
+					{
+						float4 pos_ms = Decode_Pos(I_POS_0);
+						float4 pos_ws = Mul_Pos(pos_ms, MODEL_XFORM_4x3);
+						float3 pos_cs = Mul_Pos(pos_ws, VIEW_XFORM).xyz;
+						X_POS_CS = pos_cs;
+						V_POS_OUT_TC = Pos_Out_WS(pos_ws);
+
+						X_UV_0 = Decode_UV(I_UV_0);
+
+
+
+						X_EXT = Scattering_Ext(length(pos_ws.xyz - CAMERA_POS_WS.xyz));
+						X_EXT *= C_EMISSIVE_INTENSITY;
+
+						float3 nrm_ws = Mul33(I_NRM_0, MODEL_XFORM_4x3);
+						float3 nrm_es = Mul33(nrm_ws, VIEW_XFORM);
+						float3 nrm_n_es = normalize(nrm_es);
+
+						X_NRM = nrm_n_es;
+
+						#if defined (D_NRM_ON)
+
+							float3 tng_ws = Mul33(I_TNG_0.xyz, MODEL_XFORM_4x3); //
+							float3 tng_es = Mul33(tng_ws, VIEW_XFORM); //
+							float3 tng_n_es = normalize(tng_es);
+							X_TNG = tng_n_es;
+
+							float3 bnr_n_es = cross(nrm_n_es, tng_n_es); //
+							bnr_n_es *= I_TNG_0.w;
+							X_BNR = bnr_n_es;
+
+						#endif
+
+					}
+				}
+			}
+
+			PixelShader()
+			{
+				hlsl()
+				{
+ 					#if defined(SHADER_PATH_ORBIS)
+						// #pragma PSSL_target_output_format (target 1 FMT_UNORM16_ABGR)
+					#endif
+
+					#include <master_new.hlsl>
+
+					void main()
+					{
+						FLOAT2 uv_screen = UV_Screen(V_POS_SS_TC);
+						float depth = Depth_Sample(uv_screen);
+
+						float4 pos_cs = Pos_CS(depth, V_POS_SS_TC);
+						float msk = saturate(abs(length (X_POS_CS) - length(pos_cs)));
+
+						#if defined(D_NRM_ON)
+							FLOAT3 nrm = 1;
+							FLOAT3 M_ES2TS[3];
+							M_ES2TS[0] = X_TNG;
+							M_ES2TS[1] = X_BNR;
+							M_ES2TS[2] = X_NRM;
+							nrm.xy = Sample(S_NRM, X_UV_0).ag * 2.0 - 1.0;
+							nrm.xy *= C_NRM_SCALE;
+							FLOAT3 nrm_es = Mul33T(nrm, M_ES2TS);
+						#else
+							FLOAT3 nrm_es = X_NRM;
+						#endif
+
+						FLOAT3 cam_dir_n = normalize(X_POS_CS);
+						FLOAT fresnel = saturate(1.0 - dot(-nrm_es, cam_dir_n));
+						FLOAT fr_0 = fresnel ;
+						fr_0 *= fr_0;
+						fr_0 =  1.0 - fr_0;
+						
+						#if defined(D_CLR_ON)
+							FLOAT4 clr = Sample(S_CLR, X_UV_0  );
+							O_CLR = clr;
+							O_CLR.a = saturate(clr.a * 2 - 1);
+						#else
+							O_CLR = FLOAT4(0.015, 0.4, 0.9, 1);
+						#endif
+
+						O_CLR.xyz *= X_EXT * fr_0 * msk * msk * C_C_F ;
+
+
+
+					}
+				}
+			}
+		}
+	}
+}

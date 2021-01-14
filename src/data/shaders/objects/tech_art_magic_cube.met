@@ -1,0 +1,164 @@
+//new
+
+using engineflags;
+using settemplates;
+
+template
+{
+	category Main
+	{
+		class Basic
+		{
+			string_dat clr_tex = s_tex_def : editor(ImageFileNameEditor), display(Color);
+			string_dat nrm_tex = s_tex_def : editor(ImageFileNameEditor), display(Normal);
+			float_dat f_nrm_scale = 1.0 : editor(FloatSpinEditor), display(Normal Scale);
+		}
+	}
+
+	templatebody()
+	{
+		platform("*", "none; instancing");
+
+		tech("opq")
+		{
+			use SetupMaterial();
+			Cull(CW);
+			DepthFunc(LEQUAL, TRUE);
+
+			Input I_POS_0 = new InputFloat4("POSITION");
+			Input I_UV_0 = new InputFloat2("TEXCOORD0");
+			Input I_UV_1 = new InputFloat2("TEXCOORD1");
+			Input I_NRM_0 = new InputFloat3("NORMAL0");
+			Input I_CLR_USR = new InputFloat4("COLOR_USER");
+
+			Output O_SPC = new OutputFLOAT4("COLOR0");
+			Output O_DIF = new OutputFLOAT4("COLOR1");
+			Output O_NRM = new OutputFLOAT4("COLOR2");
+
+			X_NRM = SetTexcoord3();
+
+			if((clr_tex != s_tex_def) | (nrm_tex != s_tex_def))
+			{
+				X_UV_0 = SetTexcoord2();
+				if(clr_tex != s_tex_def)
+				{
+					S_CLR = SetTexture(clr_tex);
+					Define ("D_CLR_ON", 1);
+				}
+
+				if(nrm_tex != s_tex_def)
+				{
+					C_NRM_SCALE = SetConst(f_nrm_scale);
+					S_NRM = SetTexture(nrm_tex);
+
+					Input I_TNG_0 = new InputFloat4("TANGENT");
+
+					X_BNR = SetTexcoord3();
+					X_TNG = SetTexcoord3();
+
+					Define("D_NRM_ON", 1);
+				}
+			}
+			VertexShader()
+			{
+				use Instancing();
+				hlsl()
+				{
+					#include <master_new.hlsl>
+
+					void main()
+					{
+						float4 usr_1;
+						float4 usr_0 = Decode_Usr(I_CLR_USR, usr_1);
+						float2 vec_comp_1 = float2 ( 1, -1);
+						float2 vec_comp_2 = float2 ( 0,  1);
+
+						float2 uv_0 = Decode_UV(I_UV_0) * vec_comp_1 + vec_comp_2;
+						float2 uv_1 = Decode_UV(I_UV_1) * vec_comp_1 + vec_comp_2;
+
+						float4 fake_morph_vec = float4(uv_0, uv_1);
+						float4 fake_morph_vec_low = frac(fake_morph_vec * 256.0)  ;
+						float4 fake_morph_vec_hi = (floor(fake_morph_vec * 256.0)) * 0.00390625;
+
+						float fake_morph_sin = smoothstep ( -0.0, 1.0, (abs(frac( TIME) -0.5 ) * 2.0) );
+
+						float3 fake_morph_1 = fake_morph_vec_low.xyz * usr_0.r * fake_morph_sin ;
+						float3 fake_morph_2 = fake_morph_vec_hi.xyz * usr_0.g  * fake_morph_sin ;
+						float3 fake_morph_3 = float3(  fake_morph_vec_low.w ,   fake_morph_vec_hi.w, 0.0 ) * usr_0.b * fake_morph_sin ;
+						float3 fake_morph = (fake_morph_1 + fake_morph_2  + fake_morph_3 )* 4.0;
+
+						float4 pos_ms = Decode_Pos(I_POS_0);
+						pos_ms.xyz += fake_morph;
+
+						float4 pos_ws = Mul_Pos(pos_ms, MODEL_XFORM_4x3);
+						V_POS_OUT_TC = Pos_Out_WS(pos_ws);
+
+
+						float3 nrm_ws = Mul33(I_NRM_0, MODEL_XFORM_4x3);
+						float3 nrm_es = Mul33(nrm_ws, VIEW_XFORM);
+						float3 nrm_n_es = normalize(nrm_es);
+
+						X_NRM = nrm_n_es;
+
+						#if defined (D_NRM_ON)
+
+							float3 tng_ws = Mul33(I_TNG_0.xyz, MODEL_XFORM_4x3); //
+							float3 tng_es = Mul33(tng_ws, VIEW_XFORM); //
+							float3 tng_n_es = normalize(tng_es);
+							X_TNG = tng_n_es;
+
+							float3 bnr_n_es = cross(nrm_n_es, tng_n_es); //
+							bnr_n_es *= I_TNG_0.w;
+							X_BNR = bnr_n_es;
+
+						#endif
+						
+						#if defined(X_UV_0)
+							X_UV_0 = Decode_UV(I_UV_0); //HACK
+						#endif
+					}
+				}
+			}
+
+			PixelShader()
+			{
+				hlsl()
+				{
+					#if defined(SHADER_PATH_ORBIS)
+						// #pragma PSSL_target_output_format (target 1 FMT_UNORM16_ABGR)
+					#endif
+
+					#include <master_new.hlsl>
+
+					void main()
+					{
+						#if defined(D_CLR_ON)
+							FLOAT4 clr = Sample(S_CLR, X_UV_0);
+							O_DIF = clr;
+							O_DIF.a = saturate(clr.a * 2 - 1);
+						#else
+							O_DIF = FLOAT4(0.015, 0.4, 0.9, 1);
+						#endif
+
+						#if defined(D_NRM_ON)
+							FLOAT3 nrm = 1;
+							FLOAT3 M_ES2TS[3];
+							M_ES2TS[0] = X_TNG;
+							M_ES2TS[1] = X_BNR;
+							M_ES2TS[2] = X_NRM;
+							nrm.xy = Sample(S_NRM, X_UV_0).ag * 2.0 - 1.0;
+							nrm.xy *= C_NRM_SCALE;
+							FLOAT3 nrm_es = Mul33T(nrm, M_ES2TS);
+						#else
+							FLOAT3 nrm_es = X_NRM;
+						#endif
+
+						O_NRM.xyz = nrm_es * 0.5 + 0.5;
+						O_NRM.w = 1.0;
+						O_SPC = O_DIF * float4(0.0, 0.0, 0.0, 1.0);
+					}
+				}
+			}
+		}
+	}
+}

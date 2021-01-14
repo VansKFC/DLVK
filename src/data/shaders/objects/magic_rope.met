@@ -1,0 +1,368 @@
+//new
+
+using engineflags;
+using settemplates;
+using attribs;
+
+
+	public class primary_mat_list : IntVariantConv
+	{
+		public static object[] Data = { "mat_metal", "mat_dielectric" };
+		public override object[] GetData() {return Data;}
+	};
+
+template
+{
+
+	category Main
+	{
+		class Basic
+		{
+			string_dat clr_tex = s_tex_def : editor(ImageFileNameEditor), display(Color);
+			string_dat nrm_tex = s_tex_def : editor(ImageFileNameEditor), display(Normal);
+			float_dat f_nrm_scale = 1.0 : editor(FloatSpinEditor), display(Normal Scale);
+			float_dat f_uv_prop = 1.0 : editor(FloatSpinEditor), display(UV props);
+			int_dat mid = mat_metal : converter(primary_mat_list), display(Material ID);
+		}
+				class Rope
+		{
+			float_dat f_rope_scale = 10.0 : editor(FloatSpinEditor), display(rope scale);
+			float_dat f_string_amp = 1.0 : editor(FloatSpinEditor), display(rope string amplitude );
+			float_dat f_rope_amp = 1.0 : editor(FloatSpinEditor), display(rope weave amplitude );
+			float_dat f_rope_thickness = 1.0 : editor(FloatSpinEditor), display(rope thickness );
+			bool_dat b_spool_of = FALSE : display(Spool off);
+
+		}
+		class Emissive
+		{
+			string_dat ems_tex = "" : editor(ImageFileNameEditor), display(Emissive );
+			bool_dat ems_outdoor_on = FALSE : display(Emissive outdoor intensity Enabled);
+
+		}
+	}
+
+    category Advanced
+    {
+        class Geometry
+        {
+            bool_dat static_on = true;
+        }
+    }
+
+
+	templatebody()
+	{
+
+		tech(s_tech_opq)
+		{
+			use SetupMaterial();
+			Cull(CW);
+			DepthFunc(LEQUAL, TRUE);
+
+			Input I_POS_0 = new InputFloat4("POSITION");
+			Input I_UV_0 = new InputFloat2("TEXCOORD0");
+			Input I_UV_1 = new InputFloat2("TEXCOORD1");
+			Input I_NRM_0 = new InputFloat3("NORMAL0");
+			Input I_CLR_USR = new InputFloat4("COLOR_USER");
+
+			Output O_SPC = new OutputFLOAT4("COLOR0");
+			Output O_DIF = new OutputFLOAT4("COLOR1");
+			Output O_NRM = new OutputFLOAT4("COLOR2");
+
+			X_UV_0 = SetTexcoord2();
+			X_NRM = SetTexcoord3();
+			C_NRM_SCALE = SetConst(f_nrm_scale);
+			C_UV_PROP = SetConst(f_uv_prop);
+            C_ROPE_SCALE = SetConst(f_rope_scale);
+            C_STRING_AMP = SetConst(f_string_amp);
+            C_ROPE_AMP = SetConst(f_rope_amp);
+            C_ROPE_THICKNESS = SetConst(f_rope_thickness);
+
+
+			C_NRM_FACTORS = SetConst(0.5, 0.0, 1.0); //X: nrm scale/bias, Y: mid scale(zero), Z: MID
+			if(mid == mat_dielectric)
+			{
+				Define("D_DIELECTRIC_ON", 1);
+			}
+			if(b_spool_of)
+			{
+				Define("D_SPOOL_OF", 1);
+			}
+
+			if(clr_tex != s_tex_def)
+			{
+				S_CLR = SetTexture(clr_tex);
+			}
+
+			if(nrm_tex != s_tex_def)
+			{
+				S_NRM = SetTexture(nrm_tex);
+
+				Input I_TNG_0 = new InputFloat4("TANGENT");
+
+				X_BNR = SetTexcoord3();
+				X_TNG = SetTexcoord3();
+
+			}
+            if(!static_on)
+            {
+                MarkStencilDynamic();
+            }
+
+
+
+			VertexShader()
+			{
+				use Instancing();
+				hlsl()
+				{
+
+					#include <master_new.hlsl>
+
+					void main()
+					{
+						X_UV_0 = Decode_UV(I_UV_0);
+						FLOAT2 uv_1 = Decode_UV(I_UV_1);
+
+                        float f_z = C_ROPE_SCALE ; // zakres
+						float4 usr_1 ;
+						float4 usr_0 = Decode_Usr(I_CLR_USR, usr_1);
+						float string_hz = 50.0;
+
+						float string_factor = usr_0.x;
+						float spiral_factor = usr_0.y;
+						float weave_factor = usr_0.z;
+						float f_w = usr_0.w;
+
+						float4 pos_ms = Decode_Pos(I_POS_0);
+
+
+						pos_ms.z += saturate((1.0 - X_UV_0.y ) - ( 1- f_w ))  * f_z; // pozycja w zecie
+
+						float spiral_factor_2 = saturate(saturate((1.0 - X_UV_0.y ) - ( 1- f_w ))  * 1000); // odcinanie szpulki
+
+                        float spiral_msk = saturate(pos_ms.z / C_ROPE_SCALE * 15.0) * spiral_factor + 1- spiral_factor ;
+						float2 rope_v_pos = (uv_1.xy* float2(-1.0, -1.0) + float2(0.0, 1.0)) ;
+						pos_ms.xy = lerp( pos_ms.xy, rope_v_pos, spiral_msk  *spiral_factor_2 );
+						pos_ms.xyz += normalize(lerp( I_NRM_0.xyz, float3(rope_v_pos,0),spiral_msk  *spiral_factor_2))*(C_ROPE_THICKNESS-1)*0.1;
+
+						I_NRM_0.xy = normalize(lerp( I_NRM_0.xy, pos_ms.xy, spiral_factor_2*spiral_msk));
+						I_NRM_0.z = (lerp( I_NRM_0.z, 0.0, spiral_factor_2*spiral_msk));
+
+						float2 weave_f = float2(sin(X_UV_0.y*30),sin(X_UV_0.y*38)); // fala duza
+
+						float2 bartek_w = float2(sin(X_UV_0.y*120)*0.5, cos(X_UV_0.y*120)*0.5); // fala  mala
+						float krzysztof_r = cos ( saturate(pos_ms.z  / f_z * 3 ) * 6.28 - 3.14) * 0.5 + 0.5 ; // fala mala maska
+
+						float2 string_dsp = float2( cos ( TIME * string_hz ) * 0.5 , sin ( TIME * string_hz ) ) ;
+						float string_msk = sin ( X_UV_0.y * saturate ((1.0 - X_UV_0.y ) - ( 1- f_w )) );
+                        pos_ms.xy += string_msk * (string_dsp*(1.2 - f_w)* string_factor * C_STRING_AMP + weave_f*weave_factor*C_ROPE_AMP ) + bartek_w * krzysztof_r * weave_factor*0.05*C_ROPE_AMP ;
+
+						X_UV_0.y *= C_UV_PROP;
+
+						#if defined (D_SPOOL_OF)
+							pos_ms.xyz = (pos_ms.z < 0.1)? float3(0,0,0.05): pos_ms.xyz;
+						#endif
+						float4 pos_ws = Mul_Pos(pos_ms, MODEL_XFORM_4x3);
+						V_POS_OUT_TC = Pos_Out_WS(pos_ws);
+
+						float3 nrm_ws = Mul33(I_NRM_0, MODEL_XFORM_4x3);
+						float3 nrm_es = Mul33(nrm_ws, VIEW_XFORM);
+						float3 nrm_n_es = normalize(nrm_es);
+
+						X_NRM = nrm_n_es;
+
+						#if defined (S_NRM)
+
+							float3 tng_ws = Mul33(I_TNG_0.xyz, MODEL_XFORM_4x3); //
+							float3 tng_es = Mul33(tng_ws, VIEW_XFORM); //
+							float3 tng_n_es = normalize(tng_es);
+							X_TNG = tng_n_es;
+
+							float3 bnr_n_es = cross(nrm_n_es, tng_n_es); //
+							bnr_n_es *= I_TNG_0.w;
+							X_BNR = bnr_n_es;
+						#endif
+					}
+				}
+			}
+
+			PixelShader()
+			{
+				hlsl()
+				{
+					#if defined(SHADER_PATH_ORBIS)
+						// #pragma PSSL_target_output_format (target 1 FMT_UNORM16_ABGR)
+					#endif
+
+					#include <master_new.hlsl>
+
+					void main()
+					{
+
+						#if defined(S_CLR)
+							FLOAT4 clr = Sample(S_CLR, X_UV_0);
+							O_SPC = clr;
+							O_SPC.a = saturate(clr.a * 2.0 - 1.0);
+						#else
+							O_SPC = FLOAT4(0.015, 0.4, 0.9, 1.0);
+						#endif
+
+						#if defined(S_NRM)
+							FLOAT3 nrm = float3(1.0, 1.0, 1.0);
+							FLOAT3 M_ES2TS[3];
+							M_ES2TS[0] = X_TNG;
+							M_ES2TS[1] = X_BNR;
+							M_ES2TS[2] = X_NRM;
+							nrm.xy = Sample(S_NRM, X_UV_0).ag * 2.0 - 1.0;
+							nrm.xy *= C_NRM_SCALE;
+							FLOAT3 nrm_es = Mul33T(nrm, M_ES2TS);
+						#else
+							FLOAT3 nrm_es = X_NRM;
+						#endif
+
+						#if defined(D_DIELECTRIC_ON)
+							O_DIF = O_SPC;
+							O_SPC.xyz = SwizzleXXX(0.0);
+						#else
+							O_DIF = SwizzleXXXX(0.0);
+						#endif
+						
+						O_NRM = nrm_es.xyzx * C_NRM_FACTORS.xxxy + C_NRM_FACTORS.xxxz;
+					}
+				}
+			}
+		}
+		if(ems_tex != "")
+		{
+			tech("ems")
+			{
+				use SetupMaterial();
+
+				Cull(CW);
+
+				BlendFunc(ONE, ONE, ZERO, ONE);
+				DepthFunc(LEQUAL, FALSE);
+
+				Input I_NRM_0 = new InputFloat3("NORMAL0");
+				Input I_POS_0 = new InputFloat4("POSITION");
+				Input I_UV_0 = new InputFloat2("TEXCOORD0");
+				Input I_UV_1 = new InputFloat2("TEXCOORD1");
+				Input I_CLR_USR = new InputFloat4("COLOR_USER");
+
+				Output O_CLR = new OutputFLOAT4("COLOR0");
+				X_UV_0 = SetTexcoord2();
+
+				C_NRM_SCALE = SetConst(f_nrm_scale);
+				C_UV_PROP = SetConst(f_uv_prop);
+				C_ROPE_SCALE = SetConst(f_rope_scale);
+				C_STRING_AMP = SetConst(f_string_amp);
+				C_ROPE_AMP = SetConst(f_rope_amp);
+				C_ROPE_THICKNESS = SetConst(f_rope_thickness);
+				X_EXT = SetTexcoord3("FLOAT");
+
+				if(b_spool_of)
+				{
+					Define("D_SPOOL_OF", 1);
+				}
+				if(ems_outdoor_on)
+				{
+					extern vec3_dat v_pp_shading_sun_color_clouds_off;
+					C_EMS_CLR = SetConst( v_pp_shading_sun_color_clouds_off);
+				}
+				else
+				{
+					extern float_dat f_pp_hdr_intensity_emissive;
+					C_EMS_CLR = SetConst( f_pp_hdr_intensity_emissive);
+				}
+
+				if(ems_tex != "")
+				{
+					S_CLR = SetTexture(ems_tex);
+				}
+
+				if(!static_on)
+				{
+					MarkStencilDynamic();
+				}
+
+				VertexShader()
+				{
+					use Instancing();
+					hlsl()
+					{
+
+						#include <master_new.hlsl>
+						#include <fog.hlsl>
+						void main()
+						{
+							X_UV_0 = Decode_UV(I_UV_0);
+							FLOAT2 uv_1 = Decode_UV(I_UV_1);
+
+
+							float f_z = C_ROPE_SCALE ; // zakres
+							float4 usr_1 ;
+							float4 usr_0 = Decode_Usr(I_CLR_USR, usr_1);
+							float string_hz = 50.0;
+
+							float string_factor = usr_0.x;
+							float spiral_factor = usr_0.y;
+							float weave_factor = usr_0.z;
+							float f_w = usr_0.w;
+
+							float4 pos_ms = Decode_Pos(I_POS_0);
+
+							pos_ms.z += saturate((1.0 - X_UV_0.y ) - ( 1- f_w ))  * f_z; // pozycja w zecie
+
+							float spiral_factor_2 = saturate(saturate((1.0 - X_UV_0.y ) - ( 1- f_w ))  * 1000); // odcinanie szpulki
+
+							float spiral_msk = saturate(pos_ms.z / C_ROPE_SCALE * 15.0) * spiral_factor + 1- spiral_factor ;
+							float2 rope_v_pos = (uv_1.xy* float2(-1.0, -1.0) + float2(0.0, 1.0)) ;
+							pos_ms.xy = lerp( pos_ms.xy, rope_v_pos, spiral_msk  *spiral_factor_2 );
+							pos_ms.xyz += normalize(lerp( I_NRM_0.xyz, float3(rope_v_pos,0),spiral_msk  *spiral_factor_2))*(C_ROPE_THICKNESS-1)*0.1;
+
+							float2 weave_f = float2(sin(X_UV_0.y*30),sin(X_UV_0.y*38)); // fala duza
+
+							float2 bartek_w = float2(sin(X_UV_0.y*120)*0.5, cos(X_UV_0.y*120)*0.5); // fala  mala
+							float krzysztof_r = cos ( saturate(pos_ms.z  / f_z * 3 ) * 6.28 - 3.14) * 0.5 + 0.5 ; // fala mala maska
+
+							float2 string_dsp = float2( cos ( TIME * string_hz ) * 0.5 , sin ( TIME * string_hz ) ) ;
+							float string_msk = sin ( X_UV_0.y * saturate ((1.0 - X_UV_0.y ) - ( 1- f_w )) );
+							pos_ms.xy += string_msk * (string_dsp*(1.2 - f_w)* string_factor * C_STRING_AMP + weave_f*weave_factor*C_ROPE_AMP ) + bartek_w*krzysztof_r*weave_factor*0.05*C_ROPE_AMP ;
+
+							X_UV_0.y *= C_UV_PROP;
+
+							#if defined (D_SPOOL_OF)
+								pos_ms.xyz = (pos_ms.z < 0.1)? float3(0,0,0.05): pos_ms.xyz;
+							#endif
+							float4 pos_ws = Mul_Pos(pos_ms, MODEL_XFORM_4x3);
+							V_POS_OUT_TC = Pos_Out_WS(pos_ws);
+							X_EXT = Scattering_Ext(length(pos_ws.xyz - CAMERA_POS_WS.xyz));
+							X_EXT *= C_EMS_CLR;
+
+						}
+					}
+				}
+
+				PixelShader()
+				{
+					hlsl()
+					{
+
+						#include <master_new.hlsl>
+
+						void main()
+						{
+
+							FLOAT4 clr = Sample(S_CLR, X_UV_0);
+							O_CLR = SwizzleXXXX(0.0);
+							O_CLR.xyz = clr.xyz * X_EXT;
+
+
+						}
+					}
+				}
+			}
+		}
+	}
+}
