@@ -1,0 +1,173 @@
+//new
+
+using engineflags;
+using settemplates;
+using depth_pass;
+using attribs;
+
+template
+{
+	category Basic
+	{
+		class Main
+		{
+			string_dat clr_tex = "clouds_c.dds" : editor(ImageFileNameEditor), display(Color texture);
+			float_dat uv_scale_3 = 2.0: display(Layer uv globall scale);
+			float_dat uv_scale_0 = 7.0: display(Layer 0 uv 0 scale);
+			float_dat translate_speed_0 = 0.012: display(Translate 0 speed);
+			float_dat uv_scale_1 = 3.0: display(Layer 0 uv 1 scale);
+			float_dat translate_speed_1 = 0.005: display(Translate 1 speed);
+			float_dat paralax_scale_0 = 0.2: display(layer 0 Paralax Scale);
+
+			float_dat uv_scale_2 = 3.0: display(Layer 2 uv scale);
+			float_dat paralax_scale_2 = 0.5: display(layer 2 Paralax Scale);
+			float_dat translate_speed_2 = 0.02: display(Translate 2 speed);
+
+		}
+	}
+
+	templatebody()
+	{
+		platform("*", "none; instancing");
+
+		tech("trn_back")
+		{
+			Cull(NONE);
+			BlendFunc(SRC_ALPHA, INV_SRC_ALPHA, ZERO, ONE);
+			BlendFunc(SRC_ALPHA, INV_SRC_ALPHA, ZERO, ONE, 1);
+			DepthFunc(LEQUAL, FALSE);
+
+			extern float_dat TIME;
+
+			Input I_POS_MS = new InputFloat4("POSITION");
+			Input I_TNG_MS = new InputFloat4("TANGENT0");
+			Input I_UV_0 = new InputFloat2("TEXCOORD0");
+			Input I_NRM_MS = new InputFloat3("NORMAL0");
+
+			X_UV_0 = SetTexcoord2();
+			X_UV_1 = SetTexcoord2();
+			X_UV_2 = SetTexcoord2();
+			X_POS_CS = SetTexcoord3();
+			X_TNG_CS = SetTexcoord3("FLOAT");
+			X_BNR_CS = SetTexcoord3("FLOAT");
+			X_NRM_CS = SetTexcoord3("FLOAT");
+			X_CAM_DIR_WS = SetTexcoord3("FLOAT");
+
+			Output O_RT0 = new OutputFLOAT4("COLOR0");
+			Output O_RT1 = new OutputFLOAT4("COLOR1");
+
+			C_UV_0_TRANSLATE = SetConst(translate_speed_0 * TIME);
+			C_UV_1_TRANSLATE = SetConst(translate_speed_1 * TIME);
+			C_UV_2_TRANSLATE = SetConst(translate_speed_2 * TIME);
+			C_UV_0_SCALE = SetConst(uv_scale_0);
+			C_UV_1_SCALE = SetConst(uv_scale_1);
+			C_UV_2_SCALE = SetConst(uv_scale_2);
+			C_UV_3_SCALE = SetConst(uv_scale_3);
+			C_PARALLAX_SCALE_0 =SetConst(paralax_scale_0);
+			C_PARALLAX_SCALE_2 =SetConst(paralax_scale_2);
+			S_CLR = SetTexture(clr_tex);
+
+			extern vec3_dat v_pp_clouds_clr;
+			C_CLOUDS_CLR = SetConst(v_pp_clouds_clr);
+
+			X_SCATTERING_EXT = SetTexcoord3();
+			X_SCATTERING_INS = SetTexcoord3();
+
+			extern vec3_dat v_pp_sun_scattering_dir;
+			C_SUN_SCATTERING_DIR = SetConst(v_pp_sun_scattering_dir);
+
+			VertexShader()
+			{
+				use Instancing();
+
+				hlsl()
+				{
+					#include <master_new.hlsl>
+					#include <fog.hlsl>
+					CONST_FLOAT4 v_pp_wind_2d_xform;
+					void main()
+					{
+						float4 pos_ms = Decode_Pos(I_POS_MS);
+						float4 pos_ws = Mul_Pos(pos_ms, MODEL_XFORM_4x3);
+
+						V_POS_OUT_TC = Pos_Out_WS(pos_ws);
+
+						float3 nrm_ws = Mul33(I_NRM_MS, MODEL_XFORM_4x3);
+						float3 nrm_cs = Mul33(nrm_ws, VIEW_XFORM);
+						float3 nrm_n_cs = normalize(nrm_cs);
+						X_NRM_CS = nrm_n_cs;
+
+						float3 tng_ws = Mul33(I_TNG_MS.xyz, MODEL_XFORM_4x3);
+						float3 tng_cs = Mul33(tng_ws, VIEW_XFORM);
+						float3 tng_n_cs = normalize(tng_cs);
+						X_TNG_CS = tng_n_cs;
+
+						float3 bnr_n_cs = cross(nrm_n_cs, tng_n_cs);
+						bnr_n_cs *= I_TNG_MS.w;
+						X_BNR_CS = bnr_n_cs;
+
+						float3 wind_dir_ts = Mul33T(v_pp_wind_2d_xform.xwy, MODEL_XFORM_4x3);
+						wind_dir_ts = normalize(wind_dir_ts) * float3(-1,1,1);
+
+						float2 uv_0 = Decode_UV(I_UV_0) * C_UV_3_SCALE;
+						X_UV_0 = uv_0 + wind_dir_ts.xy * C_UV_0_TRANSLATE;
+						X_UV_0 *= C_UV_0_SCALE;
+						X_UV_1 = uv_0.xy + wind_dir_ts.xy * C_UV_1_TRANSLATE;
+						X_UV_1 *= C_UV_1_SCALE;
+						float2 uv_1 = uv_0 * C_UV_2_SCALE + wind_dir_ts.xy * C_UV_2_TRANSLATE ;
+
+						X_UV_2 = uv_1;
+
+
+						float3 cam_dir_ws = pos_ws.xyz - CAMERA_POS_WS.xyz;
+						float cam_dir_length = length(cam_dir_ws);
+
+						X_SCATTERING_EXT = Scattering_Ext(cam_dir_length);
+						X_SCATTERING_INS = Scattering_Ins(X_SCATTERING_EXT, normalize(cam_dir_ws), C_SUN_SCATTERING_DIR);
+
+						X_POS_CS = Mul_Pos(pos_ws, VIEW_XFORM).xyz;
+						X_CAM_DIR_WS = cam_dir_ws.xyz;
+					}
+				}
+			}
+			PixelShader()
+			{
+				hlsl()
+				{
+					#include <master_new.hlsl>
+					#include <fog.hlsl>
+					void main()
+					{
+						float3 E2T_XFORM[3];
+						E2T_XFORM[0] = X_TNG_CS;
+						E2T_XFORM[1] = X_BNR_CS;
+						E2T_XFORM[2] = X_NRM_CS;
+
+						FLOAT3 cam_dir_ts = Mul33(X_POS_CS, E2T_XFORM);
+						FLOAT3 cam_dir_n_ts = normalize(cam_dir_ts);
+						FLOAT hgt_0 =  Sample(S_CLR, X_UV_0).a;
+						FLOAT hgt_1 =  Sample(S_CLR, X_UV_1).a;
+
+						FLOAT border_opacity = 1.0 - saturate((length(X_CAM_DIR_WS))* 0.0002 );
+
+						FLOAT hgt = (hgt_1*hgt_0)   ;
+						hgt *= C_PARALLAX_SCALE_0;
+
+						float4 clr_0 = Sample(S_CLR, X_UV_0 - cam_dir_n_ts.xy * hgt );
+						float4 clr_1 = Sample(S_CLR, X_UV_1 - cam_dir_n_ts.xy * hgt  );
+						float4 clr_2 = Sample(S_CLR, X_UV_2 + cam_dir_n_ts.xy * C_PARALLAX_SCALE_2 ) * 0.5;
+
+						float4 clr_out = clr_0 + clr_1;
+						clr_out.xyz *= 0.5;
+						clr_out = lerp(clr_2,clr_out, saturate(clr_0.w + clr_1.w));
+						clr_out.xyz *= C_CLOUDS_CLR;
+						O_RT0 = SwizzleXXXX(1.0);
+						O_RT0.xyz = clr_out.xyz * X_SCATTERING_EXT + X_SCATTERING_INS;
+						O_RT0.w =  border_opacity;
+						O_RT1 = O_RT0.wwww * float4(0.0, 0.0, 0.0, 1.0);
+					}
+				}
+			}
+		}
+	}
+}
