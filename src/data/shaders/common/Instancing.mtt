@@ -1,0 +1,41 @@
+import "EngineDefs.mth"
+
+sub Instancing()
+{
+    extern int MATERIAL_FLAGS;
+    extern int SHADER_PATH;
+
+    if ((MATERIAL_FLAGS & MF_INSTANCING_VSPLUS) != 0)
+    {
+        define("INSTANCING_ON", 1); //dodatkowy define - oznacza, ze material wlaczyl instancjonowanie gdy engine wlaczyl/zezwolil na instancjonowanie
+
+        if (SHADER_PATH == SM32)	// PS3
+        {
+            define("INSTANCING_SM30_ON", 1);
+            InstancingSM30();
+        }
+
+        if (SHADER_PATH == SM31)    // Xbox
+        {
+            define("INSTANCING_VSPLUS_ON", 1); //dodatkowy define - oznacza, ze material wlaczyl instancjonowanie gdy engine wlaczyl/zezwolil na instancjonowanie VSPLUS} (INSTANCING_VSPLUS)
+            define("VERTICES_PER_INSTANCE", "CONST_11");
+            int iXenon_Instances_Consts = 4;
+            define("XENON_INSTANCES_CONSTS", iXenon_Instances_Consts);
+            InstancingVS(1000000);
+        }
+    }
+    if ((MATERIAL_FLAGS & MF_INSTANCING) != 0)
+    {
+        if (SHADER_PATH == SM31 || SHADER_PATH == SM32)	// Xbox & PS3
+        {
+            define("INSTANCING_DIP_ON", 1);
+            InstancingDip();
+        }
+        if (SHADER_PATH == SM30 || SHADER_PATH == SM40  || SHADER_PATH == SM50 || SHADER_PATH == SM53)	// DX9/10/11/OpenGL
+        {
+            define("INSTANCING_ON", 1); //dodatkowy define - oznacza, ze material wlaczyl instancjonowanie gdy engine wlaczyl/zezwolil na instancjonowanie
+            define("INSTANCING_SM30_ON", 1);
+            InstancingSM30();
+        }
+    }
+}
