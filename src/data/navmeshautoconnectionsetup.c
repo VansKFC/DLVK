@@ -1,1 +1,5 @@
-int navmeshautoconnectionsetup(){signals(0);return 0;}
+int navmeshautoconnectionsetup()
+ {
+  signals(0);
+  return 0;
+}
