@@ -1,1 +1,5 @@
-int main(){telemetry_enabled(false);return 0;}
+int main()
+{
+  telemetry_enabled(false);
+  return 0;
+}
