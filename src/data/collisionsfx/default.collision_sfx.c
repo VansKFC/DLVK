@@ -1,4 +1,4 @@
-import"surface_id.def"int Sounds()
+import"surface_id.def" int Sounds()
 { 
  Hit(){
   MinInterval(0,0);
