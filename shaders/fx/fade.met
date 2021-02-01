@@ -1,0 +1,75 @@
+//new
+
+using engineflags;
+using settemplates;
+using tmu;
+
+template
+{
+	category Main
+	{
+		float_dat f_speed = 1.0;
+		float_dat f_angle = 0.78;
+	}
+
+    templatebody()
+    {
+		tech(s_tech_std)
+        {
+			Cull(NONE);
+			DepthFunc(ALWAYS, FALSE);
+
+			Input I_POS_MS = new InputFloat4("POSITION");
+			Input I_UV_0 = new InputFloat2("TEXCOORD0");
+
+			Output O_CLR = new OutputFLOAT4("COLOR0");
+
+			X_UV_0 = SetTexcoord2();
+
+			extern float_dat TIME;
+			extern float_dat FPS;
+
+			C_HIT_DIR = SetConst(sin(f_angle),cos(f_angle));
+			C_DT = SetConst(1.0/FPS);
+			C_ANGLE = SetConst(f_angle);
+
+			S_CLR = SetTexture(8, ANISOTROPIC_NO_MIP, CLAMP, CLAMP, false);
+
+			VertexShader()
+			{
+				hlsl(s_hlsl_profile_def)
+				{
+
+					#include <master_new.hlsl>
+
+					void main()
+					{
+						V_POS_OUT_TC = Decode_Pos(I_POS_MS);
+
+						float2 v_uv_0 = Decode_UV(I_UV_0);
+						X_UV_0 = v_uv_0;
+					}
+				}
+
+			}
+
+			PixelShader()
+			{
+				hlsl(s_hlsl_profile_def)
+				{
+
+					#include <master_new.hlsl>
+
+					void main()
+					{
+					   float4 v_clr = Sample(S_CLR, X_UV_0);
+
+					   v_clr = saturate(v_clr);
+					   O_CLR.xyz = v_clr.xyz;
+					   O_CLR.w = v_clr.w;
+					}
+				}
+			}
+        }
+    }
+}
