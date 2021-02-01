@@ -1,0 +1,2 @@
+VarFloat("f_engine_simrange_fx",50.0)
+VarFloat("f_engine_visrange_fx",50.0)
