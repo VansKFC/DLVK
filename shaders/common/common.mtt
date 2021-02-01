@@ -1,0 +1,605 @@
+import "values.mtt"
+
+sub SetRegcount(int i_regcount = 0)
+{
+    if(i_regcount > 0)
+    {
+        extern int SHADER_PATH;
+        if(SHADER_PATH == SM32)
+		{
+			Define("new_compiler", 1);
+			Define("I_REGCOUNT", i_regcount);
+		}
+    }
+}
+
+sub SetShadowmapTMU(string s_sampler = "s_shd", int i_shadowmap = 0)
+{
+    TMU(s_sampler)
+    {
+        //Shadowmap(0, i_shadowmap);
+        Usermap(USERMAP_SHADOWMAP);
+        AddressFunc(CLAMP, CLAMP, CLAMP);
+        ZFunc(GEQUAL);
+
+        extern int HSM_MODE;
+        if (HSM_MODE != HSMM_NVIDIA)
+        {
+            Filtering(NO_FILTERING);
+            extern bool FETCH4;
+            if (FETCH4) { Fetch4(); }
+        }
+        else { Filtering(LINEAR_NO_MIP); }
+    }
+}
+
+sub SetStencil(bool b_sky_on = FALSE, bool b_write_on = FALSE)
+{
+    if(b_write_on)
+    {
+        //STENCIL FAILED, DEPTH FALIED, BOTH PASSED
+        StencilOp(STENCIL_KEEP, STENCIL_KEEP, STENCIL_REPLACE);
+        StencilFunc(ALWAYS, i_stencil_sky, 255);
+        StencilWriteMask(255);
+        StencilEnable(TRUE);
+    }
+    else
+    {
+        StencilOp(STENCIL_KEEP, STENCIL_KEEP, STENCIL_KEEP);
+        extern int SHADER_PATH;
+/*        
+        if(SHADER_PATH == SM31) { StencilFunc((b_sky_on) ? EQUAL : NOTEQUAL, i_stencil_sky, 255); }// WARNING! reversed comparision
+        else { StencilFunc(EQUAL, (b_sky_on) ? i_stencil_sky : i_stencil_background, 255); }
+*/
+        /// stencil comparision function is reversed in code (similar to depth comparision function)
+        StencilFunc(EQUAL, (b_sky_on) ? i_stencil_sky : i_stencil_background, 255);
+        StencilWriteMask(0);
+        StencilEnable(TRUE);
+    }
+}
+
+sub ForceFloat()
+{
+    Define("FORCE_FLOAT_ON", 1);
+}
+
+sub SetConst_X(int i_const = 255, float f_value = 1.0) { SetConst(i_const * 4, f_value); }
+sub SetConst_Y(int i_const = 255, float f_value = 1.0) { SetConst(i_const * 4 + 1, f_value); }
+sub SetConst_Z(int i_const = 255, float f_value = 1.0) { SetConst(i_const * 4 + 2, f_value); }
+sub SetConst_W(int i_const = 255, float f_value = 1.0) { SetConst(i_const * 4 + 3, f_value); }
+
+sub SetConst_Color(int i_const = 255, vec4 v_clr = [1.0, 1.0, 1.0, 1.0], bool b_intensity_on = TRUE, float f_gamma = 2.2) //v_clr.rgb: color value, v_clr.a: color intensity
+{
+    vec3 v_clr_gamma = pow(v_clr.xyz, f_gamma);
+    vec3 v_clr_gamma = (b_intensity_on) ? v_clr_gamma * v_clr.w : v_clr_gamma;
+
+    SetConst(i_const, [v_clr_gamma, v_clr.w]);
+}
+
+sub SetDecode(string s_tex = s_tex_def)
+{
+    if(s_tex != s_tex_def)
+    {
+        Define("DECODE_TEX_ON", 1);
+        TMU("s_decode")
+        {
+            Image("decode_a.dds");
+            Filtering(LINEAR_NO_MIP);
+            Quality(HIGH);
+            AddressFunc(CLAMP, CLAMP, CLAMP);
+        }
+    }
+}
+
+sub SetFade(bool b_terrain = FALSE)
+{
+    Define("REQ_CAM_PS", 1.0);
+
+    Define("FADE", s_fade);
+    Define("FADE_STRUCT", s_fade_struct);
+
+    Define("FADE_FIELD_0", s_fade_0_field);
+    Define("FADE_FIELD_1", s_fade_1_field);
+    Define("FADE_FIELD_2", s_fade_2_field);
+
+    Define("F_FADE_0", s_fade_0);
+    Define("F_FADE_0_INV", s_fade_0_inv);
+    Define("F_FADE_1", s_fade_1);
+    Define("F_FADE_1_INV", s_fade_1_inv);
+    Define("F_FADE_2", s_fade_2);
+    Define("F_FADE_2_INV", s_fade_2_inv);
+
+    extern vec3 Terrain_Shader_LOD_SQR;
+    extern vec3 Mesh_Shader_LOD_SQR;
+
+    vec3 v_shader_lod_sqr = (b_terrain) ? Terrain_Shader_LOD_SQR : Mesh_Shader_LOD_SQR;
+
+    float f_scale = 0.01;
+    float f_scale_sqr = f_scale * f_scale;
+    vec3 v_shader_lod_sqr = v_shader_lod_sqr * f_scale_sqr;
+
+    int i_const_fade_0 = i_const_fade;
+    SetConst(i_const_fade_0, [-1.0/v_shader_lod_sqr.x, 1.0/v_shader_lod_sqr.x, 1.0, 0.0]);
+    string s_const_fade_0 = s_const_name + i_const_fade_0;
+    Define("CST_FADE_0", s_const_fade_0);
+    Define("F_FADE_0_MUL", s_const_fade_0 + ".xy");
+    Define("F_FADE_0_ADD", s_const_fade_0 + ".zw");
+
+    int i_const_fade_1 = i_const_fade + 1;
+
+    float f_fade_1_mul = 1.0 / (v_shader_lod_sqr.y - v_shader_lod_sqr.x);
+    float f_fade_1_add = v_shader_lod_sqr.x * f_fade_1_mul;
+
+    SetConst(i_const_fade_1, [-f_fade_1_mul, f_fade_1_mul, f_fade_1_add + 1.0, -f_fade_1_add]);
+    string s_const_fade_1 = s_const_name + i_const_fade_1;
+    Define("CST_FADE_1", s_const_fade_1);
+    Define("F_FADE_1_MUL", s_const_fade_1 + ".xy");
+    Define("F_FADE_1_ADD", s_const_fade_1 + ".zw");
+
+    int i_const_fade_2 = i_const_fade + 2;
+
+    float f_fade_2_mul = 1.0 / (v_shader_lod_sqr.z - v_shader_lod_sqr.y);
+    float f_fade_2_add = v_shader_lod_sqr.y * f_fade_2_mul;
+
+    SetConst(i_const_fade_2, [-f_fade_2_mul, f_fade_2_mul, f_fade_2_add + 1.0, -f_fade_2_add]);
+    string s_const_fade_2 = s_const_name + i_const_fade_2;
+    Define("CST_FADE_2", s_const_fade_2);
+    Define("F_FADE_2_MUL", s_const_fade_2 + ".xy");
+    Define("F_FADE_2_ADD", s_const_fade_2 + ".zw");
+}
+
+sub SetShaderPath()
+{
+    extern int SHADER_PATH;
+    if(SHADER_PATH == SM30) { Define("SHADER_PATH_DX9", SHADER_PATH); }
+    if(SHADER_PATH == SM31) { Define("SHADER_PATH_X360", SHADER_PATH); }
+    if(SHADER_PATH == SM32)
+    {
+        Define("SHADER_PATH_PS3", SHADER_PATH);
+        extern int i_dbg_ps3_psgl_on;
+        if(i_dbg_ps3_psgl_on != 0) { Define("PS3_PSGL_ON", 1); }
+    }
+    if(SHADER_PATH == SM40) { Define("SHADER_PATH_DX10", SHADER_PATH); }
+    if(SHADER_PATH == SM41) { Define("SHADER_PATH_WIIU", SHADER_PATH); }
+    if(SHADER_PATH == SM50) { Define("SHADER_PATH_DX11", SHADER_PATH); }
+	if(SHADER_PATH == SM51) { Define("SHADER_PATH_ORBIS", SHADER_PATH); }
+	if(SHADER_PATH == SM52) { Define("SHADER_PATH_DURANGO", SHADER_PATH); }
+	if(SHADER_PATH == SM53) { Define("SHADER_PATH_OPENGL", SHADER_PATH); }
+}
+
+sub SetTexTypes()
+{
+    Define("E_TT_IMAGE", e_tt_image);
+    Define("E_TT_VOLUME", e_tt_volume);
+    Define("E_TT_LMAP", e_tt_lmap);
+    Define("E_TT_CUBE", e_tt_cube);
+    Define("E_TT_CUBE_ENV", e_tt_cube_env);
+    Define("E_TT_CUBE_DYN", e_tt_cube_dyn);
+    Define("E_TT_BUFFER_PP", e_tt_buffer_pp);
+}
+
+// Setup material params //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+sub SetTech(string s_tech = s_tech_def)
+{
+    if(s_tech != s_tech_def) { Define("TECH_ON", 1);}
+    if(s_tech == s_tech_std) { Define("TECH_STD_ON", 1); }
+    if(s_tech == s_tech_opq) { Define("TECH_OPQ_ON", 1); }
+    if(s_tech == s_tech_trn0) { Define("TECH_TRN0_ON", 1); }
+    if(s_tech == s_tech_trn) { Define("TECH_TRN_ON", 1); }
+    if(s_tech == s_tech_trn2) { Define("TECH_TRN2_ON", 1); }
+    if(s_tech == s_tech_nrm) { Define("TECH_NRM_ON", 1); }   
+    if(s_tech == s_tech_shd) { Define("TECH_SHD_ON", 1); }
+    if(s_tech == s_tech_dpt) { Define("TECH_DPT_ON", 1); }
+    if(s_tech == s_tech_lit) { Define("TECH_LIT_ON", 1); }
+    if(s_tech == s_tech_amb_0) { Define("TECH_AMB_0_ON", 1); }
+    if(s_tech == s_tech_amb_1) { Define("TECH_AMB_1_ON", 1); }
+    if(s_tech == s_tech_amb_2) { Define("TECH_AMB_2_ON", 1); }
+	if(s_tech == s_tech_amb_3) { Define("TECH_AMB_3_ON", 1); }
+	if(s_tech == s_tech_glow_0) { Define("TECH_GLOW_0_ON", 1); }
+	if(s_tech == s_tech_glow_1) { Define("TECH_GLOW_1_ON", 1); }
+}
+
+sub SetType(int e_type = e_type_def)
+{
+    if( e_type == e_type_mesh ) { Define( "MESH_ON", 1 ); }
+    if( e_type == e_type_terrain ) { Define( "TERRAIN_ON", 1 ); }
+    if( e_type == e_type_terrain_lod ) { Define( "TERRAIN_LOD_ON", 1 ); }
+    if( e_type == e_type_grass ) { Define( "GRASS_ON", 1 ); }
+    if( e_type == e_type_fx_ws ) { Define( "FX_WS_ON", 1 ); }
+    if( e_type == e_type_fx_cs ) { Define( "FX_CS_ON", 1 ); }
+    if( e_type == e_type_water ) { Define( "WATER_ON", 1 ); }
+    if( e_type == e_type_shore ) { Define( "SHORE_ON", 1 ); }
+    if( e_type == e_type_bucket ) { Define( "BUCKET_ON", 1 ); }
+}
+
+sub SetCull(int e_cull = CW)
+{
+    if(e_cull == CW) { Define("CULLING_CW", 1); }
+    if(e_cull == CCW) { Define("CULLING_CCW", 1); }
+    if(e_cull == NONE) { Define("CULLING_NONE", 1); }
+    Cull(e_cull);
+}
+
+sub SetupMaterial(
+	int i_regcount = 0,
+    string s_tech = s_empty
+)
+{
+    use SetShaderPath();
+	use SetRegcount(i_regcount = i_regcount);
+    if(s_tech != s_empty) { use SetTech(s_tech = s_tech); }
+}
+
+sub SetupMaterial_PP(
+	int i_regcount = 0,
+	string s_tech = s_empty
+)
+{
+    DepthFunc(ALWAYS, FALSE);
+    Cull(NONE);
+	use SetupMaterial(
+		i_regcount = i_regcount,
+		s_tech = s_tech
+	);
+}
+
+// TMUs ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+sub Lightmap_TMU(string s_sampler = "s_lightmap", string s_sampler_define = "S_LIGHTMAP")
+{
+    Define(s_sampler_define, s_sampler);
+    TMU(s_sampler)
+    {
+        Lightmap();
+        Filtering(LINEAR_NO_MIP);
+        AddressFunc(CLAMP, CLAMP, CLAMP);
+        SRGB();
+    }
+}
+
+sub Shadowmap_TMU(string s_sampler = "s_shadowmap", string s_sampler_define = "S_SHADOWMAP", int i_shadowmap = 0)
+{
+    Define(s_sampler_define, s_sampler);
+    use SetShadowmapTMU(s_sampler = s_sampler, i_shadowmap = i_shadowmap);
+}
+
+sub PP_STEREO_TMU() 
+{ 
+	extern int SHADER_PATH;
+	if( (SHADER_PATH == SM30) || (SHADER_PATH == SM40))
+	{
+		Define("STEREO_TMU_ON", 1);
+		TMU("s_stereo")
+		{
+			Stereomap();
+			AddressFunc(CLAMP, CLAMP, CLAMP); 
+			Filtering(NO_FILTERING);
+		}
+	}
+}
+
+sub Default_TMU(
+    string s_sampler = "",
+    string s_sampler_define = "",
+    string s_tex = s_tex_def,
+    int i_tex_aniso = i_tex_aniso_def,
+    int e_tex_filter = e_tex_filter_def,
+    int e_tex_quality = e_tex_quality_def,
+    bool b_tex_srgb_on = b_tex_srgb_on_def,
+    int e_tex_tile_u = e_tex_tile_def,
+    int e_tex_tile_v = e_tex_tile_def,
+    int e_tex_type = e_tex_type_def
+)
+{
+	if(s_sampler != "")
+	{
+		if(s_sampler_define != "")
+		{
+			Define(s_sampler_define, s_sampler);
+			if(b_tex_srgb_on) { Define(s_sampler_define + "_SRGB_ON", 1); }
+		}
+		if(e_tex_type >= 100) { Define(s_sampler + "_F32_ON", 1); }
+		int i_user_map = (e_tex_type - 100 >= 0) ? e_tex_type - 100 : e_tex_type;
+		TMU(s_sampler)
+		{
+			if(i_user_map >= 0) { Usermap(i_user_map); }
+			else { Image(s_tex); }
+			Quality(e_tex_quality);
+			Filtering(e_tex_filter);
+			Anisotropy(i_tex_aniso);
+			AddressFunc(e_tex_tile_u, e_tex_tile_v, e_tex_tile_def);
+			if(b_tex_srgb_on) { SRGB(); }
+		}
+	}
+}
+
+sub PP_TMU(
+	string s_sampler = "s_t00",
+	string s_sampler_define = "",
+	int i_user_map = i_user_map_pp_def,
+	int e_tile = CLAMP,
+	int e_filter = LINEAR_NO_MIP,
+	bool b_srgb_on = FALSE
+)
+{
+	use Default_TMU(
+		s_sampler = s_sampler,
+		s_sampler_define = s_sampler_define,
+		e_tex_filter = e_filter,
+		b_tex_srgb_on = b_srgb_on,
+		e_tex_tile_u = e_tile,
+		e_tex_tile_v = e_tile,
+		e_tex_type = i_user_map
+	);
+}
+
+
+sub PP_DEPTH_TMU(
+	string s_sampler = "s_depth",
+	bool b_stereo_on = TRUE,
+	int i_user_map = i_um_dpt
+)
+{
+	Define("DEPTH_TMU_ON", 1);
+	use PP_TMU(
+		s_sampler = s_sampler,
+		s_sampler_define = "S_DEPTH",
+		i_user_map = i_user_map,
+		e_filter = NO_FILTERING
+	);
+	if(b_stereo_on) { use PP_STEREO_TMU(); }
+}
+
+sub PP_DEPTH4_TMU(
+	string s_sampler = "s_depth4",
+	bool b_stereo_on = TRUE,
+	int i_user_map = i_um_dpt_4
+)
+{
+	Define("DEPTH4_TMU_ON", 1);
+	use PP_TMU(
+		s_sampler = s_sampler,
+		s_sampler_define = "S_DEPTH4",
+		i_user_map = i_user_map,
+		e_filter = NO_FILTERING
+	);
+	if(b_stereo_on) { use PP_STEREO_TMU(); }
+}
+
+sub PP_NORMAL_TMU(
+	string s_sampler = "s_nrm",
+	int i_user_map = i_um_nrm,
+	int e_filter = NO_FILTERING
+)
+{
+	Define("NORMAL_TMU_ON", 1);
+	use PP_TMU(
+		s_sampler = s_sampler,
+		s_sampler_define = "S_NRM",
+		i_user_map = i_user_map,
+		e_tile = CLAMP,
+		e_filter = e_filter
+	);
+}
+
+sub PP_COLOR_TMU(
+	string s_sampler = "s_clr",
+	int i_user_map = i_um_clr,
+	int e_filter = NO_FILTERING,
+	bool b_srgb_on = TRUE
+)
+{
+	Define("COLOR_TMU_ON", 1);
+	use PP_TMU(
+		s_sampler = s_sampler,
+		s_sampler_define = "S_CLR",
+		i_user_map = i_user_map,
+		e_tile = CLAMP,
+		e_filter = e_filter,
+		b_srgb_on = b_srgb_on
+	);
+}
+
+// Vertex Shaders //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+sub Set_UV_Out_PP(
+    float f_uv_x_scale = 1.0,
+    float f_uv_y_scale = 1.0,
+    float f_uv_x_bias = 0.0,
+    float f_uv_y_bias = 0.0
+)
+{
+    use SetShaderPath();
+    if(f_uv_x_scale != 1.0) { Define("F_UV_X_SCALE", f_uv_x_scale); }
+    if(f_uv_y_scale != 1.0) { Define("F_UV_Y_SCALE", f_uv_y_scale); }
+    if(f_uv_x_bias != 0.0) { Define("F_UV_X_BIAS", f_uv_x_bias); }
+    if(f_uv_y_bias != 0.0) { Define("F_UV_Y_BIAS", f_uv_y_bias); }
+}
+
+sub PP_VS(
+    bool b_out_cam_dir_cs_on = FALSE,
+    bool b_out_cam_dir_ws_on = FALSE,
+    bool b_out_cam_dir_y_ws_on = FALSE,
+    bool b_uv_0_on = TRUE,
+    float f_uv_x_scale = 1.0,
+    float f_uv_y_scale = 1.0,
+    float f_uv_x_bias = 0.0,
+    float f_uv_y_bias = 0.0
+)
+{
+    use SetShaderPath();
+    
+    if(b_out_cam_dir_cs_on) { Define("OUT_CAM_DIR_CS_ON", 1); }
+    if(b_out_cam_dir_y_ws_on) { Define("OUT_CAM_DIR_Y_WS_ON", 1); }
+    else if(b_out_cam_dir_ws_on) { Define("OUT_CAM_DIR_WS_ON", 1); }
+
+    if(b_uv_0_on)
+    {
+        Define("PP_UV_0_ON", 1.0);
+        use Set_UV_Out_PP(
+            f_uv_x_scale = f_uv_x_scale,
+            f_uv_y_scale = f_uv_y_scale,
+            f_uv_x_bias = f_uv_x_bias,
+            f_uv_y_bias = f_uv_y_bias
+        );
+    }
+    VertexShader() { hlsl(s_hlsl_profile_def) = "#include <common_pp_vs.hlsl>" }
+}
+
+sub PS_FlatColor(
+    vec4 v_out_clr = [1.0, 1.0, 1.0, 1.0],
+    bool b_static_on = FALSE
+)
+{
+    use SetShaderPath();
+// TURNED OFF: floats can't be converted to string, yet
+//    if(b_static_on)
+//    {
+//        Define("OUT_CLR_STATIC_ON", 1);
+//        Define("V_OUT_CLR", "float4(" + v_out_clr.x + ", " + v_out_clr.y + ", " + v_out_clr.z + ", " + v_out_clr.w + ")");
+//    }
+//    else
+//    {
+        Define("V_OUT_CLR", s_const_name + i_const_flat_color_ps);
+        SetConst(i_const_flat_color_ps, v_out_clr);
+//    }
+
+    PixelShader() { hlsl(s_hlsl_profile_def) = "#include <flat_color_ps.hlsl>" }
+}
+
+// Lighting
+sub SetDirUp(bool b_space_eye_on = FALSE)
+{
+    if(b_space_eye_on)
+    {
+        extern mtx VIEW_XFORM;
+        vec3 v_up_ws = [0.0, 1.0, 0.0];
+        vec3 v_up_cs = mulv(VIEW_XFORM, v_up_ws);
+        SetConst(i_const_up_dir_cs, [v_up_cs, 0.0]);
+        Define("V_DIR_UP", s_const_name+i_const_up_dir_cs);
+        Define("CST_DIR_UP", s_const_name+i_const_up_dir_cs);
+    }
+    else { Define("V_DIR_UP", "float3(0.0, 1.0, 0.0)"); }
+}
+
+sub SetShadowmap(
+    bool b_shadows_bias_on = FALSE,
+    bool b_deferred_shadows_sun_on = FALSE,
+    bool b_dynamic_branching_on = FALSE,
+    bool b_shadows_smooth_on = FALSE,
+    bool b_shadows_simple_on = FALSE,
+    string s_special_define = ""
+)
+{
+    if(i_shadowmaps_count >= 1)
+    {
+        Define("SHADOW_XFORM_0", s_const_name + i_const_shadow_xform_0);
+        Define("SHADOW_XFORM_1", s_const_name + i_const_shadow_xform_1);
+        Define("SHADOW_XFORM_2", s_const_name + i_const_shadow_xform_2);
+        Define("SHADOW_XFORM_3", s_const_name + i_const_shadow_xform_3);
+
+        Define("SHADOWS_SUN_COUNT", i_shadowmaps_count);
+        Define("SHADOWS_SUN_UV_TABLE_SIZE", min(i_shadowmaps_count, 3));
+        if(i_shadowmaps_count > 3) { Define("float_SHADOWS_SUN_UV_SIZE", "half4"); }
+        else { Define("float_SHADOWS_SUN_UV_SIZE", "half3"); }
+        use Shadowmap_TMU();
+        extern vec4 shadow_fade_params;
+        float f_depth_scale = 0.01;
+        SetConst(i_const_shadows_fade_params, [shadow_fade_params.x * f_depth_scale, shadow_fade_params.y, shadow_fade_params.z, shadow_fade_params.w]);
+        Define("CST_SHADOWS_FADE_PARAMS", s_const_name + i_const_shadows_fade_params);
+        if(b_dynamic_branching_on) { Define("SHADOWS_SUN_DYNAMIC_BRANCHING_ON", 1); }
+        if(b_deferred_shadows_sun_on)
+        {
+            Define("DEFERRED_SHADOWS_SUN_ON", 1);
+
+            extern mtx m_xform_0 = HSM_XFORM_ES 0;
+            extern mtx m_xform_1 = HSM_XFORM_ES 1;
+            extern mtx m_xform_2 = HSM_XFORM_ES 2;
+            extern mtx m_xform_3 = HSM_XFORM_ES 3;
+
+            SetConst(i_const_shadow_xform_0, m_xform_0);
+            SetConst(i_const_shadow_xform_1, m_xform_1);
+            SetConst(i_const_shadow_xform_2, m_xform_2);
+            SetConst(i_const_shadow_xform_3, m_xform_3);
+        }
+        else
+        {
+            extern mtx m_xform_0 = HSM_XFORM_WS 0;
+            extern mtx m_xform_1 = HSM_XFORM_WS 1;
+            extern mtx m_xform_2 = HSM_XFORM_WS 2;
+            extern mtx m_xform_3 = HSM_XFORM_WS 3;
+
+            SetConst(i_const_shadow_xform_0, m_xform_0);
+            SetConst(i_const_shadow_xform_1, m_xform_1);
+            SetConst(i_const_shadow_xform_2, m_xform_2);
+            SetConst(i_const_shadow_xform_3, m_xform_3);
+        }
+
+        if(s_special_define != "") { Define(s_special_define, 1); }
+        if(b_shadows_bias_on) { Define("SHADOWS_BIAS_ON", 1); }
+        if(b_shadows_smooth_on) { Define("SHADOWS_SMOOTH_ON", 1); }
+        else if(b_shadows_simple_on) { Define("SHADOWS_SIMPLE_ON", 1); }
+    }
+}
+
+///dys material id
+sub SetMaterialID(
+	bool b_specular_on = TRUE,
+	bool b_diffuse_on = TRUE,
+	bool b_env_on = FALSE
+)
+{
+    Define("MATERIAL_ID_ON", 1);
+
+	if(b_specular_on)
+	{
+		Define("MID_SPECULAR_ON", 1);
+		TMU("s_spc_tex")
+		{
+			Image("mid_0_def.dds");
+			Filtering(LINEAR_NO_MIP);
+			AddressFunc(CLAMP, CLAMP, CLAMP);
+			SRGB();
+		} 
+		TMU("s_spc_tex_fresnel")
+		{
+			Image("mid_0b_def.dds");
+			Filtering(LINEAR_NO_MIP);
+			AddressFunc(CLAMP, CLAMP, CLAMP);
+			SRGB();
+		} 
+	}
+
+	if(b_diffuse_on)
+	{
+		Define("MID_DIFFUSE_ON", 1);
+		TMU("s_diff_tex")
+		{
+			Image("mid_1_def.dds");
+			Filtering(LINEAR_NO_MIP);
+			AddressFunc(CLAMP, CLAMP, CLAMP);
+			SRGB();
+		}
+	}
+
+	if(b_env_on)
+	{
+		Define("MID_ENV_ON", 1);
+		TMU("s_env_tex")
+		{
+			Image("mid_2_def.dds");
+			Filtering(LINEAR_NO_MIP);
+			AddressFunc(CLAMP, CLAMP, CLAMP);
+			SRGB();
+		}
+	}
+	
+    extern float f_pp_row_per_mat;
+    extern float f_pp_mat_count;
+	
+	float f_scale_inv = 1.0/(f_pp_mat_count * f_pp_row_per_mat);
+	
+	SetConst(i_const_material_id_params, [f_pp_row_per_mat * f_scale_inv, 0.5 * f_scale_inv, (f_pp_row_per_mat - 0.5) * f_scale_inv, FREE]);
+    Define("V_MATERIAL_ID_PARAMS", s_const_name + i_const_material_id_params);        
+	Define("F_MATERIAL_ID_SCALE", s_const_name + i_const_material_id_params + ".x");
+	Define("V_MATERIAL_ID_OFFSET", s_const_name + i_const_material_id_params + ".yz");
+}
