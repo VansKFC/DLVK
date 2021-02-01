@@ -1,0 +1,109 @@
+//new
+using settemplates;
+using engineflags;
+
+template
+{
+    category Main
+    {
+        string_dat tex_nrm = "" : editor(ImageFileNameEditor);
+        int_dat blend_mode = e_blend_mode_def  : converter(BlendMode_Variants);
+        float_dat deform_scale = 0.01;
+        float_dat treshold = 0.0;
+        float_dat coverage = 1.0;
+        float_dat fade_distance = 1000.0;
+    }
+
+    templatebody()
+    {
+		platform("*", "none; instancing");
+
+        tech("rfr")
+        {
+            Cull(NONE);
+            DepthFunc(LEQUAL, FALSE);
+
+            int_dat src_blend = ONE;
+            int_dat dst_blend = ZERO;
+
+            src_blend = If(blend_mode == e_bm_lerp, SRC_ALPHA, src_blend);
+            dst_blend = If(blend_mode == e_bm_lerp, INV_SRC_ALPHA, dst_blend);
+
+            src_blend = If(blend_mode == e_bm_add, ONE, src_blend);
+            dst_blend = If(blend_mode == e_bm_add, ONE, dst_blend);
+
+            src_blend = If(blend_mode == e_bm_mul, ZERO, src_blend);
+            dst_blend = If(blend_mode == e_bm_mul, SRC_COLOR, dst_blend);
+
+
+            int_dat src_blend_alpha = ZERO;
+            int_dat dst_blend_alpha = ONE;
+
+            BlendFunc(src_blend, dst_blend, src_blend_alpha, dst_blend_alpha);
+
+            C_DEFORM_SCALE = SetConst(deform_scale);
+            C_TRESHOLD = SetConst(treshold);
+            C_COVERAGE = SetConst(coverage * 100.0);
+            C_FADE_DISTANCE = SetConst(1.0/fade_distance);
+
+            S_NRM = SetTexture2D(tex_nrm, LINEAR_MIP_LINEAR, CLAMP, CLAMP, FALSE);
+            S_RFR = SetTexture2D(i_user_map_pp_def, LINEAR_NO_MIP, MIRROR, MIRROR, FALSE);
+
+            Input I_POS_0 = new InputFloat4("POSITION");
+            Input I_UV_0 = new InputFloat2("TEXCOORD0");
+            Input I_CLR_VRT = new InputFloat4("COLOR0");
+
+            Output O_RT0 = new OutputFLOAT4("COLOR0");
+
+            X_UV_0 = SetTexcoord2();
+            X_CLR_VRT_A = SetTexcoord();
+
+            VertexShader()
+            {
+                hlsl()
+                {
+                    #include <master_new.hlsl>
+
+                    void main()
+                    {
+                        float4 pos_cs = I_POS_0;
+                        V_POS_OUT_TC = Pos_Out_CS(pos_cs);
+                        X_UV_0 = I_UV_0;
+                        X_CLR_VRT_A = I_CLR_VRT.a * C_DEFORM_SCALE * saturate(1.0 -(length(pos_cs.xyz)) * C_FADE_DISTANCE);
+                    }
+                }
+
+            }
+
+            PixelShader()
+            {
+                hlsl()
+                {
+                    #include <master_new.hlsl>
+
+                    void main()
+                    {
+                        float2 uv_screen = UV_Screen(V_POS_SS_TC);
+
+                        float2 nrm = Sample(S_NRM, X_UV_0).ga;
+						nrm = nrm * SwizzleXX(2.0) - SwizzleXX(1.0);
+
+						float strength = ((abs(nrm.x) + abs(nrm.y)) > C_TRESHOLD) ? X_CLR_VRT_A : 0.0;
+
+						uv_screen += nrm * strength;
+
+                        O_RT0.xyz = Sample(S_RFR, uv_screen).xyz;
+
+						#if defined(SHADER_PATH_X360)
+							O_RT0.xyz *= 32.0;
+						#endif
+
+                        O_RT0.w = saturate(dot(abs(nrm), SwizzleXX(C_COVERAGE) ));
+						
+						clip(O_RT0.w - (1.0 / 255.0));
+                    }
+                }
+            }
+        }
+    }
+}

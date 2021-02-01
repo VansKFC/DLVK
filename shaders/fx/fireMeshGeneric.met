@@ -1,0 +1,263 @@
+//new
+
+using engineflags;
+using settemplates;
+using tmu;
+
+// GENERIC FIRE MTT
+// MTT DESCRIPTION:
+//
+//
+//  b_worldspace = true, generates UVs for flames and embers form world position,
+//                       mesh needs to be flat and oriented vertically
+//                 false, uses given UVs.
+//
+//  base texture:
+//     r - scrolling flames
+//     g - glowing embers
+//     b - mask
+//     a - unused.
+//
+//  gradient texture - 1d tex of fire colors
+//
+//  depth near / far - in/out blending of fire on objects behind.
+//               value "0" disables blending.
+//
+//  Object user color 0
+//      r - multiplies intensity of fire (fade in/out or adjustment)
+//      g - multiplies mask (burning start/stop)
+//      b, a - unused
+//
+//   Intensity
+//     global - output color intensity
+//     flame/embers - relation beetween flame and ember intensity
+//
+//   BG normal usage - strength of deformation based on normals
+//                                                of objects behind
+//
+
+template
+{
+	public static int_dat e_gf_level = 0;
+	public static int_dat e_gf_alpha = 1;
+
+	category Main
+	{
+		string_dat s_base_tex = s_tex_def;
+		string_dat s_grad_tex = "firegrad_generic.dds";
+		float_dat  f_speed = 0.25;
+		float_dat  f_scale = 1.00;
+		float_dat  f_bg_normal_usage = 1.0;
+		float_dat  f_global_intensity = 1.0;
+		float_dat  f_ember_intensity  = 1.0;
+		float_dat  f_flame_intensity  = 1.0;
+		float_dat  f_depth_near = 20.0;
+		float_dat  f_depth_far  = 50.0;
+		int_dat    e_fade_type = e_gf_level;
+		bool_dat   b_worldspace  = TRUE;
+	}
+
+    templatebody()
+    {
+		tech(s_tech_trn)
+        {
+			Cull(NONE);
+
+			BlendFunc(SRC_ALPHA, INV_SRC_ALPHA, ZERO, ONE);
+			DepthFunc(LEQUAL, FALSE);
+
+
+			Input I_POS_MS = new InputFloat4("POSITION");
+			Input I_UV_0 = new InputFloat2("TEXCOORD0");
+
+			Output O_CLR = new OutputFLOAT4("COLOR0");
+
+			X_GLOBAL_INT = SetTexcoord();
+			X_FLAME_INT = SetTexcoord();
+			X_EMBER_INT = SetTexcoord();
+			X_UV_MASK = SetTexcoord2();
+			X_UV_SPARKS = SetTexcoord2();
+			X_UV_WAVE_1 = SetTexcoord2();
+			X_UV_WAVE_2 = SetTexcoord2();
+
+
+
+			extern float_dat f_pp_hdr_intensity_emissive;
+
+			S_BASE = SetTexture(s_base_tex, e_tex_filter_def, MIRROR, MIRROR, false);
+			S_GRAD = SetTexture(s_grad_tex, e_tex_filter_def, CLAMP, CLAMP, true);
+			S_T00 = SetTexture(21, 0, 1, 1, false);
+
+			C_PARAM_SPEED_A = SetConst(1.0/f_speed);
+			C_PARAM_SPEED_B = SetConst(1.0/f_speed * 1.5);
+			C_PARAM_SCALE = SetConst(f_scale * 0.0075);
+			C_PARAM_GLOBAL_INT = SetConst(1.5 * f_pp_hdr_intensity_emissive * f_global_intensity);
+			C_PARAM_EMBER_INT = SetConst(5.0 * f_ember_intensity);
+			C_PARAM_FLAME_INT = SetConst(1.25 * f_flame_intensity);
+			C_PARAM_DPT_NEAR = SetConst(If(f_depth_near > 0.0, 1.0/f_depth_near, 10000.0));
+			C_PARAM_DPT_FAR = SetConst(If(f_depth_far > 0.0, 1.0/f_depth_far, 10000.0));
+			C_PARAM_NORMALS_EMBER = SetConst(0.10 * f_bg_normal_usage);
+			C_PARAM_NORMALS_FLAME = SetConst(0.05 * f_bg_normal_usage);
+
+			if(f_depth_near > 0.0)
+			{
+				X_DEPTH_NEAR = SetTexcoord();
+			}
+
+			if(f_depth_far > 0.0)
+			{
+				X_DEPTH_FAR = SetTexcoord();
+			}
+
+			if(f_depth_near > 0.0 & f_depth_far > 0.0)
+			{
+			  Define("DPT_BOTH", 1.0);
+			}
+
+			if(e_fade_type == e_gf_level)
+			{
+			  Define("FADE_LEVELS", 1);
+			}
+			else
+			{
+			  Define("FADE_ALPHA", 1);
+			}
+
+			if(f_bg_normal_usage > 0.0)
+			{
+				Define("USE_BG_NORMALS", 1.0);
+			}
+
+			if( b_worldspace )
+			{
+			  Define("B_WORLDSPACE", 1);
+			}
+
+			use PP_DEPTH_TMU();
+
+			VertexShader()
+			{
+				hlsl(s_hlsl_profile_def)
+				{
+
+					#include <master_new.hlsl>
+
+					void main()
+					{
+						float4 pos_ms = Decode_Pos(I_POS_MS);
+						float4 pos_ws = Mul_Pos(pos_ms, MODEL_XFORM_4x3);
+
+						X_UV_MASK =  Decode_UV(I_UV_0);
+
+						X_GLOBAL_INT = CONST_0.r * C_PARAM_GLOBAL_INT;
+
+						X_FLAME_INT = CONST_0.g * C_PARAM_FLAME_INT;
+						X_EMBER_INT = CONST_0.g * C_PARAM_EMBER_INT;
+
+						V_POS_OUT_TC = Mul44(pos_ws, VIEWPROJ_XFORM);
+
+						#if defined(B_WORLDSPACE)
+						  X_UV_SPARKS.x  = ((pos_ws.x + pos_ws.z) * C_PARAM_SCALE - X_UV_MASK.x) * 0.5;
+						  X_UV_SPARKS.y  = (pos_ws.y) * C_PARAM_SCALE * 0.5;
+						#else
+						  X_UV_SPARKS = X_UV_MASK;
+						#endif
+
+						X_UV_WAVE_1 = X_UV_SPARKS;
+						X_UV_WAVE_2 = X_UV_SPARKS;
+
+						X_UV_WAVE_1.y *= 2.0;
+						X_UV_WAVE_1.x  = 1.0 - X_UV_SPARKS.x;
+						X_UV_WAVE_2.y *= 2.0;
+
+						X_UV_WAVE_1.y -= frac(TIME * C_PARAM_SPEED_A) * 2.0;
+						X_UV_WAVE_2.y -= frac(TIME * C_PARAM_SPEED_B) * 2.0;
+
+						X_UV_SPARKS *= 2.0;
+
+						#if defined(X_DEPTH_NEAR)
+							X_DEPTH_NEAR = dot(pos_ws, VIEWPROJ_XFORM[3]) * C_PARAM_DPT_NEAR;
+						#endif
+
+						#if defined(X_DEPTH_FAR)
+							X_DEPTH_FAR = dot(pos_ws, VIEWPROJ_XFORM[3]) * C_PARAM_DPT_FAR;
+						#endif
+					}
+				}
+
+			}
+
+			PixelShader()
+			{
+				hlsl(s_hlsl_profile_def)
+				{
+
+					#include <master_new.hlsl>
+					#include <depth_sample.hlsl>
+
+					void main()
+					{
+						float2 v_uv = UV_Screen(V_POS_SS_TC);
+						float f_depth = Depth_Sample(v_uv);
+						FLOAT f_diff = 1.0;
+
+						#if defined(F_PARAM_DPT_NEAR)
+							f_diff = saturate(f_depth * C_PARAM_DPT_NEAR - X_DEPTH_NEAR);
+							clip(f_diff - 0.01);
+						#endif
+
+						#if defined(F_PARAM_DPT_FAR)
+							f_diff *= saturate(1.0 - f_depth * C_PARAM_DPT_FAR + X_DEPTH_FAR);
+							clip(f_diff - 0.01);
+						#endif
+
+						f_diff *= f_diff;
+
+
+						float2 uv_embers = X_UV_SPARKS;
+						float2 uv_flames_1 = X_UV_WAVE_1;
+						float2 uv_flames_2 = X_UV_WAVE_2;
+
+						#if defined(USE_BG_NORMALS)
+							FLOAT2 v_uv_screen = UV_Screen(V_POS_SS_TC);
+							FLOAT4 v_user_map_pp_nrm = Sample (S_T00 , v_uv_screen) ;
+							FLOAT3 v_nrm = normalize( v_user_map_pp_nrm . rgb * 2.0 - 1.0) ;
+
+							uv_embers   += C_PARAM_NORMALS_EMBER * v_nrm.xz;
+							uv_flames_1 += C_PARAM_NORMALS_FLAME * v_nrm.xz;
+							uv_flames_2 += C_PARAM_NORMALS_FLAME * v_nrm.xz;
+						#endif
+
+						FLOAT  f_mask   = Sample_h4( S_BASE, X_UV_MASK ).b;
+						FLOAT  f_embers = Sample_h2( S_BASE, uv_embers).g;
+						FLOAT  f_wave_1 = Sample_h2( S_BASE, uv_flames_1).r;
+						FLOAT  f_wave_2 = Sample_h2( S_BASE, uv_flames_2).r;
+
+						FLOAT level = f_mask * (X_FLAME_INT * (f_wave_1 + f_wave_2)
+																  + X_EMBER_INT * f_embers);
+
+						#if defined (FADE_LEVELS)
+							level *= f_diff;
+						#endif
+
+						FLOAT4 v_clr_fire = Sample_h4(S_GRAD, float2(level, 0.0)) * X_GLOBAL_INT;
+						FLOAT  alpha = v_clr_fire.r;
+
+						#if defined(FADE_ALPHA)
+							alpha *= f_diff;
+						#endif
+
+						O_CLR = v_clr_fire;
+						O_CLR.a = alpha;
+
+
+						clip(-step(O_CLR.a, 0.001));
+
+					}
+				}
+			}
+        }
+    }
+}
+
+

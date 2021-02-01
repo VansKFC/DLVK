@@ -1,0 +1,105 @@
+//new
+
+using engineflags;
+using settemplates;
+
+template
+{
+	category LOOT
+	{
+		class Basic
+		{
+
+		}
+	}
+	
+	public void setup()
+	{
+		tech("rfr")
+		{
+			use SetupMaterial();
+			Cull(NONE);
+			DepthFunc(LEQUAL, TRUE);
+			BlendFunc(ONE,ONE,ZERO,SRC_ALPHA);
+			Input I_POS_0 = new InputFloat4("POSITION");
+			Input I_CLR_USR = new InputFloat4("COLOR_USER");
+			Input I_NRM_0 = new InputFloat3("NORMAL0");
+			Output O_CLR = new OutputFLOAT4("COLOR0");
+			
+			X_V_CLR_3 = SetTexcoord3();
+			X_V_CLR = SetTexcoord();
+
+			
+			Define("D_LOOT_FACTOR", 5.0);
+			Define("D_LOOT_HIGH", 0.5 );
+			
+			VertexShader()
+			{
+				use Instancing();
+				hlsl()
+				{
+					#include <master_new.hlsl>
+					
+					void main()
+					{
+					
+						float4 usr_1;
+						float4 usr_0 = Decode_Usr(I_CLR_USR, usr_1);
+						
+						
+						float3 nrm_ws = Mul33(I_NRM_0, MODEL_XFORM_4x3);
+						float3 nrm_es = Mul33(nrm_ws, VIEW_XFORM);
+						float3 nrm_n_es = normalize(nrm_es);
+						
+						float4 pos_ms = Decode_Pos(I_POS_0);
+						pos_ms.xyz -= normalize(I_NRM_0) * 0.005;
+						float4 pos_ws = Mul_Pos(pos_ms, MODEL_XFORM_4x3);
+						float3 v_pivot_pos_ws = float3(MODEL_XFORM_4x3[0].w, MODEL_XFORM_4x3[1].w, MODEL_XFORM_4x3[2].w);
+						
+						float dir_y = (( nrm_ws.y>0.0) ?  1.0: -0.0 ) ;
+						pos_ws.y += D_LOOT_HIGH*dir_y ;
+						V_POS_OUT_TC = Pos_Out_WS(pos_ws);
+		
+						float3 pos_noise = pos_ms.xyz;
+						float time_x = TIME  ;
+						float wind_noise_scale =5.0 ;
+						float wind_msk =  1 ; 
+								
+						float  noise_delay_z1 = (smoothstep ( 1.0, 0.0, abs(frac( time_x * 0.193 + pos_noise.z * wind_noise_scale * 0.273 + pos_noise.x * wind_noise_scale * 0.11 ) - 0.5) * 2.0) * 2.0 - 1.0) ;
+						float  noise_delay_y1 = (smoothstep ( 1.0, 0.0, abs(frac( time_x * 0.232 + pos_noise.y * wind_noise_scale * 0.255 + pos_noise.z * wind_noise_scale * 0.13 ) - 0.5) * 2.0) * 2.0 - 1.0) ;
+								
+						float noise_vec = ( smoothstep ( 1.0, 0.0, abs(frac( time_x - pos_noise.x * wind_noise_scale * 0.23 + noise_delay_z1 * 0.37 ) - 0.5) * 2.0 ) * 2.0 - 1.0) ;
+						noise_vec += ( smoothstep ( 1.0, 0.0, abs(frac(time_x - pos_noise.x * wind_noise_scale * 0.12 + noise_delay_y1 * 0.31 ) - 0.5) * 2.0 ) * 2.0 - 1.0) ;
+						X_V_CLR_3 = (SwizzleXXX(noise_vec) *  0.3 + 0.7) * usr_0.rgb * usr_0.a * D_LOOT_FACTOR ;
+						X_V_CLR = (( dir_y>0.0) ?  0.0: 1.0 );
+						
+						// float3 color_p = float3(0.0, 0.3333, 0.6666);
+						// X_V_CLR_3= saturate(abs(frac(usr_0.a +color_p )*2.0-1.0)*2-0.6);
+
+					}
+				}
+			}
+			PixelShader()
+			{
+				hlsl()
+				{
+				    #include <master_new.hlsl>
+					
+					void main()
+					{
+						FLOAT clr_msk =  X_V_CLR * X_V_CLR ; // to w pikslu zeby byla ladna maska
+						O_CLR.xyz = X_V_CLR_3 * clr_msk ;
+							
+						O_CLR.w = 1.0;
+
+					}
+				}
+			}
+		}
+	}
+	    templatebody()
+    {
+		loot loot_render = new loot(this);
+		loot_render.setup();		
+    }
+}

@@ -1,0 +1,145 @@
+//new
+
+using engineflags;
+using settemplates;
+using tmu;
+
+template
+{   
+	category Main
+	{
+		string_dat s_tex_dmg          = s_tex_def;
+		string_dat s_tex_sht          = s_tex_def;
+		string_dat s_tex_env          = "interior_cube_map.dds";
+		float_dat f_env_factor        = 0.1;
+		float_dat f_shutter_tile      = 3.0;
+		float_dat f_shutter_intensity = 0.25;
+		float_dat f_damage_intensity  = 1.0;
+		float_dat f_falling_intensity = 1.0;
+		float_dat f_edge_intenisty    = 0.25;
+		float_dat f_base_op           = 0.5;
+		float_dat f_damagescale       = 4.0;
+	}
+	
+    templatebody()
+    {
+		tech(s_tech_trn)
+        {
+			Cull(CCW);
+                
+			BlendFunc(SRC_ALPHA, INV_SRC_ALPHA, ZERO, ONE);
+			DepthFunc(LEQUAL, FALSE);				
+			
+			Input I_POS_MS = new InputFloat4("POSITION");
+			Input I_NRM_MS = new InputFloat3("NORMAL");
+			Input I_UV_0 = new InputFloat2("TEXCOORD0");
+
+			Output O_CLR = new OutputFLOAT4("COLOR0");
+
+			X_UV_0 = SetTexcoord2();			
+			X_UV_1 = SetTexcoord2();
+			X_UV_2 = SetTexcoord2();
+			X_UV_3 = SetTexcoord2();
+			X_UV_4 = SetTexcoord2();
+			X_UV_ENV = SetTexcoord3();
+			X_CLR_0 = SetTexcoord4();
+
+			S_CLR = SetTexture(s_tex_dmg);
+			S_DAMAGE = SetTexture(s_tex_dmg, e_tex_filter_def, CLAMP, CLAMP, false);
+			S_SHUTTER = SetTexture(s_tex_sht);
+			S_ENV = SetTextureCUBE(s_tex_env);
+			
+			C_PARAM_INT_SHUTTER = SetConst(f_shutter_intensity);
+			C_PARAM_INT_FALLING = SetConst(f_falling_intensity);
+			C_PARAM_INT_DAMAGE = SetConst(f_damage_intensity);
+			C_PARAM_INT_EDGE = SetConst(f_edge_intenisty);
+			
+			C_PARAM_INT_BASE = SetConst(f_base_op);
+			C_PARAM_DMG_SCALE = SetConst(1.0/f_damagescale);
+			C_PARAM_SHUTTER_SCALE = SetConst(f_shutter_tile);
+			C_PARAM_ENV_FACTOR = SetConst(f_env_factor);
+			
+			VertexShader()
+			{
+				hlsl(s_hlsl_profile_def)
+				{
+					
+					#include <master_new.hlsl>
+
+					void main()
+					{
+						float4 pos_ms = Decode_Pos(I_POS_MS);
+						float4 pos_ws = Mul_Pos(pos_ms, MODEL_XFORM_4x3);
+						V_POS_OUT_TC = Mul44(Decode_Pos(I_POS_MS), COMBINED_XFORM);   
+
+						X_CLR_0 = float4(1,1,1,1);
+
+						X_CLR_0.r = 0.9 - CONST_0.r;                   // f_damage_vis;
+						X_CLR_0.g = CONST_0.g;                         // f_shutter_progress;
+						X_CLR_0.b = saturate( 1.0 - 2.0 * X_CLR_0.r); // detail visibility; 
+						X_CLR_0.a = 1.8 * CONST_0.g - 0.2;             // falling glass factor
+
+						X_UV_0 = Decode_UV(I_UV_0);
+
+						X_UV_1 =  X_UV_0 * C_PARAM_SHUTTER_SCALE;
+						X_UV_2 =  X_UV_0;
+						X_UV_3 =  X_UV_0 - float2(0.0, TIME);
+						X_UV_4 =  X_UV_0 - 1.5 * float2(0.0, TIME);
+
+						X_UV_0 = C_PARAM_DMG_SCALE * (X_UV_0 - float2(CONST_0.b, CONST_0.a)) + float2(0.5, 0.5);// offset
+
+						float3 v_cam_dir_ws = pos_ws.xyz - CAMERA_POS_WS.xyz;
+						float3 v_cam_dir_n_ws = normalize(v_cam_dir_ws);
+
+						float3 v_nrm_ws = Mul33(I_NRM_MS, MODEL_XFORM_4x3);
+						v_nrm_ws = normalize(v_nrm_ws);
+
+						X_UV_ENV = reflect(v_cam_dir_n_ws, v_nrm_ws);											
+					}
+				}
+
+			}
+
+			PixelShader()
+			{
+				hlsl(s_hlsl_profile_def)
+				{
+					
+					#include <master_new.hlsl>
+
+					void main()
+					{
+						FLOAT3 v_clr_env = SampleCUBE_h3(S_ENV, X_UV_ENV, 1.35);
+						v_clr_env *= v_clr_env;
+
+						FLOAT f_clr_damage  = C_PARAM_INT_DAMAGE  * Sample_h2( S_DAMAGE, X_UV_0 ).r;
+						FLOAT f_clr_detail = C_PARAM_INT_SHUTTER * Sample_h2( S_CLR, X_UV_1    ).g;
+
+						FLOAT f_damage_grad       = Sample_h4(S_DAMAGE, X_UV_0 ).b;
+
+						FLOAT2 v_clr_shutter_grad = Sample_h4( S_SHUTTER, X_UV_2 ).bg;
+						FLOAT  f_clr_falling      = Sample_h2( S_SHUTTER, X_UV_3 ).r 
+											+ Sample_h2(S_SHUTTER, X_UV_4  ).r;
+										  
+						f_clr_falling *= C_PARAM_INT_FALLING * saturate((X_CLR_0.a - v_clr_shutter_grad.g) * 10.0);
+
+						float f_damage = f_clr_damage * step(X_CLR_0.r, f_damage_grad);
+						float	f_edge   = v_clr_shutter_grad.r * C_PARAM_INT_EDGE;
+
+						float f_shutter = step(X_CLR_0.g - 0.1, v_clr_shutter_grad.g);
+
+						float f_mask = f_damage + (f_edge + f_clr_detail) * X_CLR_0.b + f_clr_falling;
+
+						O_CLR.rgb =  f_mask + C_PARAM_ENV_FACTOR * v_clr_env;
+						O_CLR.a   = (f_mask + C_PARAM_INT_BASE) * f_shutter;
+						
+						clip(-step(O_CLR.a, 0.01));
+
+					}
+				}
+			}
+        }
+    }
+}
+
+  
