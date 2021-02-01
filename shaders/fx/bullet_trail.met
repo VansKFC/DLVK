@@ -1,0 +1,114 @@
+//new
+using settemplates;
+using engineflags;
+
+template
+{
+    category Basic
+    {
+		class Main
+		{
+			vec3_dat clr = vec(2.0, 1.25, 0.0) : editor(ColorRGBEditor), display(Color);
+		}
+    }
+
+    templatebody()
+    {
+        tech("ems")
+        {
+            Cull(NONE);
+			AlphaFunc(GREATER, 0.0);
+			BlendFunc(ONE, ONE, ZERO, ONE);
+            DepthFunc(LEQUAL, FALSE);
+
+			extern float_dat f_pp_hdr_intensity_emissive;
+			C_CLR = SetConst(pow(clr, 2.2) * f_pp_hdr_intensity_emissive);
+
+			Input I_POS_MS = new InputFloat4("POSITION");
+			Input I_CLR_USR = new InputFloat4("COLOR_USER");
+            // Input I_UV_0 = new InputFloat2("TEXCOORD0");
+
+			X_POS = SetTexcoord3();
+			X_CLR = SetTexcoord3();
+			X_CAM_DIR = SetTexcoord3();
+
+            Output O_CLR = new OutputFLOAT4("COLOR0");
+
+			Define("D_MAX_LENGTH", 1.0);
+			Define("D_SCALE_Z", 0.01);
+			Define("D_MASK_POWER", 30.0);
+
+            VertexShader()
+            {
+                use Instancing();
+
+                hlsl()
+                {
+                    #include <master_new.hlsl>
+					#include <fog.hlsl>
+
+                    void main()
+                    {
+						float4 pos_ms = Decode_Pos(I_POS_MS);
+						float4 clr_usr_0 = Decode_Usr(I_CLR_USR);
+
+						//clipping
+						float2 extents_z = clr_usr_0.xy * D_MAX_LENGTH;
+						pos_ms.z = max(pos_ms.z, extents_z.x);
+						pos_ms.z = min(pos_ms.z, extents_z.y);
+
+                        float4 pos_ws = Mul_Pos(pos_ms, MODEL_XFORM_4x3);
+
+						float4 pos_scaled_ms = pos_ms;
+						pos_scaled_ms.xy *= sqrt(length(CAMERA_POS_WS.xyz - pos_ws.xyz)) * 0.2;
+						// pos_ws = Mul_Pos(pos_scaled_ms, MODEL_XFORM_4x3);
+						V_POS_OUT_TC = Pos_Out_WS(pos_ws);
+
+						X_CLR = Scattering_Ext(length(CAMERA_POS_WS.xyz - pos_ws.xyz));
+						X_CLR *= C_CLR;
+
+						//mask
+						float4 pos_s = pos_ms;
+						pos_s.z -= D_MAX_LENGTH * 0.5;
+						pos_s.z *= D_SCALE_Z;
+						X_POS = pos_s.xyz;
+
+						float4 m_model[3];
+						m_model[0] = MODEL_XFORM_4x3[0];
+						m_model[1] = MODEL_XFORM_4x3[1];
+						m_model[2] = MODEL_XFORM_4x3[2];
+						
+						float4 m_invmodel[3];
+						InvertMTX(m_model, m_invmodel);
+
+						float3 cam_pos_s = Mul_Pos(CAMERA_POS_WS, m_invmodel).xyz;
+						cam_pos_s.z -= D_MAX_LENGTH * 0.5;
+						cam_pos_s.z *= D_SCALE_Z;
+
+						X_CAM_DIR = cam_pos_s - pos_s.xyz;
+                    }
+                }
+            }
+
+            PixelShader()
+            {
+                hlsl()
+                {
+                    #include <master_new.hlsl>
+
+                    void main()
+                    {
+						FLOAT3 cam_dir_n = normalize(X_CAM_DIR);
+						FLOAT3 pos_n = normalize(X_POS);
+
+						FLOAT mask = saturate(dot(cam_dir_n, pos_n));
+						mask = pow(mask, D_MASK_POWER);
+						
+						O_CLR.xyz = X_CLR * mask;
+						O_CLR.w = 0.0;
+					}
+                }
+            }
+        }
+    }
+}

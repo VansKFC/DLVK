@@ -1,0 +1,86 @@
+using engineflags;
+using settemplates;
+using tmu;
+template
+{   
+	category Main
+	{
+		string_dat s_msk = s_tex_def;
+		float_dat f_scale = 1.0;
+		float_dat f_speed = 1.0;
+	}
+	
+    templatebody()
+    {
+		tech(s_tech_trn)
+        {
+			Cull(NONE);
+            BlendFunc(ONE, ONE, ONE, ONE);
+            DepthFunc(LEQUAL, FALSE);
+			
+			Input I_POS_MS = new InputFloat4("POSITION");
+			Input I_CLR_0 = new InputFloat4("COLOR0");
+
+			Output O_CLR = new OutputFLOAT4("COLOR0");
+
+			X_CLR_0 = SetTexcoord3();			
+			
+			
+			extern float_dat f_pp_hdr_intensity_emissive;
+            extern float_dat TIME;
+			
+			
+
+			C_SCALE = SetConst(f_pp_hdr_intensity_emissive * f_scale);
+			C_TIME = SetConst(f_speed * TIME);	
+			
+			
+			if(s_msk != s_tex_def)
+			{
+				Define("MSK_ON", 1);
+				Input I_UV_0 = new InputFloat2("TEXCOORD0");
+				X_UV_0 = SetTexcoord2();
+				S_MSK = SetTexture(s_msk, LINEAR_MIP_POINT, CLAMP, CLAMP, false);
+			}
+			
+			VertexShader()
+			{
+				hlsl(s_hlsl_profile_def)
+				{
+					
+					#include <master_new.hlsl>
+
+					void main()
+					{
+						V_POS_OUT_TC = Mul44(Decode_Pos(I_POS_MS), COMBINED_XFORM);
+
+						float f_func = frac(C_TIME + I_CLR_0.w);
+						
+						f_func = C_SCALE - C_SCALE * f_func;
+																							
+						X_CLR_0.xyz = pow(I_CLR_0.xyz, float3(2.2, 2.2, 2.2)) * f_func;
+
+						#if defined(MSK_ON)
+							X_UV_0 =  Decode_UV(I_UV_0);
+						#endif
+					}
+				}
+
+			}
+
+PixelShader()
+{
+ hlsl(s_hlsl_profile_def)
+ {			
+ #include <master_new.hlsl>
+ void main()
+ {
+  O_CLR.xyz = X_CLR_0;			
+  #if defined(MSK_ON)
+  FLOAT f_mask = Sample_h2(S_MSK, X_UV_0).g;
+	O_CLR.xyz *= f_mask;
+	#endif
+	O_CLR.w = 1.0;
+  }
+ }
+}}}}
