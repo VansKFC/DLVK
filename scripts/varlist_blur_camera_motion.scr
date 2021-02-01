@@ -1,0 +1,4 @@
+VarFloat("f_blur_camera_motion_factor", 12.0)
+VarFloat("f_blur_camera_motion_near", 0.5)
+VarFloat("f_blur_camera_motion_far", 1.0)
+VarFloat("f_blur_camera_motion_max", 12.0)
