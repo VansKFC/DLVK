@@ -1,0 +1,8 @@
+VarFloat("f_sun_glow_radius",50.0)
+VarFloat("f_sun_glow_range",5.0)
+VarFloat("f_sun_glow_near",10.0)
+VarFloat("f_sun_glow_rotation_speed",0.3)
+VarFloat("f_sun_glow_rotation_offset",2.0)
+VarVec3("v_sun_glow_color",[0.0,0.0,0.0])
+VarFloat("f_sun_flare_on",0.0)
+VarFloat("f_sun_flare_intensity",0.0)

@@ -1,0 +1,6 @@
+VarFloat("f_rain_strength",0.0)
+VarFloat("f_rain_drops_speed",0.0)
+VarFloat("f_rain_drops_opacity",0.0)
+VarFloat("f_rain_drops_extent",0.0)
+VarFloat("f_rain_drops_strength",0.0)
+VarFloat("f_rain_reflection_strength",0.0)
