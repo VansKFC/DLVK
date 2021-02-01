@@ -4,7 +4,7 @@
  - performance 
  - cosmetic
  - efficiency
-##### touchup of the game **Dying Light** originally using the [Direct3D11](https://docs.microsoft.com/en-us/windows/win32/direct3d11/atoc-dx-graphics-direct3d-11) and [OpenGL](https://www.opengl.org/) rendering API's and shading languages using [DXVK](https://github.com/doitsujin/dxvk)
+##### touchup of the game [Dying Light](https://dyinglightgame.com/dyinglight/) originally using the [Direct3D11](https://docs.microsoft.com/en-us/windows/win32/direct3d11/atoc-dx-graphics-direct3d-11) and [OpenGL](https://www.opengl.org/) rendering API's and shading languages using [DXVK](https://github.com/doitsujin/dxvk)
 
 ### DLVK is not:
 - a vector for cheats
