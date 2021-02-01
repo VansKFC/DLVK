@@ -1,0 +1,666 @@
+ TravelDistance(1.00)
+ RayRanges(-100.00, 1000.00)
+ Layer("Trash")
+ {
+    RenderRangesLod(30.00, 0.00, 0.00)
+    BlendRangesLod(0, 5.00, 5.00)
+    DensityMap("old_town_foliage_trash")
+    InstancesPerMeter(4.00)
+    ExpensiveTraces(1)
+    Type()
+    {
+        MeshLod(0, "foliage_paper_a.msh", "paper_foliage.mat")
+        Priority(5)
+        AlignToNormal(1)
+        Scale(1.00, 1.10)
+        Shadows(0, 1)
+    }
+    Type()
+    {
+        MeshLod(0, "foliage_paper_b.msh", "paper_foliage.mat")
+        Priority(5)
+        AlignToNormal(1)
+        Scale(1.00, 1.10)
+        Shadows(0, 1)
+    }
+    Type()
+    {
+        MeshLod(0, "foliage_paper_d.msh", "paper_foliage.mat")
+        Priority(5)
+        AlignToNormal(1)
+        Scale(1.00, 1.10)
+        Shadows(0, 1)
+    }
+    Type()
+    {
+        MeshLod(0, "foliage_trash_a.msh", "trash_foliage.mat")
+        Priority(5)
+        AlignToNormal(1)
+        Scale(1.00, 1.10)
+        Shadows(-1, 0)
+    }
+    Type()
+    {
+        MeshLod(0, "foliage_trash_b.msh", "trash_foliage.mat")
+        Priority(5)
+        AlignToNormal(1)
+        Scale(1.00, 1.10)
+        Shadows(-1, 0)
+    }
+    Type()
+    {
+        MeshLod(0, "foliage_trash_d.msh", "trash_foliage.mat")
+        Priority(5)
+        AlignToNormal(1)
+        Scale(1.00, 1.10)
+        Shadows(-1, 0)
+    }
+    Type()
+    {
+        MeshLod(0, "foliage_trash_bottle_b.msh", "foliage_trash_a.mat")
+        Priority(5)
+        AlignToNormal(1)
+        Scale(1.00, 1.10)
+        Shadows(0, 1)
+    }
+    Type()
+    {
+        MeshLod(0, "to_carton_box_a.msh", "to_carton_box_a.mat")
+        Priority(5)
+        AlignToNormal(1)
+        Scale(1.00, 1.00)
+        Shadows(0, 1)
+    }
+    Type()
+    {
+        MeshLod(0, "to_carton_box_b.msh", "to_carton_box_b.mat")
+        Priority(5)
+        AlignToNormal(1)
+        Scale(1.00, 1.00)
+        Shadows(0, 1)
+    }
+    Type()
+    {
+        MeshLod(0, "to_carton_box_c.msh", "to_carton_box_c.mat")
+        Priority(5)
+        AlignToNormal(1)
+        Scale(1.00, 1.00)
+        Shadows(1, 0)
+    }
+    Type()
+    {
+        MeshLod(0, "foliage_paper_b.msh", "paper_foliage.mat")
+        Priority(5)
+        AlignToNormal(1)
+        Scale(1.00, 1.00)
+        Shadows(0, 1)
+    }
+    Type()
+    {
+        MeshLod(0, "foliage_trash_d.msh", "paper_foliage.mat")
+        Priority(5)
+        AlignToNormal(1)
+        Scale(1.00, 1.00)
+        Shadows(0, 1)
+    }
+    Type()
+    {
+        MeshLod(0, "to_cigarette_a.msh", "cigarette_a.mat")
+        Priority(5)
+        AlignToNormal(1)
+        Scale(1.00, 1.00)
+        Shadows(0, 1)
+    }
+    Type()
+    {
+        MeshLod(0, "to_cigarette_b.msh", "cigarette_a.mat")
+        Priority(5)
+        AlignToNormal(0)
+        Scale(1.00, 1.00)
+        Shadows(0, 1)
+    }
+    Type()
+    {
+        MeshLod(0, "bottle_trash_a.msh", "bottle_trash_a.mat")
+        Priority(1)
+        AlignToNormal(0)
+        Scale(1.00, 2.00)
+        Shadows(0, 1)
+    }
+    Type()
+    {
+        MeshLod(0, "bottle_trash_b.msh", "bottle_trash_a.mat")
+        Priority(1)
+        AlignToNormal(0)
+        Scale(1.00, 2.00)
+        Shadows(0, 1)
+    }
+    Type()
+    {
+        MeshLod(0, "bottle_trash_c.msh", "bottle_trash_a.mat")
+        Priority(1)
+        AlignToNormal(0)
+        Scale(1.00, 2.00)
+        Shadows(0, 1)
+    }
+    Type()
+    {
+        MeshLod(0, "bottle_trash_d.msh", "bottle_trash_a.mat")
+        Priority(1)
+        AlignToNormal(0)
+        Scale(1.00, 2.00)
+        Shadows(0, 1)
+    }
+ }
+ Layer("Grass")
+ {
+    RenderRangesLod(36.00, 0.00, 0.00)
+    BlendRangesLod(0, 5.00, 1.00)
+    DensityMap("old_town_foliage_grass")
+    InstancesPerMeter(6.00)
+    ExpensiveTraces(1)
+    Type()
+    {
+        MeshLod(0, "foliage_grass_a.msh", "foliage_grass_a_fade.mat")
+        Priority(70)
+        AlignToNormal(1)
+        Scale(1.00, 1.20)
+        Shadows(1, 1)
+    }
+ }
+ Layer("Stones")
+ {
+    RenderRangesLod(30.00, 0.00, 0.00)
+    BlendRangesLod(0, 5.00, 5.00)
+    DensityMap("old_town_foliage_stones")
+    InstancesPerMeter(2.00)
+    ExpensiveTraces(1)
+    Type()
+    {
+        MeshLod(0, "foliage_trash_stone_a.msh", "foliage_trash_stone_a.mat")
+        Priority(10)
+        AlignToNormal(1)
+        Scale(1.00, 1.30)
+        Shadows(0, 1)
+    }
+    Type()
+    {
+        MeshLod(0, "foliage_trash_stone_b.msh", "foliage_trash_stone_a.mat")
+        Priority(10)
+        AlignToNormal(1)
+        Scale(1.00, 1.20)
+        Shadows(0, 1)
+    }
+    Type()
+    {
+        MeshLod(0, "foliage_trash_stone_c.msh", "foliage_trash_stone_a.mat")
+        Priority(10)
+        AlignToNormal(1)
+        Scale(1.00, 1.30)
+        Shadows(0, 1)
+    }
+    Type()
+    {
+        MeshLod(0, "foliage_trash_stone_d.msh", "foliage_trash_stone_a.mat")
+        Priority(20)
+        AlignToNormal(1)
+        Scale(1.00, 1.30)
+        Shadows(0, 1)
+    }
+    Type()
+    {
+        MeshLod(0, "foliage_trash_stone_e.msh", "foliage_trash_stone_a.mat")
+        Priority(20)
+        AlignToNormal(1)
+        Scale(1.00, 1.30)
+        Shadows(0, 1)
+    }
+    Type()
+    {
+        MeshLod(0, "foliage_trash_stone_f.msh", "foliage_trash_stone_a.mat")
+        Priority(20)
+        AlignToNormal(1)
+        Scale(1.00, 1.30)
+        Shadows(0, 1)
+    }
+ }
+ Layer("Nature")
+ {
+    RenderRangesLod(46.00, 0.00, 0.00)
+    BlendRangesLod(0, 4.00, 4.00)
+    DensityMap("old_town_foliage_nature")
+    InstancesPerMeter(3.00)
+    ExpensiveTraces(1)
+    Type()
+    {
+        MeshLod(0, "foliage_grass_a.msh", "foliage_grass_a_fade.mat")
+        Priority(35)
+        AlignToNormal(0)
+        Scale(1.00, 1.25)
+        Shadows(1, 1)
+    }
+    Type()
+    {
+        MeshLod(0, "foliage_plant_b.msh", "foliage_plant_b_fade.mat")
+        Priority(20)
+        AlignToNormal(0)
+        Scale(0.60, 1.30)
+        Shadows(-1, 0)
+    }
+    Type()
+    {
+        MeshLod(0, "foliage_plant_a.msh", "foliage_plant_a_b_fade.mat")
+        Priority(20)
+        AlignToNormal(0)
+        Scale(0.60, 1.30)
+        Shadows(-1, 0)
+    }
+    Type()
+    {
+        MeshLod(0, "foliage_plant_a.msh", "foliage_plant_a_c_fade.mat")
+        Priority(20)
+        AlignToNormal(0)
+        Scale(0.80, 1.00)
+        Shadows(1, 0)
+    }
+ }
+ Layer("Gore")
+ {
+    RenderRangesLod(11.00, 0.00, 0.00)
+    BlendRangesLod(0, 2.00, 5.00)
+    DensityMap("old_town_foliage_gore")
+    InstancesPerMeter(3.00)
+    ExpensiveTraces(1)
+    Type()
+    {
+        MeshLod(0, "blood_basic_rorschach_a_l.msh", "dead_body_decal_blood.mat")
+        Priority(100)
+        AlignToNormal(1)
+        Scale(1.00, 2.00)
+        Shadows(1, 0)
+    }
+    Type()
+    {
+        MeshLod(0, "blood_basic_puddle_b_l.msh", "dead_body_decal_blood.mat")
+        Priority(20)
+        AlignToNormal(1)
+        Scale(1.00, 1.00)
+        Shadows(1, 0)
+    }
+    Type()
+    {
+        MeshLod(0, "blood_basic_shot_b_r.msh", "dead_body_decal_blood.mat")
+        Priority(100)
+        AlignToNormal(1)
+        Scale(1.00, 1.00)
+        Shadows(1, 0)
+    }
+    Type()
+    {
+        MeshLod(0, "blood_basic_droplets_a.msh", "dead_body_decal_blood.mat")
+        Priority(50)
+        AlignToNormal(0)
+        Scale(1.50, 2.00)
+        Shadows(1, 0)
+    }
+    Type()
+    {
+        MeshLod(0, "blood_basic_puddle_a_r.msh", "dead_body_decal_blood.mat")
+        Priority(10)
+        AlignToNormal(0)
+        Scale(1.20, 1.50)
+        Shadows(1, 0)
+    }
+    Type()
+    {
+        MeshLod(0, "blood_basic_rorschach_c_r.msh", "dead_body_decal_blood.mat")
+        Priority(100)
+        AlignToNormal(0)
+        Scale(1.00, 1.00)
+        Shadows(1, 0)
+    }
+    Type()
+    {
+        MeshLod(0, "blood_basic_line_a.msh", "dead_body_decal_blood.mat")
+        Priority(50)
+        AlignToNormal(0)
+        Scale(2.00, 3.00)
+        Shadows(1, 0)
+    }
+    Type()
+    {
+        MeshLod(0, "blood_basic_smear_a_l.msh", "dead_body_decal_blood.mat")
+        Priority(10)
+        AlignToNormal(0)
+        Scale(1.00, 1.00)
+        Shadows(1, 0)
+    }
+    Type()
+    {
+        MeshLod(0, "blood_basic_smear_b_l.msh", "dead_body_decal_blood.mat")
+        Priority(10)
+        AlignToNormal(0)
+        Scale(1.00, 1.00)
+        Shadows(1, 0)
+    }
+ }
+ Layer("Dead_Birds")
+ {
+    RenderRangesLod(32.00, 0.00, 0.00)
+    BlendRangesLod(0, 2.00, 5.00)
+    DensityMap("old_town_foliage_dead_birds")
+    InstancesPerMeter(2.00)
+    ExpensiveTraces(1)
+    Type()
+    {
+        MeshLod(0, "dead_bird_pigeon_a.msh", "dead_bird_pigeon.mat")
+        Priority(10)
+        AlignToNormal(1)
+        Scale(1.00, 1.00)
+        Shadows(0, 1)
+    }
+    Type()
+    {
+        MeshLod(0, "dead_bird_pigeon_b.msh", "dead_bird_pigeon.mat")
+        Priority(10)
+        AlignToNormal(1)
+        Scale(1.00, 1.00)
+        Shadows(0, 1)
+    }
+    Type()
+    {
+        MeshLod(0, "dead_bird_pigeon_c.msh", "dead_bird_pigeon.mat")
+        Priority(10)
+        AlignToNormal(1)
+        Scale(1.00, 1.00)
+        Shadows(0, 1)
+    }
+    Type()
+    {
+        MeshLod(0, "dead_bird_pigeon_compact.msh", "dead_bird_pigeon.mat")
+        Priority(10)
+        AlignToNormal(1)
+        Scale(1.00, 1.00)
+        Shadows(0, 1)
+    }
+    Type()
+    {
+        MeshLod(0, "dead_bird_pigeon_d.msh", "dead_bird_pigeon.mat")
+        Priority(10)
+        AlignToNormal(1)
+        Scale(1.00, 1.00)
+        Shadows(0, 1)
+    }
+    Type()
+    {
+        MeshLod(0, "dead_bird_pigeon_e.msh", "dead_bird_pigeon.mat")
+        Priority(10)
+        AlignToNormal(1)
+        Scale(1.00, 1.00)
+        Shadows(0, 1)
+    }
+    Type()
+    {
+        MeshLod(0, "dead_bird_pigeon_f.msh", "dead_bird_pigeon.mat")
+        Priority(10)
+        AlignToNormal(1)
+        Scale(1.00, 1.00)
+        Shadows(0, 1)
+    }
+ }
+ Layer("burned")
+ {
+    RenderRangesLod(30.00, 0.00, 0.00)
+    BlendRangesLod(0, 5.00, 5.00)
+    DensityMap("old_town_foliage_burned")
+    InstancesPerMeter(32.00)
+    ExpensiveTraces(1)
+    Type()
+    {
+        MeshLod(0, "tiny_obj_wood_a.msh", "tiny_obj_wood_a.mat")
+        Priority(10)
+        AlignToNormal(1)
+        Scale(1.00, 1.30)
+        Shadows(-1, 0)
+    }
+    Type()
+    {
+        MeshLod(0, "tiny_obj_wood_b.msh", "tiny_obj_wood_c.mat")
+        Priority(10)
+        AlignToNormal(1)
+        Scale(1.00, 1.20)
+        Shadows(-1, 0)
+    }
+    Type()
+    {
+        MeshLod(0, "tiny_obj_wood_c.msh", "tiny_obj_wood_c.mat")
+        Priority(10)
+        AlignToNormal(1)
+        Scale(1.00, 1.30)
+        Shadows(-1, 0)
+    }
+    Type()
+    {
+        MeshLod(0, "tiny_obj_wood_d.msh", "tiny_obj_wood_d.mat")
+        Priority(20)
+        AlignToNormal(1)
+        Scale(1.00, 1.30)
+        Shadows(-1, 0)
+    }
+    Type()
+    {
+        MeshLod(0, "tiny_obj_wood_e.msh", "tiny_obj_wood_e.mat")
+        Priority(20)
+        AlignToNormal(1)
+        Scale(1.00, 1.30)
+        Shadows(-1, 0)
+    }
+    Type()
+    {
+        MeshLod(0, "tiny_obj_wood_f.msh", "tiny_obj_wood_f.mat")
+        Priority(20)
+        AlignToNormal(1)
+        Scale(1.00, 1.30)
+        Shadows(-1, 0)
+    }
+ }
+ Layer("rubble")
+ {
+    RenderRangesLod(30.00, 0.00, 0.00)
+    BlendRangesLod(0, 5.00, 5.00)
+    DensityMap("old_town_foliage_rubble")
+    InstancesPerMeter(3.40)
+    ExpensiveTraces(1)
+    Type()
+    {
+        MeshLod(0, "tiny_obj_rock_a.msh", "tiny_obj_rock_a.mat")
+        Priority(10)
+        AlignToNormal(1)
+        Scale(0.80, 1.00)
+        Shadows(-1, 0)
+    }
+    Type()
+    {
+        MeshLod(0, "tiny_obj_rock_b.msh", "tiny_obj_rock_b.mat")
+        Priority(10)
+        AlignToNormal(1)
+        Scale(0.80, 1.00)
+        Shadows(-1, 0)
+    }
+    Type()
+    {
+        MeshLod(0, "tiny_obj_rock_c.msh", "tiny_obj_rock_c.mat")
+        Priority(10)
+        AlignToNormal(1)
+        Scale(0.80, 1.00)
+        Shadows(-1, 0)
+    }
+    Type()
+    {
+        MeshLod(0, "tiny_obj_rock_d.msh", "tiny_obj_rock_d.mat")
+        Priority(10)
+        AlignToNormal(1)
+        Scale(0.60, 0.80)
+        Shadows(-1, 0)
+    }
+    Type()
+    {
+        MeshLod(0, "tiny_obj_rock_e.msh", "tiny_obj_rock_e.mat")
+        Priority(10)
+        AlignToNormal(1)
+        Scale(0.60, 0.80)
+        Shadows(-1, 0)
+    }
+    Type()
+    {
+        MeshLod(0, "tiny_obj_rock_f.msh", "tiny_obj_rock_f.mat")
+        Priority(10)
+        AlignToNormal(1)
+        Scale(0.80, 1.00)
+        Shadows(-1, 0)
+    }
+ }
+ Layer("water_plants")
+ {
+    RenderRangesLod(40.00, 0.00, 0.00)
+    BlendRangesLod(0, 5.00, 5.00)
+    DensityMap("old_town_foliage_waterp")
+    InstancesPerMeter(1.00)
+    ExpensiveTraces(1)
+    Type()
+    {
+        MeshLod(0, "water_vegetation_c.msh", "water_vegetation_c.mat")
+        Priority(25)
+        AlignToNormal(0)
+        Scale(1.00, 1.30)
+        Shadows(-1, 0)
+    }
+    Type()
+    {
+        MeshLod(0, "water_vegetation_d.msh", "water_vegetation_c.mat")
+        Priority(25)
+        AlignToNormal(0)
+        Scale(1.00, 1.50)
+        Shadows(-1, 0)
+    }
+    Type()
+    {
+        MeshLod(0, "water_vegetation_b.msh", "water_vegetation_b.mat")
+        Priority(5)
+        AlignToNormal(0)
+        Scale(1.00, 1.80)
+        Shadows(-1, 0)
+    }
+    Type()
+    {
+        MeshLod(0, "water_vegetation_a.msh", "water_vegetation_a.mat")
+        Priority(2)
+        AlignToNormal(0)
+        Scale(1.00, 1.80)
+        Shadows(-1, 0)
+    }
+ }
+ Layer("Roof Trash")
+ {
+    RenderRangesLod(32.00, 0.00, 0.00)
+    BlendRangesLod(0, 2.00, 5.00)
+    DensityMap("old_town_foliage_rooftrash")
+    InstancesPerMeter(5.00)
+    ExpensiveTraces(1)
+    Type()
+    {
+        MeshLod(0, "foliage_paper_a.msh", "paper_foliage.mat")
+        Priority(100)
+        AlignToNormal(0)
+        Scale(0.80, 1.10)
+        Shadows(1, 0)
+    }
+    Type()
+    {
+        MeshLod(0, "foliage_paper_b.msh", "paper_foliage.mat")
+        Priority(100)
+        AlignToNormal(0)
+        Scale(0.80, 1.10)
+        Shadows(1, 0)
+    }
+    Type()
+    {
+        MeshLod(0, "foliage_paper_d.msh", "paper_foliage.mat")
+        Priority(100)
+        AlignToNormal(0)
+        Scale(0.80, 1.10)
+        Shadows(1, 0)
+    }
+    Type()
+    {
+        MeshLod(0, "foliage_trash_d.msh", "trash_foliage.mat")
+        Priority(20)
+        AlignToNormal(0)
+        Scale(0.80, 1.10)
+        Shadows(-1, 0)
+    }
+    Type()
+    {
+        MeshLod(0, "tiny_obj_wood_a.msh", "tiny_obj_wood_a.mat")
+        Priority(100)
+        AlignToNormal(0)
+        Scale(0.80, 1.10)
+        Shadows(1, 0)
+    }
+    Type()
+    {
+        MeshLod(0, "tiny_obj_wood_c.msh", "tiny_obj_wood_a.mat")
+        Priority(100)
+        AlignToNormal(0)
+        Scale(0.80, 1.10)
+        Shadows(1, 0)
+    }
+    Type()
+    {
+        MeshLod(0, "dead_bird_pigeon_a.msh", "dead_bird_pigeon.mat")
+        Priority(5)
+        AlignToNormal(0)
+        Scale(1.00, 1.00)
+        Shadows(-1, 0)
+    }
+    Type()
+    {
+        MeshLod(0, "dead_bird_pigeon_b.msh", "dead_bird_pigeon.mat")
+        Priority(5)
+        AlignToNormal(0)
+        Scale(1.00, 1.00)
+        Shadows(-1, 0)
+    }
+    Type()
+    {
+        MeshLod(0, "dead_bird_pigeon_c.msh", "dead_bird_pigeon.mat")
+        Priority(5)
+        AlignToNormal(0)
+        Scale(1.00, 1.00)
+        Shadows(-1, 0)
+    }
+    Type()
+    {
+        MeshLod(0, "dead_bird_pigeon_d.msh", "dead_bird_pigeon.mat")
+        Priority(5)
+        AlignToNormal(0)
+        Scale(1.00, 1.00)
+        Shadows(-1, 0)
+    }
+    Type()
+    {
+        MeshLod(0, "dead_bird_pigeon_e.msh", "dead_bird_pigeon.mat")
+        Priority(5)
+        AlignToNormal(0)
+        Scale(1.00, 1.00)
+        Shadows(-1, 0)
+    }
+    Type()
+    {
+        MeshLod(0, "dead_bird_pigeon_f.msh", "dead_bird_pigeon.mat")
+        Priority(5)
+        AlignToNormal(0)
+        Scale(1.00, 1.00)
+        Shadows(-1, 0)
+    }
+ }
