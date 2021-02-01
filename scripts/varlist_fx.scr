@@ -1,0 +1,2 @@
+VarVec3("v_fx_fnd_dust_color",[0.0,0.0,0.0])
+VarString("s_fx_weapon_trail","DefaultTexture.dds")

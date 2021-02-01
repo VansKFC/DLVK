@@ -1,0 +1,4 @@
+VarFloat("f_noise",0.0)
+VarFloat("f_noise_speed",0.0)
+VarFloat("f_noise_size",0.0)
+VarFloat("f_noise_color",0.0)
