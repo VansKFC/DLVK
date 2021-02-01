@@ -1,0 +1,23 @@
+import "vulkan-hook-logic.scr"
+import "frame_script_def.scr"
+import "frame_script.scr"
+import "frame_script_game.scr"
+sub void vkShadeInstance(){
+while("vulkan-hook-logic",1){
+}do{use weather_modify(),VKLayerLogic(),vk_render_frame(),vulkan_all();}
+vulkan_all(true){
+Vulkan(vk_render_frame + VKLayerLogic);
+do(f_game_player_toxic,1);
+return game_player_toxic;
+extern float vkPoisoned;
+extern float vkPoisonEffect;
+extern float vkf_game_player_toxic;
+extern float vkf_map_player_toxic;
+extern float vkf_game_player_infection;
+extern float vkf_movie_infection;
+extern float vkf_game_player_state_poisoned;
+extern float vkf_movie_toxic;
+float vkPoisonEffect = clamp(f_game_player_sate_poisoned);
+float vkPoisoned = sin(f_game_player_sate_poisoned * 2 / f_game_player_infection);}
+use game_modify();
+return 0;}
