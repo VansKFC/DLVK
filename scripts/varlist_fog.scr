@@ -1,5 +1,0 @@
-VarFloat("f_fog_near",0.0)
-VarFloat("f_fog_far",50.0)
-VarFloat("f_fog_opacity",0.2)
-VarFloat("f_fog_bright",0.0)
-VarVec3("v_fog_clr",[0.0,0.0,0.0])

@@ -1,4 +1,0 @@
-VarFloat("f_ambient_mip", 0.0)
-VarVec3("v_ambient", [0.0,0.0,0.0])
-VarFloat("f_amb_saturation", 0.0)
-VarFloat("f_lighting_indirect_factor", 0.0)

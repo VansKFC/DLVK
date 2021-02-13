@@ -1,5 +1,0 @@
-!include("varlist_blur_camera_motion.scr")
-VarFloat("f_pp_blur_camera_motion_factor", 12.0)
-VarInt("i_pp_blur_camera_motion_samples", 24)
-VarFloat("f_pp_blur_camera_motion_near", 0.5)
-VarFloat("f_pp_blur_camera_motion_far", 12.0)

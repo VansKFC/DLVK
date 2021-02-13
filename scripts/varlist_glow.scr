@@ -1,3 +1,0 @@
-VarFloat("f_glow_factor", 1.0)
-
-VarFloat("f_glow_threshold", 1.0)

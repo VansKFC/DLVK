@@ -1,8 +1,0 @@
-!include("varlist_fog.scr")
-VarFloat("f_pp_fog_near",0.0)
-VarFloat("f_pp_fog_far",50.0)
-VarFloat("f_pp_fog_opacity",0.2)
-VarVec3("v_pp_fog_clr",[0.0,0.0,0.0])
-VarVec3("v_pp_fog_clr_glow",[0.0,0.0,1.0])
-VarVec4("v_pp_fog_scalebias",[0.0,0.0,0.0,0.0])
-VarVec3("v_pp_fog_bright",[0.0,0.0,0.0])
