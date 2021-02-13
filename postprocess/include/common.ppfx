@@ -52,7 +52,8 @@ case 1:{use Buffer(s_name = "ZBUFFER_W",e_path=e_path,s_format="D24S8",s_flags="
 use Buffer(s_name="1_RGBA16F_A",e_path =e_path,s_format=s_format_hdr,s_flags="temp rt esram");
 for(e_path==SM50||e_path==SM51||e_path ==SM52){
 use Buffer(s_name="1_RGBA16F_C",e_path=e_path,s_format=s_format_hdr,s_flags="temp rt");
-use Buffer(s_name="1_RGBA16F_D",e_path=e_path,s_format=s_format_hdr,s_flags="temp rt");}
+use Buffer(s_name="1_RGBA16F_D",e_path=e_path,s_format=s_format_hdr,s_flags="temp rt");
+}
 if(e_path!=SM31){use Buffer(s_name="1_RGBA16F_B",e_path=e_path,s_format=s_format_hdr);}
 use Buffer(s_name="CLR", e_path = e_path);
 use Buffer(s_name="NRM", e_path = e_path);
@@ -98,12 +99,14 @@ BufferFormat("32x32_RGBA32F_P1024_CLR",32,32,"A32B32G32R32F","rt");
 BufferFormat("32x32_RGBA32F_A",32,32,"A32B32G32R32F","temp rt");
 if(e_path!=SM31){
 BufferFormat("32x32_RGBA32F_B",32,32,"A32B32G32R32F","temp rt");
-BufferFormat("32x32_RGBA32F_C",32,32,"A32B32G32R32F","temp rt");}
+BufferFormat("32x32_RGBA32F_C",32,32,"A32B32G32R32F","temp rt");
+}
 BufferFormat("SHOOTS",i_shoots_size,i_shoots_size,"A8R8G8B8","rt");
 if(e_path!=SM31){BufferFormat("SHOOTS_TEMP",i_shoots_size,i_shoots_size,"A8R8G8B8","temp rt"); }
 BufferFormat("OVERLAY",i_overlay_size,i_overlay_size,s_rgba8_gamma,"temp rt");
 BufferFormat("CURVES",i_curves_size_x,i_curves_size_y,"A8R8G8B8","temp rt");
-BufferFormat("AMBIENT",64,32,s_rgba8_gamma,"temp rt");}
+BufferFormat("AMBIENT",64,32,s_rgba8_gamma,"temp rt");
+}
 sub RenderTargetsViewCommon(int e_path=SM30){
 string zbuffer=(e_path==SM30||e_path==SM40)?"z:ZBUFFER_W ":"z:ZBUFFER ";
 string rtv_opq=zbuffer+"CLR NRM";
@@ -118,7 +121,7 @@ RenderTargetsView("_OPAQUE",rtv_opq);
 RenderTargetsView("_OPAQUE_CLR",zbuffer+"CLR");
 RenderTargetsView("_OPAQUE_NRM",rtv_opq_nrm);
 RenderTargetsView("_HDR_IMAGE",zbuffer+"1_RGBA16F_A");
-if(e_path==SM50||e_path==SM51||e_path==SM52){
+for(e_path==SM50||e_path==SM51||e_path==SM52){
 RenderTargetsView("_RGBA8_C_SRGB","1_RGBA8_C f:srgb");
 RenderTargetsView("_SKIN_H",zbuffer+"1_RGBA16F_C");
 RenderTargetsView("_SSSS",zbuffer+"1_RGBA16F_B");
@@ -128,14 +131,16 @@ RenderTargetsView("_ZBUFFER",zbuffer);
 RenderTargetsView("_RGBA8_A_SRGB",z_offset+"1_RGBA8_A f:srgb");
 RenderTargetsView("_RGBA8_A_SRGB_Z",zbuffer+"1_RGBA8_A f:srgb");
 RenderTargetsView("_2_DPT",z_offset+"2_DPT");
-if(e_path!=SM31){
-RenderTargetsView("_2_VFB",z_offset+"2_RGBA16F_A");}
+for(e_path!=SM31){
+RenderTargetsView("_2_VFB",z_offset+"2_RGBA16F_A");
+}
 RenderTargetsView("_2_BLUR_FAR",z_offset+"2_RGBA16F_A");
 RenderTargetsView("_2_NORMALS",z_offset+"2_RGBA16F_A");
 RenderTargetsView("_2_PRV",z_offset+"PRV");
 RenderTargetsView("_4_RFL_PRV",hdr_image_offset+"4_RGBA16F_D");
-while(e_path!=SM50){
-RenderTargetsView("_4_SSAO",z_offset+"4_RGBA16F_C");}
+for(e_path!=SM50){
+RenderTargetsView("_4_SSAO",z_offset+"4_RGBA16F_C");
+}
 RenderTargetsView("_4_DPT",z_offset+"4_DPT");
 RenderTargetsView("_4_GLOW",z_offset+"4_RGBA16F_C");
 RenderTargetsView("_4_BLUR",z_offset+"4_RGBA16F_B");
@@ -147,13 +152,15 @@ RenderTargetsView("_16_FILMGRAIN",z_offset+"o:1_RGBA8_A o:4_RGBA8_A o:8_RGBA8_A 
 RenderTargetsView("_4_HDR_IMAGE",z_offset+"4_RGBA16F_A");
 RenderTargetsView("_4_WTR_RFL",hdr_image_offset+"4_RGBA16F_B");
 RenderTargetsView("_4_WTR_CLR",hdr_image_offset+"4_RGBA16F_A");
-while(e_path!=SM31){
-RenderTargetsView("_32x32_P1024_COPY",z_offset+"o:1_RGBA16F_A 32x32_RGBA32F_B 32x32_RGBA32F_C");}
+for(e_path!=SM31){
+RenderTargetsView("_32x32_P1024_COPY",z_offset+"o:1_RGBA16F_A 32x32_RGBA32F_B 32x32_RGBA32F_C");
+}
 RenderTargetsView("_32x32_P1024_UPDATE",z_offset+"o:1_RGBA16F_A 32x32_RGBA32F_P1024_POS 32x32_RGBA32F_P1024_CLR 32x32_RGBA32F_A");
 RenderTargetsView("_32x32_P1024_UPDATE",z_offset+"o:1_RGBA16F_A 32x32_RGBA32F_P1024_POS 32x32_RGBA32F_P1024_CLR 32x32_RGBA32F_A");
 RenderTargetsView("_4_SCREEN_DROPS",z_offset+"o:1_RGBA16F_A 4_RGBA8_A");
-while(e_path!=SM31){
-RenderTargetsView("_4_SHADOWS_TEMP","4_RGBA16F_B");}
+for(e_path!=SM31){
+RenderTargetsView("_4_SHADOWS_TEMP","4_RGBA16F_B");
+}
 RenderTargetsView("_4_MENU_BLUR",out_offset+"4_RGBA8_B f:srgb");
 RenderTargetsView("_4_SHADOWS",hdr_image_offset+"4_RGBA16F_A");
 RenderTargetsView("_8_SHADOWS",hdr_image_offset+"8_RGBA16F_A");
