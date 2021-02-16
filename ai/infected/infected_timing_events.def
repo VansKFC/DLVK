@@ -1,3 +1,0 @@
-!include("ai_timing.def")
-
-////Keep this synchronized with EZombieTimingEvent enum!
