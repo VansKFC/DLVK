@@ -1,0 +1,11 @@
+!include("infected_data_custom_preset_armored_hard.scr")
+
+ParamBool("arena_difficulty_scaling_enabled", 1)
+
+ParamFloat("health_mul", 1.2)
+ParamFloat("xp_factor", 6.0)
+ParamFloat("experience_award", 1600.0)
+ParamFloat("overall_speed_factor", 1.1)
+
+ParamInt("min_body_hits_to_kill", 5)
+ParamInt("min_head_hits_to_kill", 7)

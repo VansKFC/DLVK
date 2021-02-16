@@ -1,0 +1,8 @@
+!include("ai_data.def")
+!include("ai_timing.def")
+
+!include("zombie_data_custom_preset_woman_b.scr")
+
+!include("zombie_params_level_5.scr")
+
+ParamFloat("damage_mul", 1.5)

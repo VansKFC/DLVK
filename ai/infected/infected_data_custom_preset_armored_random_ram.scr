@@ -1,0 +1,21 @@
+!include("infected_data_custom_preset_armored_hard.scr")
+
+ParamBool("arena_difficulty_scaling_enabled", 1)
+
+ParamInt("consecutive_berserkers_min", 4) // min consecutive berserkers (one player)
+ParamInt("consecutive_berserkers_max", 5) // max consecutive berserkers (4 players in coop)
+ParamInt("random_ram_stop_min_hits", 2)
+
+ParamFloat("throw_projectile_speed", 30.0) //default = 15
+ParamFloat("min_time_btw_throws_projectile", 5.0)
+ParamFloat("throw_projectile_prediction_accuracy", 1.0) // 0 - min accuracy (no prediction), 1 - max accuracy
+ParamFloat("throw_projectile_max_accuracy_range", 40.0) //default = 15
+ParamFloat("throw_projectile_accuracy_degradation_dist", 5.0) 
+
+ParamString("projectile_name", "Throwable_Rock_Noisy") // throwing this rock makes noise (attract virals)
+
+ParamInt("min_body_hits_to_kill", 5)
+ParamInt("min_head_hits_to_kill", 7)
+
+ParamFloat("xp_factor", 2.0)
+ParamFloat("experience_award", 10000.0)

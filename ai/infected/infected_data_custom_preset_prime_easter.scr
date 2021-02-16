@@ -1,0 +1,4 @@
+!include("infected_data_custom_preset_prime.scr")
+
+ParamBool("can_be_killed_silently", 0)
+ParamInt("zombie_type", 0)
