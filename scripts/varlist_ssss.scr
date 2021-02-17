@@ -1,1 +1,2 @@
-VarFloat("f_ssss_correction",0.0)VarFloat("f_ssss_factor",0.0)
+VarFloat("f_ssss_correction",400.0)
+VarFloat("f_ssss_factor",3.5)
