@@ -2,8 +2,7 @@ import "frame_script_def.scr"
 sub weather_modify(){
 extern float f_pp_game_weather;
 extern float f_game_zombie_vision;
-Set("f_pp_game_weather",f_pp_game_weather*(0.1-f_game_zombie_vision)+0.2*f_game_zombie_vision);
-}
+Set("f_pp_game_weather",f_pp_game_weather*(0.1-f_game_zombie_vision)+0.2*f_game_zombie_vision);}
 sub game_modify(){
 extern float TIME;
 extern float f_game_oculus_enable;
@@ -292,13 +291,11 @@ Set("f_pp_curves_effect_6",gre);
 Set("f_pp_curves_effect_7_v",0.0);
 Set("f_pp_curves_effect_7",damage);
 Set("f_pp_curves_effect_8_v",0.0);
-Set("f_pp_curves_effect_8",hunter_drained);
-}
+Set("f_pp_curves_effect_8",hunter_drained);}
 sub game_set(){
 extern float f_pp_game_player_blood;
 extern float f_pp_game_player_blood_hit;
 extern float f_pp_blur_on;
 float f_pp_blur_on=max(f_pp_blur_on,f_pp_game_player_blood);
 float f_pp_blur_on=max(f_pp_blur_on,f_pp_game_player_blood_hit);
-Set("f_pp_blur_on",f_pp_blur_on);
-}
+Set("f_pp_blur_on",f_pp_blur_on);}

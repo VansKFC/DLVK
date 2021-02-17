@@ -558,6 +558,4 @@ Set("f_nvdof_bokeh_out_color_saturation",0.0);
 Set("f_nvdof_bokeh_max_blur_size",0.0);
 Set("f_nvdof_bokeh_intensity",0.0);
 Set("f_nvdof_bokeh_exp_falloff",0.0);
-Set("f_nvdof_bokeh_area_factor",0.0);	
-extern float f_pp_blur_far_min;
-extern float f_pp_blur_far_max;}
+Set("f_nvdof_bokeh_area_factor",0.0);	extern float f_pp_blur_far_min;extern float f_pp_blur_far_max;}

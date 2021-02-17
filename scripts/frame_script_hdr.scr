@@ -57,4 +57,4 @@ extern float f_ambient_mip;
 extern float f_game_ambient_factor;
 Set("f_pp_hdr_intensity_ambient",intensity_ambient_factor*f_ambient_mip*f_game_ambient_factor);
 Set("f_ambient_mip",0.0);
-Set("f_pp_hdr_intensity_shading_lights_ambient",intensity_shading_lights_ambient);return 0;}
+Set("f_pp_hdr_intensity_shading_lights_ambient",intensity_shading_lights_ambient);}

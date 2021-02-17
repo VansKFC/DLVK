@@ -1,127 +1,97 @@
-import "values.mtt"
-import "common.ppfx"
-import "game_effects.ppfx"
-import "dpt_first.ppfx"
-import "dpt_last.ppfx"
-import "opq_first.ppfx"
-import "opq_last.ppfx"
-import "opq_nrm_first.ppfx"
-import "opq_nrm_last.ppfx"
-import "opq_clr_first.ppfx"
-import "opq_clr_last.ppfx"
-import "lit_first.ppfx"
-import "lit_last.ppfx"
-import "glow_first.ppfx"
-import "glow_add.ppfx"
-import "glow_last.ppfx"
-import "blur_first.ppfx"
-import "blur_last.ppfx"
-import "screen_drops.ppfx"
-import "postprocess.ppfx"
-import "postprocess_old.ppfx"
-import "postprocess_first.ppfx"
-import "std_first.ppfx"
-import "std_last.ppfx"
-import "last.ppfx"
-import "trn_first.ppfx"
-import "trn_last.ppfx"
-import "TBC.ppfx"
-sub usermaps(int e_path = -1){
-string[] = {"i_um_overlay_game,i_um_overlay_map,i_um_overlay_sensor,ssao,hbao_mask_dilation"};
- SetTextureVar(i_um_nrm_waves,"s_nrm_waves_def");
- SetTextureVar(i_um_env,"s_env");
- SetTextureVar(i_um_fx_weapon_trail,"s_fx_weapon_trail");
- SetTextureVar(i_um_player_reflection,"s_player_reflection");
- SetTextureVar(i_um_fx_weapon_trail,"s_fx_weapon_trail");
- SetTextureVar(i_um_moon,"s_moon");
- SetTextureVar(i_um_clouds,"s_clouds");
- SetTextureVar(i_um_clouds_dynamic,"s_clouds_dynamic");
- SetTextureVar(i_um_stars,"s_stars");
- SetTextureVar(i_um_screen_drops_splat,"s_screen_drops_splat");
- SetTextureVar(i_um_overlay_add_effect_0,"s_overlay_add_effect_0");
- SetTextureVar(i_um_overlay_map,"s_overlay_map");
- SetTextureVar(i_um_overlay_weather_0,"s_overlay_weather_0");
- SetTextureVar(i_um_overlay_sensor,"s_overlay_sensor");
- SetTextureVar(i_um_overlay_movie,"s_overlay_movie");
- SetTextureVar(i_um_overlay_effect_0,"s_overlay_effect_0");
- SetTextureVar(i_um_overlay_game,"s_overlay_game");
- SetTextureVar(i_um_fade_pp_clr,"s_fade_pp_clr");
- SetTextureVar(i_um_fade_pp_msk,"s_fade_pp_msk");
-}
- switch(e_path == SM31){
- case bufertype:
- SetBuffer(i_um_hdr_buffer_copy,"1_RGBA8_C");
- break;
- case BufferLogic:
- SetBuffer(16,"16_RGBA16F_B");
- SetBuffer(16,"2_RGBA16F_A");
- SetBuffer(16,"CLR");
- SetBuffer(16,"NRM");
- SetBuffer(32,"LUM_16x16_PRV");
- break;
-}
- sky(int e_path = -1, bool b_sky_on = FALSE){
-  int sky = 2;
-  switch(b_sky_on){
-  case off:
-  !b_sky_on(true);
-  break;
-  case on:
-  b_sky_on(true);
-  break;
-}
-Mesh("sky.msh");
-}
-opq_render(int e_path = -1, bool b_clear_depth_on(false));
+import"values.mtt"
+import"common.ppfx"
+import"game_effects.ppfx"
+import"dpt_first.ppfx"
+import"dpt_last.ppfx"
+import"opq_first.ppfx"
+import"opq_last.ppfx"
+import"opq_nrm_first.ppfx"
+import"opq_nrm_last.ppfx"
+import"opq_clr_first.ppfx"
+import"opq_clr_last.ppfx"
+import"lit_first.ppfx"
+import"lit_last.ppfx"
+import"glow_first.ppfx"
+import"glow_add.ppfx"
+import"glow_last.ppfx"
+import"blur_first.ppfx"
+import"blur_last.ppfx"
+import"screen_drops.ppfx"
+import"postprocess.ppfx"
+import"postprocess_old.ppfx"
+import"postprocess_first.ppfx"
+import"std_first.ppfx"
+import"std_last.ppfx"
+import"last.ppfx"
+import"trn_first.ppfx"
+import"trn_last.ppfx"
+import"TBC.ppfx"
+sub usermaps(int e_path=-1){
+string[]={"i_um_overlay_game,i_um_overlay_map,i_um_overlay_sensor,ssao,hbao_mask_dilation"};
+SetTextureVar(i_um_nrm_waves,"s_nrm_waves_def");
+SetTextureVar(i_um_env,"s_env");
+SetTextureVar(i_um_fx_weapon_trail,"s_fx_weapon_trail");
+SetTextureVar(i_um_player_reflection,"s_player_reflection");
+SetTextureVar(i_um_fx_weapon_trail,"s_fx_weapon_trail");
+SetTextureVar(i_um_moon,"s_moon");
+SetTextureVar(i_um_clouds,"s_clouds");
+SetTextureVar(i_um_clouds_dynamic,"s_clouds_dynamic");
+SetTextureVar(i_um_stars,"s_stars");
+SetTextureVar(i_um_screen_drops_splat,"s_screen_drops_splat");
+SetTextureVar(i_um_overlay_add_effect_0,"s_overlay_add_effect_0");
+SetTextureVar(i_um_overlay_map,"s_overlay_map");
+SetTextureVar(i_um_overlay_weather_0,"s_overlay_weather_0");
+SetTextureVar(i_um_overlay_sensor,"s_overlay_sensor");
+SetTextureVar(i_um_overlay_movie,"s_overlay_movie");
+SetTextureVar(i_um_overlay_effect_0,"s_overlay_effect_0");
+SetTextureVar(i_um_overlay_game,"s_overlay_game");
+SetTextureVar(i_um_fade_pp_clr,"s_fade_pp_clr");
+SetTextureVar(i_um_fade_pp_msk,"s_fade_pp_msk");}
+switch(e_path==SM31){
+case bufertype:SetBuffer(i_um_hdr_buffer_copy,"1_RGBA8_C");break;
+case BufferLogic:SetBuffer(16,"16_RGBA16F_B");SetBuffer(16,"2_RGBA16F_A");SetBuffer(16,"CLR");SetBuffer(16,"NRM");SetBuffer(32,"LUM_16x16_PRV");break;}
+sky(int e_path=-1,bool b_sky_on=FALSE){
+int sky=2;
+switch(b_sky_on){case off:!b_sky_on(true);break;
+case on:b_sky_on(true);break;}Mesh("sky.msh");}
+opq_render(int e_path=-1,bool b_clear_depth_on(false));
 b_sky_on(false);
 b_legacy_on(false);
 b_indoor_on(false);
 sub b_clear_depth() {
-SetClearColor(0, 0, 0, 0);
+SetClearColor(0,0,0,0);
 SetRenderTargetsView("_ZBUFFER_COPY","color depth stencil noresolve");
-use dpt_first(e_path = e_path);
+use dpt_first(e_path=e_path);
 Scene("dpt");
-use dpt_last();
-}
+use dpt_last();}
 sub clear_color_on(){
 set(!"f_ed_pink_backround_on"){
 SetClearColor(0,0,0,0)
-SetRenderTargetsView("_OPAQUE","color noresolve");
-}
-use opq_first(e_path = e_path);
+SetRenderTargetsView("_OPAQUE","color noresolve");}
+use opq_first(e_path=e_path);
 Scene("opq_first","opq0","opq","opq_last");
 sky(false);}
- sub soot_particles(){//Susu o torinzoku ni wa
- Mesh("","std");
- set("i_pp_dust_amount",0);
-}
- sub weather(){
- rain(resolve(0,"");
- e_path("SM31");
- SetXenonGPRs(0,0);
- for("i_weather_wet",0);
- type("std","NRM","1_RGBA8_A")
- Mesh("quad_screen.msh","copy.mat");
- SetBuffer(4)
-}
+sub soot_particles(){
+Mesh("","std");
+set("i_pp_dust_amount",0);}
+sub weather(){
+rain(resolve(0,"");
+e_path("SM31");
+SetXenonGPRs(0,0);
+for("i_weather_wet",0);
+type("std","NRM","1_RGBA8_A")
+Mesh("quad_screen.msh","copy.mat");
+SetBuffer(4)}
 sub fx_gen(){
 path(-1);
 string(rtv_params,SM32,"noresolve color");
- while("i_pp_vfb_on",0){
- SetClearColor(0,0,0,0);
- SetRenderTargetsView("_2_VFB",rtv_params);
- Mesh("quad_screen.msh","std");
- SetBuffer(0,"16_RGBA8_A");
- }do{
-  scene("vfb");
-  vfb(false);
- }
-}
-sub full_ppfx(int e_path = -1,bool b_opq_nrm_ddof_on = FALSE,bool b_heat_on = FALSE,bool b_sky_on = FALSE,bool b_rain_on = FALSE,bool b_editor_on = FALSE,bool b_editor_lighting_on = FALSE,bool b_editor_stencil_on = FALSE,bool b_top_on = FALSE,bool b_shoots_on = FALSE,bool b_opq_clear_depth_on = FALSE,bool b_opq_clear_color_on 0,bool b_legacy_on = FALSE; bool b_glow_on = FALSE; bool b_blur_on = FALSE; bool b_blur_motion_on = FALSE;bool b_aa_on = FALSE;
-)
-bool b_sm3x_on = (e_path == SM31) || (e_path == SM32) || (e_path == SM40);//Rendā API o shiyō suru
-bool b_sm5x_on = (e_path == SM50) || (e_path == SM51) || (e_path == SM52) || (e_path == SM53); 
-string hdr_image_rtv_params = (b_sm5x_on) ? "read_only_ds" : "noresolve";
-SetBuffer(i_um_avg,"LUM_16x16_PRV");
- }
-}}
+while("i_pp_vfb_on",0){
+SetClearColor(0,0,0,0);
+SetRenderTargetsView("_2_VFB",rtv_params);
+Mesh("quad_screen.msh","std");
+SetBuffer(0,"16_RGBA8_A");}do{scene("vfb");vfb(false);}}
+sub full_ppfx(int e_path = -1,bool b_opq_nrm_ddof_on=FALSE,bool b_heat_on=FALSE,bool b_sky_on=FALSE,bool b_rain_on=FALSE,bool b_editor_on=FALSE,bool b_editor_lighting_on=FALSE,bool b_editor_stencil_on=FALSE,bool b_top_on=FALSE,bool b_shoots_on=FALSE,bool b_opq_clear_depth_on=FALSE,bool b_opq_clear_color_on=FALSE,bool b_legacy_on=FALSE,bool b_glow_on=FALSE,bool b_blur_on=FALSE,bool b_blur_motion_on=FALSE,bool b_aa_on=FALSE)
+bool b_sm3x_on=(e_path==SM31)||(e_path==SM32)||(e_path==SM40);
+bool b_sm5x_on=(e_path==SM50)||(e_path==SM51)||(e_path==SM52)||(e_path==SM53); 
+string hdr_image_rtv_params=(b_sm5x_on)?"read_only_ds":"noresolve";
+SetBuffer(i_um_avg,"LUM_16x16_PRV");}}}

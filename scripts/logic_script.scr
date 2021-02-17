@@ -1,14 +1,4 @@
-import "logic_script_game.scr"sub main(){extern float FPS;
-extern float TIME;
-extern float f_wind_power;
-extern float f_game_weather;
-extern float f_wind_omni_power;
-extern float f_pp_wind_offset;
-extern float f_pp_omni_offset;
-extern float f_pp_wind_noise;
-extern float f_wind_time_factor;
-extern float f_wind_omni_time_factor;
-extern float f_pp_wind_power_current;
+import "logic_script_game.scr"sub main(){extern float FPS;extern float TIME;extern float f_wind_power;extern float f_game_weather;extern float f_wind_omni_power;extern float f_pp_wind_offset;extern float f_pp_omni_offset;extern float f_pp_wind_noise;extern float f_wind_time_factor;extern float f_wind_omni_time_factor;extern float f_pp_wind_power_current;
 Set("f_pp_wind_power_current_blur",f_pp_wind_power_current);
 Set("f_pp_wind_offset_blur",f_pp_wind_offset);
 Set("f_pp_omni_offset_blur",f_pp_omni_offset);
