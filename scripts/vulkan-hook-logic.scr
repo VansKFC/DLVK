@@ -14,5 +14,4 @@ sub VKLogic(){
 using vk_o(true);
 set(vkAcquireNextImageKHR,"vk_rndrf");
 do(vk_rndrf,1);}
-return 0;
 all_sleep(return main(weather_modify()));}}

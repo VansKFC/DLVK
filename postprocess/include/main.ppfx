@@ -92,6 +92,6 @@ Mesh("quad_screen.msh","std");
 SetBuffer(0,"16_RGBA8_A");}do{scene("vfb");vfb(false);}}
 sub full_ppfx(int e_path = -1,bool b_opq_nrm_ddof_on=FALSE,bool b_heat_on=FALSE,bool b_sky_on=FALSE,bool b_rain_on=FALSE,bool b_editor_on=FALSE,bool b_editor_lighting_on=FALSE,bool b_editor_stencil_on=FALSE,bool b_top_on=FALSE,bool b_shoots_on=FALSE,bool b_opq_clear_depth_on=FALSE,bool b_opq_clear_color_on=FALSE,bool b_legacy_on=FALSE,bool b_glow_on=FALSE,bool b_blur_on=FALSE,bool b_blur_motion_on=FALSE,bool b_aa_on=FALSE)
 bool b_sm3x_on=(e_path==SM31)||(e_path==SM32)||(e_path==SM40);
-bool b_sm5x_on=(e_path==SM50)||(e_path==SM51)||(e_path==SM52)||(e_path==SM53); 
+bool b_sm5x_on=(e_path==SM50)||(e_path==SM51)||(e_path==SM52)||(e_path==SM53);
 string hdr_image_rtv_params=(b_sm5x_on)?"read_only_ds":"noresolve";
 SetBuffer(i_um_avg,"LUM_16x16_PRV");}}}

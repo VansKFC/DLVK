@@ -1,4 +1,4 @@
-import "frame_script_def.scr"
+ import "frame_script_def.scr"
 sub game_modify(){
 extern float FPS;
 extern float f_game_player_flashbang;
