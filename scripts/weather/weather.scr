@@ -66,43 +66,34 @@ float lighting_mask=lighting_mask*weight_storm*weight_storm;
 float lighting=lighting_mask*4.0;
 Set("f_pp_lightning_on",lighting);
 vec3 shading_sun_color_night=[0.075,0.075,0.075]*weight_night;
-vec3 shading_sun_color_dawn_start = [0.0, 0.0, 0.0] * weight_dawn_start;
-vec3 shading_sun_color_dawn = [0.38, 0.33, 0.25] * weight_dawn;
-vec3 shading_sun_color_dawn_end = [0.996078, 0.87, 0.72] * weight_dawn_end;
-vec3 shading_sun_color_day = [0.996078, 0.968628, 0.921569] * weight_day;
-vec3 shading_sun_color_dusk_start = [0.996078, 0.87, 0.72] * weight_dusk_start;
-vec3 shading_sun_color_dusk = [0.6, 0.42, 0.27] * weight_dusk;
-vec3 shading_sun_color_dusk_end = [0.0, 0.0, 0.0] * weight_dusk_end;
-vec3 shading_sun_color = shading_sun_color_night + shading_sun_color_dawn_start + shading_sun_color_dawn + shading_sun_color_dawn_end + shading_sun_color_day + shading_sun_color_dusk_start + shading_sun_color_dusk + shading_sun_color_dusk_end;
-float shading_sun_lum = shading_sun_color.x * v_lum_factors.x + shading_sun_color.y * v_lum_factors.y + shading_sun_color.z * v_lum_factors.z;
+vec3 shading_sun_color_dawn_start=[0.0,0.0,0.0]*weight_dawn_start;
+vec3 shading_sun_color_dawn=[0.38,0.33,0.25]*weight_dawn;
+vec3 shading_sun_color_dawn_end=[0.996078,0.87,0.72]*weight_dawn_end;
+vec3 shading_sun_color_day=[0.996078,0.968628,0.921569]*weight_day;
+vec3 shading_sun_color_dusk_start=[0.996078,0.87,0.72]*weight_dusk_start;
+vec3 shading_sun_color_dusk=[0.6,0.42,0.27]*weight_dusk;
+vec3 shading_sun_color_dusk_end=[0.0,0.0,0.0]*weight_dusk_end;
+vec3 shading_sun_color=shading_sun_color_night+shading_sun_color_dawn_start+shading_sun_color_dawn+shading_sun_color_dawn_end+shading_sun_color_day+shading_sun_color_dusk_start+shading_sun_color_dusk+shading_sun_color_dusk_end;
+float shading_sun_lum=shading_sun_color.x*v_lum_factors.x+shading_sun_color.y*v_lum_factors.y+shading_sun_color.z*v_lum_factors.z;
 extern float f_level_lighting_reference;
-vec3 shading_sun_color = shading_sun_color * (1.0 - f_level_lighting_reference) + shading_sun_lum * f_level_lighting_reference;
-
-vec3 shading_sun_color_clouds_fade_only = shading_sun_color * weight_clouds_inv;
-Set("v_pp_shading_sun_color_clouds_fade_only", shading_sun_color_clouds_fade_only);
-
-vec3 shading_sun_color_clouds_fade=shading_sun_color_clouds_fade_only + lighting;
+vec3 shading_sun_color=shading_sun_color*(1.0-f_level_lighting_reference)+shading_sun_lum*f_level_lighting_reference;
+vec3 shading_sun_color_clouds_fade_only=shading_sun_color*weight_clouds_inv;
+Set("v_pp_shading_sun_color_clouds_fade_only",shading_sun_color_clouds_fade_only);
+vec3 shading_sun_color_clouds_fade=shading_sun_color_clouds_fade_only+lighting;
 Set("v_pp_shading_sun_color_clouds_fade",shading_sun_color_clouds_fade);
-
-Set("v_pp_shading_sun_color_clouds_off", shading_sun_color + lighting);
-
-vec3 shading_sun_color = (weight_clouds < 1.0) ? shading_sun_color : [0.0, 0.0, 0.0];
-Set("v_pp_shading_sun_color_only", shading_sun_color);
-
-vec3 shading_sun_color = shading_sun_color + lighting;
-Set("v_shading_sun_color", shading_sun_color);
-
-
-
+Set("v_pp_shading_sun_color_clouds_off",shading_sun_color+lighting);
+vec3 shading_sun_color=(weight_clouds<1.0)?shading_sun_color:[0.0,0.0,0.0];
+Set("v_pp_shading_sun_color_only",shading_sun_color);
+vec3 shading_sun_color=shading_sun_color+lighting;
+Set("v_shading_sun_color",shading_sun_color);
 extern float f_clouds_dynamic_on;
-float clouds_cover = (lighting_mask > 0.0) ? 0.0 : weight_clouds;
-Set("f_pp_clouds_dynamic_on", clouds_cover * f_clouds_dynamic_on);
-Set("f_pp_clouds_dynamic_cover", clouds_cover * clouds_cover * 3.0 - 1.0);
-
-vec3 clouds_color_night = [0.93, 0.93, 1.0] * 0.0 * weight_night;
-vec3 clouds_color_dawn_start = [0.99, 0.83, 0.68] * 0.12 * weight_dawn_start;
-vec3 clouds_color_dawn = [0.6, 0.52, 0.47] * 0.5 * weight_dawn;
-vec3 clouds_color_dawn_end = [0.996078, 0.97, 0.87] * weight_dawn_end;
+float clouds_cover=(lighting_mask>0.0)?0.0:weight_clouds;
+Set("f_pp_clouds_dynamic_on",clouds_cover*f_clouds_dynamic_on);
+Set("f_pp_clouds_dynamic_cover",clouds_cover*clouds_cover*3.0-1.0);
+vec3 clouds_color_night=[0.93,0.93,1.0]*0.0*weight_night;
+vec3 clouds_color_dawn_start=[0.99,0.83,0.68]*0.12*weight_dawn_start;
+vec3 clouds_color_dawn=[Donatas#41540.6,0.52,0.47]*0.5*weight_dawn;
+vec3 clouds_color_dawn_end=[0.996078,0.97,0.87]*weight_dawn_end;
 vec3 clouds_color_day = [1.0, 1.0, 1.0] * weight_day;
 vec3 clouds_color_dusk_start = [0.996078, 0.87, 0.72] * 0.7 * weight_dusk_start;
 vec3 clouds_color_dusk = [0.67, 0.42, 0.27] * 0.75 * weight_dusk;
@@ -154,7 +145,7 @@ float scattering_n_fog_weight = clamp(weight_fog * weight_fog);
 float scattering_n = scattering_n * (1.0 - scattering_n_fog_weight) + scattering_n_fog * scattering_n_fog_weight;
 Set("f_pp_scattering_input_n", scattering_n);
 
-Set("f_pp_scattering_input_v", 4.0); //Junge's exponent
+Set("f_pp_scattering_input_v", 4.0);
 Set("f_pp_scattering_input_m", 0.001545);
 Set("f_pp_scattering_input_pn", 0.035);
 Set("f_pp_scattering_input_c", 0.2);
@@ -174,57 +165,46 @@ float scattering_sun_brightness = 30.0;
 float scattering_sun_brightness_night_rain = 0.25;
 float scattering_sun_brightness_fog = 10.0;
 
-float scattering_sun_brightness_night_weight = clamp(weight_dusk * 0.75 + weight_dusk_end + weight_night + weight_dawn_start + weight_dawn * 0.75);
-float scattering_sun_brightness_night_weight_inv = 1.0 - scattering_sun_brightness_night_weight;
-
-float scattering_sun_brightness_fog = scattering_sun_brightness_night_weight_inv * scattering_sun_brightness_fog; //0.0 at night
-
-float scattering_sun_brightness_fog_weight = pow(clamp(weight_fog * 4.0), (1.0 - scattering_sun_brightness_night_weight_inv) * 0.9 + 0.1);
-
-float scattering_sun_brightness_fog_weight = clamp(3.0 * pow(scattering_sun_brightness_fog_weight, 2.0) - 2.0 * pow(scattering_sun_brightness_fog_weight, 3.0));
-
-float scattering_sun_brightness_night_rain_weight = pow(scattering_sun_brightness_night_weight * weight_clouds, 0.1);
-float scattering_sun_brightness = scattering_sun_brightness * (1.0 - scattering_sun_brightness_night_rain_weight) + scattering_sun_brightness_night_rain * scattering_sun_brightness_night_rain_weight;
-
-float scattering_sun_brightness = scattering_sun_brightness * (1.0 - scattering_sun_brightness_fog_weight) + scattering_sun_brightness_fog * scattering_sun_brightness_fog_weight;
-
+float scattering_sun_brightness_night_weight=clamp(weight_dusk*0.75+weight_dusk_end+weight_night + weight_dawn_start + weight_dawn * 0.75);
+float scattering_sun_brightness_night_weight_inv=1.0-scattering_sun_brightness_night_weight;
+float scattering_sun_brightness_fog=scattering_sun_brightness_night_weight_inv*scattering_sun_brightness_fog;
+float scattering_sun_brightness_fog_weight=pow(clamp(weight_fog*4.0),(1.0-scattering_sun_brightness_night_weight_inv)*0.9+0.1);
+float scattering_sun_brightness_fog_weight=clamp(3.0*pow(scattering_sun_brightness_fog_weight,2.0)-2.0*pow(scattering_sun_brightness_fog_weight,3.0));
+float scattering_sun_brightness_night_rain_weight=pow(scattering_sun_brightness_night_weight*weight_clouds,0.1);
+float scattering_sun_brightness=scattering_sun_brightness*(1.0-scattering_sun_brightness_night_rain_weight)+scattering_sun_brightness_night_rain*scattering_sun_brightness_night_rain_weight;
+float scattering_sun_brightness=scattering_sun_brightness*(1.0-scattering_sun_brightness_fog_weight)+scattering_sun_brightness_fog*scattering_sun_brightness_fog_weight;
 extern float f_ed_pp_dev_ambient_on;
-Set("f_pp_scattering_sun_brightness", scattering_sun_brightness * interior_inv * (1.0 - f_ed_pp_dev_ambient_on));
-
-float scattering_g = 0.7;
-float scattering_g_fog = 0.25;
-float scattering_g_rain = 0.2;
-float scattering_g = scattering_g * weight_fog_inv + scattering_g_fog * weight_fog;
-float scattering_g = scattering_g * weight_cloudsrain_inv + scattering_g_rain * weight_cloudsrain;
-Set("f_pp_scattering_input_mie_g", scattering_g);
-
-Set("f_fog_bright", 0.0);
-
+Set("f_pp_scattering_sun_brightness",scattering_sun_brightness*interior_inv*(1.0-f_ed_pp_dev_ambient_on));
+float scattering_g=0.7;
+float scattering_g_fog=0.25;
+float scattering_g_rain=0.2;
+float scattering_g=scattering_g*weight_fog_inv+scattering_g_fog*weight_fog;
+float scattering_g=scattering_g*weight_cloudsrain_inv+scattering_g_rain*weight_cloudsrain;
+Set("f_pp_scattering_input_mie_g",scattering_g);
+Set("f_fog_bright",0.0);
 extern float f_pp_hdr_intensity_shading_sun;
-float sun_shading_intensity_fog = f_pp_hdr_intensity_shading_sun * 0.85;
-float sun_shading_intensity = f_pp_hdr_intensity_shading_sun * weight_fog_inv + sun_shading_intensity_fog * weight_fog;
-Set("f_pp_hdr_intensity_shading_sun", sun_shading_intensity);
+float sun_shading_intensity_fog=f_pp_hdr_intensity_shading_sun*0.85;
+float sun_shading_intensity=f_pp_hdr_intensity_shading_sun*weight_fog_inv+sun_shading_intensity_fog*weight_fog;
+Set("f_pp_hdr_intensity_shading_sun",sun_shading_intensity);
 extern float f_bokeh_lum_threshold;
-float bokeh_int_day = f_bokeh_lum_threshold * (weight_dawn + weight_dawn_end + weight_day + weight_dusk_start + weight_dusk);
-float bokeh_int_night = f_bokeh_lum_threshold * 0.5 * (weight_night + weight_dusk_end + weight_dawn_start);
-
-Set("f_bokeh_lum_threshold",bokeh_int_day + bokeh_int_night);
-
-float sun_flare_dawn_bias = 0.1;
-float sun_flare_dusk_bias = 0.3;
-float sun_flare_intensity = clamp(clamp(clamp(weight_dawn_end - sun_flare_dawn_bias) + weight_day + clamp(weight_dusk_start - sun_flare_dusk_bias)) * 1000.0);
-float sun_flare_intensity = sun_flare_intensity * weight_fog_inv;
-float sun_flare_intensity = sun_flare_intensity * interior_inv;
-float sun_flare_intensity = (weight_clouds_inv > 0.0) ? sun_flare_intensity : 0.0;
-Set("f_sun_flare_intensity", sun_flare_intensity);
-Set("f_pp_sun_flare_on", sun_flare_intensity);
-Set("f_sun_glow_radius",550.0);
-Set("f_sun_glow_range",500.0);
+float bokeh_int_day=f_bokeh_lum_threshold*(weight_dawn+weight_dawn_end+weight_day+weight_dusk_start+weight_dusk);
+float bokeh_int_night=f_bokeh_lum_threshold*0.5*(weight_night+weight_dusk_end+weight_dawn_start);
+Set("f_bokeh_lum_threshold",bokeh_int_day+bokeh_int_night);
+float sun_flare_dawn_bias=0.1;
+float sun_flare_dusk_bias=0.3;
+float sun_flare_intensity=clamp(clamp(clamp(weight_dawn_end-sun_flare_dawn_bias)+weight_day+clamp(weight_dusk_start-sun_flare_dusk_bias))*1000.0);
+float sun_flare_intensity=sun_flare_intensity*weight_fog_inv;
+float sun_flare_intensity=sun_flare_intensity*interior_inv;
+float sun_flare_intensity=(weight_clouds_inv>0.0)?sun_flare_intensity:0.0;
+Set("f_sun_flare_intensity",sun_flare_intensity);
+Set("f_pp_sun_flare_on",sun_flare_intensity);
+Set("f_sun_glow_radius",50.0);
+Set("f_sun_glow_range",50.0);
 Set("f_sun_glow_rotation_speed",0.5);
 Set("f_sun_glow_rotation_offset",10.0);
 float sun_glow_near_fog=15000.0;
-float sun_glow_near=30000.0;
-float sun_glow_near=sun_glow_near * weight_fog_inv + sun_glow_near_fog * weight_fog;
+float sun_glow_near=300.0;
+float sun_glow_near=sun_glow_near*weight_fog_inv+sun_glow_near_fog*weight_fog;
 Set("f_sun_glow_near",sun_glow_near);
 vec3 sun_glow_color_night=[0.0,0.0,0.0]*weight_night;
 vec3 sun_glow_color_dawn_start=[0.0,0.0,0.0]*weight_dawn_start;
