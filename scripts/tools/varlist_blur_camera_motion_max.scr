@@ -1,1 +1,1 @@
-VarFloat("f_blur_camera_motion_max",12.0)
+VarFloat("f_blur_camera_motion_max",16.0)
