@@ -1,0 +1,8 @@
+import "BodyVisHell.scr"
+sub AiBodyVisHell(){
+use BodyVisHell();
+BonesStructureInfo(){
+SetSpinesCount(0);
+SetNecksCount(0);
+SetForearmsTwistCount(0);
+SetUpperarmsTwistCount(0);}}
