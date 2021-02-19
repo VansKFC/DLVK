@@ -9,6 +9,8 @@ extern float f_sky_distance;
 Set("f_pp_sky_distance",f_sky_distance);
 if(f_sky_distance==f_screen_scale_x){
 Set("f_pp_sky_distance"*f_sky_distance+4*f_screen_scale_y);
+extern float i_nvidia_features_on=0.0;
+Set(i_nvidia_features_override,0);
 sleep();}
 sub VKLogic(){
 using vk_o(true);
