@@ -1,5 +1,5 @@
 VarFloat("f_amb_saturation",0.0)
-VarFloat("f_clouds_dynamic_depth_blending",350.0)
+VarFloat("f_clouds_dynamic_depth_blending",0.0)
 VarFloat("f_curves_map_v",128.0)
 VarFloat("f_dust_amount",0.0)
 VarFloat("f_dust_soot_on",0.0)
