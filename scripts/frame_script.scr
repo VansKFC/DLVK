@@ -130,7 +130,7 @@ extern float f_wind_phase_factor;
 extern float f_wind_speed;
 extern float f_wind_omni_range;
 extern float f_wind_omni_power;
-extern vec3  v_wind_omni_pos;
+extern vec3 v_wind_omni_pos;
 vec4 v_wind_wave_length=[1.0/v_wind_wave_length.y,1.0/v_wind_wave_length.z,1.0/v_wind_wave_length.w];
 float f_wind_omni_range=max(f_wind_omni_range,0.0);
 Set("v_pp_wind_params_0",v_wind_wave_length);
