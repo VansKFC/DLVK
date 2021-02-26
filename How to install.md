@@ -3,7 +3,7 @@ On __Linux__ go to [Steam](https://store.steampowered.com/)
 
 ### Right click [Dying Light](https://dyinglightgame.com/dyinglight/)
 ### Go to *Browse Local Files*
-### Cut the [latest release](https://www.youtube.com) archive from *Downloads*
+### Cut the [latest release](https://github.com/VansKFC/DLVK/releases/download/2-38.0/DyingLight_Vulkan-R2-38.0.arc) archive from *Downloads*
 ### Paste into [Dying Light](https://dyinglightgame.com/dyinglight/) folder and then extract the files
 #### _Ensure Proton is using DXVK._
 
