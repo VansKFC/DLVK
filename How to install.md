@@ -1,0 +1,18 @@
+# Linux
+On __Linux__ go to [Steam](https://store.steampowered.com/)
+
+### Right click [Dying Light](https://dyinglightgame.com/dyinglight/)
+### Go to *Browse Local Files*
+### Cut the [latest release](https://www.youtube.com) archive from *Downloads*
+### Paste into [Dying Light](https://dyinglightgame.com/dyinglight/) folder and then extract the files
+#### _Ensure Proton is using DXVK._
+
+
+# Windows
+On __Windows__ go to [Steam](https://store.steampowered.com/)
+
+### Right click [Dying Light](https://dyinglightgame.com/dyinglight/)
+### Go to *Browse Local Files*
+### Cut the [latest release](https://www.youtube.com) archive from *Downloads*
+### Paste into [Dying Light](https://dyinglightgame.com/dyinglight/) folder and then extract the files
+#### _Open the archive with 7zip._
