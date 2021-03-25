@@ -7,6 +7,7 @@ Sur __Linux__ allez sur [Steam](https://store.steampowered.com/)
 ### Coller dans le dossier [Dying Light](https://dyinglightgame.com/dyinglight/) puis extraire les fichiers
 #### _S'assurer que Proton utilise DXVK._
 
+# 
 
 # Windows
 Sur __Windows__ allez à [Steam](https://store.steampowered.com/)
