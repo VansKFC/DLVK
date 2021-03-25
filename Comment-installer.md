@@ -25,3 +25,4 @@ Sur __Windows__ allez à [Steam](https://store.steampowered.com/)
 # Disclaimer
 _Au début, il se peut que vous subissiez des pertes d'images occasionnelles lors du rendu d'un nouveau terrain._
 _Cela est dû au fait qu'il met en cache les shaders afin de pouvoir les exécuter facilement. Vous pouvez constater une amélioration des performances dans certains cas. Cela varie selon les cartes._
+# 
