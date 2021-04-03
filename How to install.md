@@ -19,9 +19,9 @@ On __Windows__ go to [Steam](https://store.steampowered.com/)
 
 #
 
-Disclaimer
+# Disclaimer
 
 #
 
-At first you may experience occasional frame loss when rendering new terrain. This is due to the fact that it caches shaders so that they can be run easily. You may see a performance improvement in some cases. This varies from map to map.
+_At first you may experience occasional frame loss when rendering new terrain. This is due to the fact that it caches shaders so that they can be run easily. You may see a performance improvement in some cases. This varies from map to map._
 #
