@@ -1,5 +1,5 @@
 VarFloat("f_curves_map_v",139.0)
-VarFloat("f_engine_mesh_cull_dist_threshold",5.0)
+VarFloat("f_engine_mesh_cull_dist_threshold",0.0)
 VarFloat("f_engine_mesh_cull_size",0.0)
 VarFloat("f_engine_simrange_fx",0.0)
 VarFloat("f_engine_visrange_decals",105.0)
