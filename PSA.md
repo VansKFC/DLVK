@@ -83,7 +83,7 @@
 # *Polski*
 
 # Ogłoszenie Publiczne
-  Ostatnio stałem się coraz bardziej świadomy pewnych dość queerfobicznych, bigoteryjnych i ogólnie toksycznych zachowań oraz makabrycznych przedstawień nienawiści wśród ludzi z mojej społeczności.
+  _Ostatnio stałem się coraz bardziej świadomy pewnych dość queerfobicznych, bigoteryjnych i ogólnie toksycznych zachowań oraz makabrycznych przedstawień nienawiści wśród ludzi z mojej społeczności.
   Ze względu na to, jak to na mnie wpłynęło, będę się izolował. Będę na [sieci Matrix](https://www.matrix.org) i będę wysyłał tylko prywatne wiadomości do moich osobistych przyjaciół, którzy mogą być zaniepokojeni.
   Projekt nie będzie aktualizowany na Discordzie przez jakiś czas. Wciąż możesz zobaczyć postępy, pobrać aktualizacje, tworzyć forki i wszystko to poprzez [GitHub](https://www.github.com/VansKFC/DLVK).
   Przepraszam wszystkich, którzy odczuli negatywne skutki toksyczności. Dla mojego samopoczucia zachowuję prywatność. Jeśli tak jest, ty też powinieneś. Żegnajcie na razie!_.
