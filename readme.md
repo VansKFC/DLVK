@@ -1,25 +1,15 @@
+#
+
+## _English_
+
 # Dying Light Vulkan
+## DLVK is a mod with optimizes Dying Light for the [DXVK](https://www.github.com/doitsujin/dxvk) translation layer.
+_You may find several benefits including increased framerate stability, framerate levels, reduced input delay, and enhanced visuals.
+This project is originally intended for [Valve's Proton](https://github.com/ValveSoftware/Proton/)/SteamPlay. However, it does work exceptionally on Windows 10.
+DLVK has not been tested on Windows 8.1, Windows 8, or Windows 7._
 
-### DLVK is a simple:
- - performance 
- - cosmetic
- - efficiency
-##### touchup of the game [Dying Light](https://dyinglightgame.com/dyinglight/) originally using the [Direct3D11](https://docs.microsoft.com/en-us/windows/win32/direct3d11/atoc-dx-graphics-direct3d-11) and [OpenGL](https://www.opengl.org/) rendering API's and shading languages using [DXVK](https://github.com/doitsujin/dxvk)
-
-#
-
-### DLVK is not:
-- a vector for cheats
-- a cheat in general
-
-_This provides no intentional unfair advantage over other players in any way._
+**_No I am not responsible for maintaining its functionality on Windows platforms as this was created on Linux for Proton/Linux. Though I will make using it on Windows as easy as I can :)_**
 
 #
 
-**I am fairly new to GitHub as well so expect mishaps.** _sorry :(_
-
-Credit to [Doitsujin](https://github.com/doitsujin/) for [DXVK](https://github.com/doitsujin/dxvk)
-
-###### _I am still learning the [Markdown](https://daringfireball.net/projects/markdown/) language so I apologize for poor formatting._
-
-# 
+#
