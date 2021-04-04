@@ -90,3 +90,29 @@
 #
 
 ## Możesz się ze mną skontaktować na moim [koncie GitHub :)](https://www.github.com/VansKFC)
+
+#
+
+# *Dansk*
+
+# Offentlig bekendtgørelse
+  _Jeg er i den seneste tid blevet mere og mere opmærksom på nogle temmelig queerfobiske, bigotte og generelt giftige adfærdsmønstre og grusomme hadskildringer hos folk i mine samfund.
+  På grund af hvordan dette har påvirket mig, vil jeg isolere mig selv. Jeg vil være på [Matrix network](https://www.matrix.org) og vil kun sende private beskeder til mine personlige venner, som kan være berørt.
+  Projektet vil ikke blive opdateret på Discord i et stykke tid. Du kan stadig se fremskridt og downloade opdateringer og oprette forks og alt muligt via [GitHub](https://www.github.com/VansKFC/DLVK).
+  Beklager til alle, der har følt de negative virkninger af toksicitet. For mit velbefindende holder jeg mig privat. Hvis du gør det, bør du også gøre det. Farvel for nu!_
+#
+
+## Du kan kontakte mig på min [GitHub-konto :)]](https://www.github.com/VansKFC)
+
+#
+
+# *Svenska*
+
+# Offentligt tillkännagivande
+  _Jag har på senare tid blivit alltmer medveten om vissa ganska queerfobiska, bigotta och allmänt giftiga beteenden och grymma hatskildringar hos människor i mina samhällen.
+  På grund av hur detta har påverkat mig kommer jag att isolera mig själv. Jag kommer att vara på [Matrix network](https://www.matrix.org) och kommer endast att skicka privata meddelanden till mina personliga vänner som kan vara berörda.
+  Projektet kommer inte att uppdateras på Discord på ett tag. Du kan fortfarande se framsteg, ladda ner uppdateringar och skapa gafflar och allt via [GitHub](https://www.github.com/VansKFC/DLVK).
+  Jag ber om ursäkt till alla som kände de negativa effekterna av giftigheten. För mitt välbefinnande håller jag mig privat. Om du gör det bör du också göra det. Adjö för tillfället!_
+#
+
+## Du kan kontakta mig på mitt [GitHub-konto :)]](https://www.github.com/VansKFC)
