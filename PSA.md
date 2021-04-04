@@ -15,7 +15,7 @@
 
 # Anuncio público
   _ltimamente me he dado cuenta de algunos comportamientos bastante queerfóbicos, intolerantes y generalmente tóxicos y representaciones horripilantes de odio en personas de mis comunidades.
-  Debido a cómo esto me ha afectado me voy a aislar. Estaré en la [red de Matrix] (https://www.matrix.org) y sólo enviaré mensajes privados a mis amigos personales que puedan estar preocupados.
+  Debido a cómo esto me ha afectado me voy a aislar. Estaré en la [red de Matrix](https://www.matrix.org) y sólo enviaré mensajes privados a mis amigos personales que puedan estar preocupados.
   El proyecto no se actualizará en Discord durante un tiempo. Usted todavía puede ver el progreso y descargar las actualizaciones y crear forks y todo a través de [el GitHub](https://www.github.com/VansKFC/DLVK).
   Lo siento para quien haya sentido los efectos negativos de la toxicidad. Por mi bienestar me mantengo en privado. Si lo haces, tú también deberías hacerlo. ¡Adiós por ahora!_
 #
@@ -26,7 +26,7 @@
 
 # Public Announcement
   _écemment, je suis devenu de plus en plus conscient de certains comportements assez queerphobes, bigots et généralement toxiques, ainsi que de représentations horribles de la haine chez les personnes de ma communauté.
-  En raison de la façon dont cela m'a affecté, je vais m'isoler. Je serai sur le [réseau Matrix] (https://www.matrix.org) et je n'enverrai que des messages privés à mes amis personnels qui pourraient être concernés.
+  En raison de la façon dont cela m'a affecté, je vais m'isoler. Je serai sur le [réseau Matrix](https://www.matrix.org) et je n'enverrai que des messages privés à mes amis personnels qui pourraient être concernés.
   Le projet ne sera pas mis à jour sur Discord pendant un certain temps. Vous pouvez toujours voir les progrès, télécharger les mises à jour, créer des forks et tout le reste via [le GitHub](https://www.github.com/VansKFC/DLVK).
   Désolé pour tous ceux qui ont ressenti les effets négatifs de la toxicité. Pour mon bien-être, je reste privé. Si c'est le cas, vous devriez en faire autant. Au revoir pour le moment !_
 #
