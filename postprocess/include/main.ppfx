@@ -49,7 +49,7 @@ SetTextureVar(i_um_fade_pp_clr,"s_fade_pp_clr");
 SetTextureVar(i_um_fade_pp_msk,"s_fade_pp_msk");}
 switch(e_path==SM31){
 case bufertype:SetBuffer(i_um_hdr_buffer_copy,"1_RGBA8_C");break;
-case BufferLogic:SetBuffer(16,"16_RGBA16F_B");SetBuffer(16,"2_RGBA16F_A");SetBuffer(16,"CLR");SetBuffer(16,"NRM");SetBuffer(32,"LUM_16x16_PRV");break;}
+case BufferLogic:SetBuffer(16,"16_RGBA16F_B");SetBuffer(16,"2_RGBA16F_A");SetBuffer(16,"CLR");SetBuffer(16,"NRM");SetBuffer(16,"LUM_16x16_PRV");break;}
 sky(int e_path=-1,bool b_sky_on=FALSE){
 int sky=2;
 switch(b_sky_on){case off:!b_sky_on(true);break;
