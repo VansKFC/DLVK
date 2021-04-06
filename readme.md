@@ -14,4 +14,16 @@ DLVK has not been tested on Windows 8.1, Windows 8, or Windows 7._
 
 #
 
+## _Español_
+
+## Dying Light Vulkan
+#### DLVK es un mod que optimiza Dying Light para la capa de traducción [DXVK](https://www.github.com/doitsujin/dxvk).
+Puede encontrar varios beneficios, incluyendo el aumento de la estabilidad del framerate, los niveles de framerate, la reducción del retardo de entrada y la mejora de los efectos visuales.
+Este proyecto está pensado originalmente para [Valve's Proton](https://github.com/ValveSoftware/Proton/)/SteamPlay. Sin embargo, funciona excepcionalmente en Windows 10.
+DLVK no ha sido probado en Windows 8.1, Windows 8, o Windows 7._
+
+**_No soy responsable de mantener su funcionalidad en plataformas Windows ya que esto fue creado en Linux para Proton/Linux. Aunque haré que su uso en Windows sea tan fácil como pueda :)_**
+
+#
+
 #
