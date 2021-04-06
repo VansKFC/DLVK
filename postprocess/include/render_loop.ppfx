@@ -1,27 +1,27 @@
-import "values.mtt"
-import "game_effects.ppfx"
-import "dpt_first.ppfx"
-import "dpt_last.ppfx"
-import "opq_first.ppfx"
-import "opq_last.ppfx"
-import "opq_nrm_first.ppfx"
-import "opq_nrm_last.ppfx"
-import "opq_clr_first.ppfx"
-import "opq_clr_last.ppfx"
-import "lit_first.ppfx"
-import "lit_last.ppfx"
-import "glow_first.ppfx"
-import "glow_add.ppfx"
-import "glow_last.ppfx"
-import "blur_first.ppfx"
-import "blur_last.ppfx"
-import "screen_drops.ppfx"
-import "postprocess.ppfx"
-import "std_first.ppfx"
-import "std_last.ppfx"
-import "last.ppfx"
-import "trn_first.ppfx"
-import "trn_last.ppfx"
+import"values.mtt"
+import"game_effects.ppfx"
+import"dpt_first.ppfx"
+import"dpt_last.ppfx"
+import"opq_first.ppfx"
+import"opq_last.ppfx"
+import"opq_nrm_first.ppfx"
+import"opq_nrm_last.ppfx"
+import"opq_clr_first.ppfx"
+import"opq_clr_last.ppfx"
+import"lit_first.ppfx"
+import"lit_last.ppfx"
+import"glow_first.ppfx"
+import"glow_add.ppfx"
+import"glow_last.ppfx"
+import"blur_first.ppfx"
+import"blur_last.ppfx"
+import"screen_drops.ppfx"
+import"postprocess.ppfx"
+import"std_first.ppfx"
+import"std_last.ppfx"
+import"last.ppfx"
+import"trn_first.ppfx"
+import"trn_last.ppfx"
 sub BuffersCommon(int e_path=-1,bool b_editor_on=FALSE){
 BufferScreenFormat("ZBUFFER",1,"D32FS8","temp rt ds esram");
 BufferScreenFormat("1_RG11B10F_A",1,"R11G11B10F","temp rt esram");
@@ -49,22 +49,17 @@ BufferScreenFormat("2_RG11B10F_B",2,"R11G11B10F","temp rt");
 BufferScreenFormat("2_RG16F_A",2,"G16R16F","temp rt");
 BufferScreenFormat("2_RG16F_UA_A",2,"G16R16F","temp rt ua");
 BufferScreenFormat("2_R16F_UA_A",2,"R16F","temp rt ua");
-
 BufferScreenFormat("2_R16F_DPT_MIN",2,"R16F","temp rt");
 BufferScreenFormat("2_R16F_DPT_MAX",2,"R16F","temp rt");
 BufferScreenFormat("2_R16F_DPT_AVG",2,"R16F","temp rt esram");
-
 BufferScreenFormat("2_L8_A",2,"L8","temp rt esram");
 BufferScreenFormat("2_L8_B",2,"L8","temp rt esram");
-
 BufferScreenFormat("4_DPT",4,"A16B16G16R16F","temp rt esram");
-
 BufferScreenFormat("4_RG11B10F_A",4,"R11G11B10F","temp rt esram");
 BufferScreenFormat("4_RG11B10F_B",4,"R11G11B10F","temp rt");
 BufferScreenFormat("4_RG11B10F_C",4,"R11G11B10F","temp rt esram");
 BufferScreenFormat("4_RG11B10F_PRV_RFL",4,"R11G11B10F","rt");
 BufferScreenFormat("4_RG16F_A",4,"G16R16F","temp rt esram");
-
 BufferScreenFormat("4_RGBA8_A",4,"A8R8G8B8","temp rt");
 BufferScreenFormat("4_L8_A",4,"L8","temp rt");
 BufferScreenFormat("4_L8_B",4,"L8","temp rt");
@@ -91,55 +86,43 @@ BufferFormat("32x32_RGBA32F_A",32,32,"A32B32G32R32F","temp rt");
 BufferFormat("32x32_RGBA32F_B",32,32,"A32B32G32R32F","temp rt");
 BufferFormat("32x32_RGBA32F_C",32,32,"A32B32G32R32F","temp rt");
 BufferFormat("LUM_32x16",32,16,"R32F","temp rt");
-
 BufferFormat("LUM_16x16_A",16,16,"R32F","temp rt esram");
 BufferFormat("LUM_16x16_B",16,16,"R32F","temp rt");
 BufferFormat("LUM_16x16_PRV",16,16,"R32F","rt");
-
 BufferFormat("OVERLAY",32,32,"A8R8G8B8","temp rt");
-
 BufferFormat("CURVES",256,1,"A8R8G8B8","temp rt esram");
-
 BufferFormat("WRONG",1,1,"A8R8G8B8","temp rt");
-
 if(e_path==SM50){
-BufferScreenFormat("RIFT_L", 1,"A16B16G16R16F","rt");
-BufferScreenFormat("RIFT_R", 1,"A16B16G16R16F","rt");
-BufferScreenFormat("OCULUS_FINAL", 1,"A16B16G16R16F","rt");
+BufferScreenFormat("RIFT_L",1,"A16B16G16R16F","rt");
+BufferScreenFormat("RIFT_R",1,"A16B16G16R16F","rt");
+BufferScreenFormat("OCULUS_FINAL",1,"A16B16G16R16F","rt");
 RenderTargetsView("_RIFT_L","RIFT_L");
 RenderTargetsView("_RIFT_R","RIFT_R");
 RenderTargetsView("_OCULUS_FINAL","OCULUS_FINAL");}
 if(b_editor_on){
 BufferScreenFormat("1_RGBA16F_A",1,"A16B16G16R16F","temp rt");}
-RenderTargetsView("_Z1", "z:ZBUFFER");
-
+RenderTargetsView("_Z1","z:ZBUFFER");
 RenderTargetsView("_Z1_GBUFFER", "z:ZBUFFER 1_RGBA8_SPC 1_RGBA8_DIF 1_RGB10A2_NRM 1_RG16F_MV");
-RenderTargetsView("_Z1_GBUFFER_CLR_NRM", "z:ZBUFFER 1_RGBA8_SPC 1_RGBA8_DIF 1_RGB10A2_NRM");
-RenderTargetsView("_Z1_GBUFFER_CLR", "z:ZBUFFER 1_RGBA8_SPC 1_RGBA8_DIF");
-RenderTargetsView("_Z1_GBUFFER_NRM", "z:ZBUFFER 1_RGB10A2_NRM");
-RenderTargetsView("_1_GBUFFER_MV", "1_RG16F_MV");
-RenderTargetsView("_1_GBUFFER_DIF", "1_RGBA8_DIF");
-
-
-RenderTargetsView("_Z1_RGB10A2_A", "z:ZBUFFER 1_RGB10A2_A");
-
-RenderTargetsView("_1_RG11B10F_A", "1_RG11B10F_A");
-RenderTargetsView("_1_RG11B10F_B", "1_RG11B10F_B");
-
-RenderTargetsView("_Z1_RG11B10F_A", "z:ZBUFFER 1_RG11B10F_A");
-RenderTargetsView("_Z1_RG11B10F_B", "z:ZBUFFER 1_RG11B10F_B");
-RenderTargetsView("_Z1_RG11B10F_C", "z:ZBUFFER 1_RG11B10F_C");
-
+RenderTargetsView("_Z1_GBUFFER_CLR_NRM","z:ZBUFFER 1_RGBA8_SPC 1_RGBA8_DIF 1_RGB10A2_NRM");
+RenderTargetsView("_Z1_GBUFFER_CLR","z:ZBUFFER 1_RGBA8_SPC 1_RGBA8_DIF");
+RenderTargetsView("_Z1_GBUFFER_NRM","z:ZBUFFER 1_RGB10A2_NRM");
+RenderTargetsView("_1_GBUFFER_MV","1_RG16F_MV");
+RenderTargetsView("_1_GBUFFER_DIF","1_RGBA8_DIF");
+RenderTargetsView("_Z1_RGB10A2_A","z:ZBUFFER 1_RGB10A2_A");
+RenderTargetsView("_1_RG11B10F_A","1_RG11B10F_A");
+RenderTargetsView("_1_RG11B10F_B","1_RG11B10F_B");
+RenderTargetsView("_Z1_RG11B10F_A","z:ZBUFFER 1_RG11B10F_A");
+RenderTargetsView("_Z1_RG11B10F_B","z:ZBUFFER 1_RG11B10F_B");
+RenderTargetsView("_Z1_RG11B10F_C","z:ZBUFFER 1_RG11B10F_C");
 RenderTargetsView("_Z1_RG11B10F_AB","z:ZBUFFER 1_RG11B10F_A 1_RG11B10F_B");
 RenderTargetsView("_Z1_RG11B10F_AB__RG16F_PRV_UA_A","z:ZBUFFER 1_RG11B10F_A 1_RG11B10F_B 1_RG16F_PRV_UA_A");
 RenderTargetsView("_Z1_RG11B10F_AB__L8_B","z:ZBUFFER 1_RG11B10F_A 1_RG11B10F_B 1_L8_B");
 RenderTargetsView("_Z1_RG11B10F_DB","z:ZBUFFER 1_RG11B10F_D 1_RG11B10F_B");
 RenderTargetsView("_1_RG11B10F_CD","1_RG11B10F_C 1_RG11B10F_D");
 RenderTargetsView("_Z1_RG11B10F_A__L8_B","z:ZBUFFER 1_RG11B10F_A 1_L8_B");
-
-RenderTargetsView("_1_RGBA8_SRGB_PRV_A", "1_RGBA8_SRGB_PRV_A f:srgb");
-RenderTargetsView("_Z1_RGBA8_SPC", "z:ZBUFFER 1_RGBA8_SPC");
-RenderTargetsView("_Z1_RGBA8_DIF", "z:ZBUFFER 1_RGBA8_DIF");
+RenderTargetsView("_1_RGBA8_SRGB_PRV_A","1_RGBA8_SRGB_PRV_A f:srgb");
+RenderTargetsView("_Z1_RGBA8_SPC","z:ZBUFFER 1_RGBA8_SPC");
+RenderTargetsView("_Z1_RGBA8_DIF","z:ZBUFFER 1_RGBA8_DIF");
 
 
 RenderTargetsView("_1_L8_A", "z:ZBUFFER 1_L8_A");
@@ -210,8 +193,8 @@ RenderTargetsView("_LUM_16x16_A", "LUM_16x16_A");
 RenderTargetsView("_LUM_16x16_B", "LUM_16x16_B");
 RenderTargetsView("_WRONG", "WRONG");}
 sub usermaps(int e_path=-1){
-SetRenderTargetsView("_WRONG", "");
-Mesh("tri_screen.msh", "wrong_buffer.mat", "std");
+SetRenderTargetsView("_WRONG","");
+Mesh("tri_screen.msh","wrong_buffer.mat","std");
 SetBuffer(i_um_shadows, "1_L8_A");
 SetBuffer(i_um_overlay, "OVERLAY");
 SetBuffer(i_um_curves, "CURVES");
@@ -259,35 +242,23 @@ SetBuffer(i_um_fx_lighting, "16_RG11B10F_LIT");
 SetBuffer(i_um_dpt_2_min, "2_R16F_DPT_MIN");
 SetBuffer(i_um_dpt_2_max, "2_R16F_DPT_MAX");
 SetBuffer(i_um_dpt_2_avg, "2_R16F_DPT_AVG");
-
-SetBuffer(13, "1_RGBA8_SPC");
-SetBuffer(14, "1_RGB10A2_NRM");
-SetBuffer(15, "1_RG11B10F_PRV");
-SetBuffer(32, "LUM_16x16_PRV");
-}
-
-sub jitter(bool enabled = false, bool b_aa_on = FALSE)
-{
-if(b_aa_on)
-{
-If("f_smaa_jitter_on", "", "", "", "")
-{
+SetBuffer(13,"1_RGBA8_SPC");
+SetBuffer(14,"1_RGB10A2_NRM");
+SetBuffer(15,"1_RG11B10F_PRV");
+SetBuffer(32,"LUM_16x16_PRV");}
+sub jitter(bool enabled=false,bool b_aa_on=FALSE){
+if(b_aa_on){
+If("f_smaa_jitter_on", "", "", "", ""){
 If("f_game_postprocess_effect_4", "", "", "", "not"){
 SMAAScreenJitter(enabled);}}}}
-
-//// OPQ render //
 sub opq_render(int e_path = -1, bool b_sky_on = FALSE, bool b_editor_on = FALSE)
 {
-//// DEPTH 
 SetRenderTargetsView("_Z1", "depth stencil");
 use dpt_first(e_path = e_path);
 Scene("dpt");
 use dpt_last(e_path = e_path);
-// CLEAR MOTION VECTORS ////
 SetClearColor(0.0, 0.0, 0.0, 0.0);
-SetRenderTargetsView("_1_GBUFFER_MV", "color");
-
-//// OPQ FULL ///
+SetRenderTargetsView("_1_GBUFFER_MV","color");
 SetRenderTargetsView("_Z1_GBUFFER", "");
 use opq_first(e_path = e_path);
 Scene("opq_first");
