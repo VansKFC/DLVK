@@ -1,0 +1,20 @@
+sub materials(){material(0){enabled(0);
+clr_tex(0,"ground_horizon_forest_a.dds");
+nrm_tex(0,"ground_horizon_forest_a_nrm.dds");
+shn_tex(0,"defaultspecularmask.dds");
+uv_scale(0,0.0);
+nrm_scale(0,0.0);
+shn_factor(0,0.0);
+surface_id(0,8);
+preset(0,2);
+uv_scale(1,0.0);
+nrm_scale(1,0.0);
+shn_factor(1,0.0);
+surface_id(1,0);
+preset(1,0);
+weight(0.0);}}
+sub layers(){
+layer(0){name("New Layer");mat_top(0);param(0.5);}
+layer(1){name("New Layer");mat_top(1);param(0.5);}
+layer(2){name("New Layer");mat_top(2);param(0.5);}
+layer(3){name("New Layer");mat_top(3);param(0.5);}}

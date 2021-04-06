@@ -1,0 +1,21 @@
+sub main(){
+mesh("bbox.msh"){vrng(200.0);glod(10.0,15.0,10.0);}
+mesh("blood_pp.msh"){vrng(0.0);}
+mesh("bsphere.msh"){vrng(1.5975);glod(10.0,15.0,10.0);}
+mesh("bsphere_hq.msh"){vrng(900.0);defglod();}
+mesh("fury_pp_border.msh"){vrng(900.0);defglod();}
+mesh("grass_a.msh"){vrng(0.0);glod(0.0,0.0,0.0);}
+mesh("heat_pp.msh"){vrng(0.0);glod(0.0,0.0,0.0);}
+mesh("light_box.msh"){vrng(150.0);}
+mesh("light_pyramid.msh"){vrng(150.0);}
+mesh("light_sphere.msh"){vrng(150.0);}
+mesh("nomesh.msh"){vrng(0.0);glod(0.0,0.0,0.0);}
+mesh("odebox.msh"){vrng(300.0);glod(10.0,15.0,10.0);}
+mesh("odecone.msh"){vrng(300.0);glod(10.0,15.0,10.0);}
+mesh("odecylinder.msh"){vrng(300.0);glod(10.0,15.0,10.0);}
+mesh("odecylinderempty.msh"){vrng(300.0);}
+mesh("odehalfsphere.msh"){vrng(300.0);glod(10.0,15.0,10.0);}
+mesh("odesphere.msh"){vrng(300.0);glod(10.0,15.0,10.0);}
+mesh("sky.msh"){vrng(0.0);}
+mesh("stars.msh"){vrng(0.0);glod(0.0,0.0,0.0);}
+mesh("sun.msh"){vrng(0.0);glod(0.0,0.0,0.0);}}

@@ -80,16 +80,16 @@ BufferScreenFormat("16_L8_A",16,"L8","temp rt");
 BufferScreenFormat("16_L8_B",16,"L8","temp rt");
 BufferFormat("SHOOTS",128,128,"A8R8G8B8","rt");
 BufferFormat("SHOOTS_TEMP",128,128,"A8R8G8B8","temp rt");
-BufferFormat("32x32_RGBA32F_P1024_POS",32,32,"A32B32G32R32F","rt");
-BufferFormat("32x32_RGBA32F_P1024_CLR",32,32,"A32B32G32R32F","rt");
-BufferFormat("32x32_RGBA32F_A",32,32,"A32B32G32R32F","temp rt");
-BufferFormat("32x32_RGBA32F_B",32,32,"A32B32G32R32F","temp rt");
-BufferFormat("32x32_RGBA32F_C",32,32,"A32B32G32R32F","temp rt");
-BufferFormat("LUM_32x16",32,16,"R32F","temp rt");
-BufferFormat("LUM_16x16_A",16,16,"R32F","temp rt esram");
-BufferFormat("LUM_16x16_B",16,16,"R32F","temp rt");
-BufferFormat("LUM_16x16_PRV",16,16,"R32F","rt");
-BufferFormat("OVERLAY",32,32,"A8R8G8B8","temp rt");
+BufferFormat("32x32_RGBA32F_P1024_POS",8,8,"A32B32G32R32F","rt");
+BufferFormat("32x32_RGBA32F_P1024_CLR",8,8,"A32B32G32R32F","rt");
+BufferFormat("32x32_RGBA32F_A",8,8,"A32B32G32R32F","temp rt");
+BufferFormat("32x32_RGBA32F_B",8,8,"A32B32G32R32F","temp rt");
+BufferFormat("32x32_RGBA32F_C",8,8,"A32B32G32R32F","temp rt");
+BufferFormat("LUM_32x16",8,8,"R32F","temp rt");
+BufferFormat("LUM_16x16_A",8,8,"R32F","temp rt esram");
+BufferFormat("LUM_16x16_B",8,8,"R32F","temp rt");
+BufferFormat("LUM_16x16_PRV",8,8,"R32F","rt");
+BufferFormat("OVERLAY",8,8,"A8R8G8B8","temp rt");
 BufferFormat("CURVES",256,1,"A8R8G8B8","temp rt esram");
 BufferFormat("WRONG",1,1,"A8R8G8B8","temp rt");
 if(e_path==SM50){
@@ -123,29 +123,18 @@ RenderTargetsView("_Z1_RG11B10F_A__L8_B","z:ZBUFFER 1_RG11B10F_A 1_L8_B");
 RenderTargetsView("_1_RGBA8_SRGB_PRV_A","1_RGBA8_SRGB_PRV_A f:srgb");
 RenderTargetsView("_Z1_RGBA8_SPC","z:ZBUFFER 1_RGBA8_SPC");
 RenderTargetsView("_Z1_RGBA8_DIF","z:ZBUFFER 1_RGBA8_DIF");
-
-
-RenderTargetsView("_1_L8_A", "z:ZBUFFER 1_L8_A");
-
-RenderTargetsView("_Z1_L8_A", "z:ZBUFFER 1_L8_A");
-
-
-RenderTargetsView("_1_RGBA8_SRGB_A", "1_RGBA8_SRGB_A f:srgb");
-RenderTargetsView("_1_RGBA8_SRGB_B", "1_RGBA8_SRGB_B f:srgb");
-
-RenderTargetsView("_Z1_RGBA8_SRGB_A", "z:ZBUFFER 1_RGBA8_SRGB_A f:srgb");
-RenderTargetsView("_Z1_RGBA8_SRGB_B", "z:ZBUFFER 1_RGBA8_SRGB_B f:srgb");
-
-RenderTargetsView("_Z1_RGBA8_A", "z:ZBUFFER 1_RGBA8_A");
-
-RenderTargetsView("_2_R16F_DPT_MIN_MAX_AVG", "2_R16F_DPT_MIN 2_R16F_DPT_MAX 2_R16F_DPT_AVG");
-
-RenderTargetsView("_1_RG11B10F_PRV", "1_RG11B10F_PRV");
-
-RenderTargetsView("_4_RG11B10F_PRV_RFL", "4_RG11B10F_PRV_RFL");
-
-RenderTargetsView("_2_RG11B10F_A", "2_RG11B10F_A");
-RenderTargetsView("_2_RG11B10F_B", "2_RG11B10F_B");
+RenderTargetsView("_1_L8_A","z:ZBUFFER 1_L8_A");
+RenderTargetsView("_Z1_L8_A","z:ZBUFFER 1_L8_A");
+RenderTargetsView("_1_RGBA8_SRGB_A","1_RGBA8_SRGB_A f:srgb");
+RenderTargetsView("_1_RGBA8_SRGB_B","1_RGBA8_SRGB_B f:srgb");
+RenderTargetsView("_Z1_RGBA8_SRGB_A","z:ZBUFFER 1_RGBA8_SRGB_A f:srgb");
+RenderTargetsView("_Z1_RGBA8_SRGB_B","z:ZBUFFER 1_RGBA8_SRGB_B f:srgb");
+RenderTargetsView("_Z1_RGBA8_A","z:ZBUFFER 1_RGBA8_A");
+RenderTargetsView("_2_R16F_DPT_MIN_MAX_AVG","2_R16F_DPT_MIN 2_R16F_DPT_MAX 2_R16F_DPT_AVG");
+RenderTargetsView("_1_RG11B10F_PRV","1_RG11B10F_PRV");
+RenderTargetsView("_4_RG11B10F_PRV_RFL","4_RG11B10F_PRV_RFL");
+RenderTargetsView("_2_RG11B10F_A","2_RG11B10F_A");
+RenderTargetsView("_2_RG11B10F_B","2_RG11B10F_B");
 
 RenderTargetsView("_2_RG11B10F_A_L8_A", "2_RG11B10F_A 2_L8_A");
 RenderTargetsView("_2_RG11B10F_B_L8_B", "2_RG11B10F_B 2_L8_B");
@@ -236,7 +225,6 @@ SetTextureVar(i_um_overlay_game, "s_overlay_game");
 SetTextureVar(i_um_fade_pp_clr, "s_fade_pp_clr");
 SetTextureVar(i_um_fade_pp_msk, "s_fade_pp_msk");
 SetBuffer(i_um_hdr_buffer_copy, "1_RG11B10F_B");
-
 SetBuffer(i_um_clouds_msk, "1_L8_B");
 SetBuffer(i_um_fx_lighting, "16_RG11B10F_LIT");
 SetBuffer(i_um_dpt_2_min, "2_R16F_DPT_MIN");
@@ -251,8 +239,7 @@ if(b_aa_on){
 If("f_smaa_jitter_on", "", "", "", ""){
 If("f_game_postprocess_effect_4", "", "", "", "not"){
 SMAAScreenJitter(enabled);}}}}
-sub opq_render(int e_path = -1, bool b_sky_on = FALSE, bool b_editor_on = FALSE)
-{
+sub opq_render(int e_path = -1, bool b_sky_on = FALSE, bool b_editor_on = FALSE){
 SetRenderTargetsView("_Z1", "depth stencil");
 use dpt_first(e_path = e_path);
 Scene("dpt");
@@ -1477,70 +1464,50 @@ Mesh("tri_screen.msh", "smaa_edge_detection.mat", "std");
 SetClearColor(0.0, 0.0, 0.0, 0.0);
 SetRenderTargetsView("_Z1_RGBA8_DIF", "color");
 SetBuffer(16, "1_RGBA8_A");
-Mesh("tri_screen.msh", "smaa_blend_weight.mat", "std");
+Mesh("tri_screen.msh","smaa_blend_weight.mat","std");
 
 SetRenderTargetsView("_1_RGBA8_SRGB_A", "");
-SetBuffer(16, "1_RG16F_MV");
-SetBuffer(17, "1_RGBA8_SRGB_B");
-SetBuffer(18, "1_RGBA8_DIF"); //WEIGHTS
-Mesh("tri_screen.msh", "smaa_blend.mat", "std");
-
-//copy previous
-SetRenderTargetsView("_1_RGBA8_SRGB_B", "");
-SetBuffer(16, "1_RG16F_MV");
-SetBuffer(17, "1_RGBA8_SRGB_A");
-SetBuffer(18, "1_RGBA8_SRGB_PRV_A");
-Mesh("tri_screen.msh", "smaa_resolve.mat", "std");
-
-SetRenderTargetsView("_1_RGBA8_SRGB_PRV_A", "");
-SetBuffer(16, "1_RGBA8_SRGB_A"); //T2X
-// SetBuffer(16, "1_RGBA8_SRGB_B"); //T1X
-Mesh("tri_screen.msh", "copy_srgb.mat", "std");
-}
-}
-}
-
-if(b_blur_motion_on)
-{
-If("f_pp_blur_motion_object", "", "", "", "")
-{
-SetRenderTarget("1_RGBA8_SRGB_A", "");
-SetBuffer(16, "1_RGBA8_SRGB_B");
-Mesh("tri_screen.msh", "copy.mat", "std");
-
-SetRenderTarget("2_RG16F_A", "");
-SetBuffer(16, "1_RG16F_MV");
-Mesh("tri_screen.msh", "om_tile_max_0.mat", "std");
-
-SetRenderTarget("4_RG16F_A", "");
-SetBuffer(16, "2_RG16F_A");
+SetBuffer(8,"1_RG16F_MV");
+SetBuffer(8,"1_RGBA8_SRGB_B");
+SetBuffer(8,"1_RGBA8_DIF");
+Mesh("tri_screen.msh","smaa_blend.mat","std");
+SetRenderTargetsView("_1_RGBA8_SRGB_B","");
+SetBuffer(8,"1_RG16F_MV");
+SetBuffer(8,"1_RGBA8_SRGB_A");
+SetBuffer(8,"1_RGBA8_SRGB_PRV_A");
+Mesh("tri_screen.msh","smaa_resolve.mat","std");
+SetRenderTargetsView("_1_RGBA8_SRGB_PRV_A","");
+SetBuffer(16,"1_RGBA8_SRGB_A");
+Mesh("tri_screen.msh","copy_srgb.mat","std");}}}
+if(b_blur_motion_on){
+If("f_pp_blur_motion_object","","","",""){
+SetRenderTarget("1_RGBA8_SRGB_A","");
+SetBuffer(8,"1_RGBA8_SRGB_B");
+Mesh("tri_screen.msh","copy.mat","std");
+SetRenderTarget("2_RG16F_A","");
+SetBuffer(8,"1_RG16F_MV");
+Mesh("tri_screen.msh","om_tile_max_0.mat","std");
+SetRenderTarget("4_RG16F_A","");
+SetBuffer(8,"2_RG16F_A");
+Mesh("tri_screen.msh","om_tile_max.mat","std");
+SetRenderTarget("8_RG16F_A","");
+SetBuffer(8,"4_RG16F_A");
 Mesh("tri_screen.msh", "om_tile_max.mat", "std");
-
-SetRenderTarget("8_RG16F_A", "");
-SetBuffer(16, "4_RG16F_A");
-Mesh("tri_screen.msh", "om_tile_max.mat", "std");
-
 SetRenderTarget("16_RG16F_A", "");
-SetBuffer(16, "8_RG16F_A");
-Mesh("tri_screen.msh", "om_tile_max.mat", "std");
-
-SetRenderTarget("16_RG16F_B", "");
-SetBuffer(16, "16_RG16F_A");
-Mesh("tri_screen.msh", "om_neighbor_max.mat", "std");
-
-///object motion blur
-SetRenderTargetsView("_1_RGBA8_SRGB_B", "");
-SetBuffer(16, "16_RG16F_B");
-SetBuffer(17, "1_RG16F_MV");
-SetBuffer(18, "1_RGBA8_SRGB_A");
-Mesh("tri_screen.msh", "blur_object_motion.mat", "std");
-}
-}
+SetBuffer(8,"8_RG16F_A");
+Mesh("tri_screen.msh","om_tile_max.mat","std");
+SetRenderTarget("16_RG16F_B","");
+SetBuffer(16,"16_RG16F_A");
+Mesh("tri_screen.msh","om_neighbor_max.mat","std");
+SetRenderTargetsView("_1_RGBA8_SRGB_B","");
+SetBuffer(8,"16_RG16F_B");
+SetBuffer(8,"1_RG16F_MV");
+SetBuffer(8,"1_RGBA8_SRGB_A");
+Mesh("tri_screen.msh","blur_object_motion.mat","std");}}
 Discard("4_RG16F_A");
 Discard("8_RG16F_A");
 Discard("16_RG16F_A");
 Discard("16_RG16F_B");
-
 If("f_pp_curves", "", "", "", "")
 {
 SetRenderTargetsView("_CURVES", "");
@@ -1564,7 +1531,7 @@ Mesh("tri_screen.msh", "overlays_mix.mat", "std");
 }
 
 SetRenderTargetsView("_Z1_RGBA8_SRGB_A", "read_only_ds");
-SetBuffer(16, "1_RGBA8_SRGB_B"); //s_clr
+SetBuffer(16, "1_RGBA8_SRGB_B");
 
 use postprocess(e_path = e_path);
 
@@ -1716,99 +1683,48 @@ Mesh("tri_screen.msh", "copy_srgb.mat", "std");
 
 SetRenderTargetsView("_Z1_RGBA8_SRGB_A", "read_only_ds");
 SetBuffer(16, "1_RGBA8_SRGB_B");
-Mesh("tri_screen.msh", "postprocess_effect_9.mat", "std");
-}
-
-if(!b_editor_on)
-{
-use last(e_path = e_path);
-If("f_pp_fade_pp", "", "", "", "")
-{
-If("f_pp_fade_pp_clr", "", "", "", "")
-{
-If("f_pp_fade_pp_msk", "", "", "", "")
-{
-Mesh("tri_screen.msh", "fade_pp_cm.mat", "std");
-}
-If("f_pp_fade_pp_msk", "", "", "", "not")
-{
-Mesh("tri_screen.msh", "fade_pp_c_.mat", "std");
-}
-}
-If("f_pp_fade_pp_clr", "", "", "", "not")
-{
-If("f_pp_fade_pp_msk", "", "", "", "")
-{
-Mesh("tri_screen.msh", "fade_pp__m.mat", "std");
-}
-If("f_pp_fade_pp_msk", "", "", "", "not")
-{
-Mesh("tri_screen.msh", "fade_pp___.mat", "std");
-}
-}
-}
-}
-
-if(b_editor_on || b_editor_stencil_on)
-{
-If("f_ed_pp_grid_cs", "", "", "", "")
-{
-Mesh("tri_screen.msh", "grid_cs.mat", "std");
-}
-If("f_ed_pp_grid_ws", "", "", "", "")
-{
-Mesh("tri_screen.msh", "grid_ws.mat", "std");
-}
-If("f_ed_pp_grid_distance", "", "", "", "")
-{
-Mesh("tri_screen.msh", "grid_distance.mat", "std");
-}
-If("f_ed_pp_grid_distance_ws", "", "", "", "")
-{
-Mesh("tri_screen.msh", "grid_distance_ws.mat", "std");
-}
-
-use jitter(enabled = true, b_aa_on = b_aa_on);
-
-SetRenderTargetsView("_Z1_GBUFFER_NRM", "stencil");
+Mesh("tri_screen.msh", "postprocess_effect_9.mat", "std");}
+if(!b_editor_on){
+use last(e_path=e_path);
+If("f_pp_fade_pp","","","",""){
+If("f_pp_fade_pp_clr","","","",""){
+If("f_pp_fade_pp_msk","","","",""){
+Mesh("tri_screen.msh","fade_pp_cm.mat","std");}
+If("f_pp_fade_pp_msk","","","","not"){
+Mesh("tri_screen.msh","fade_pp_c_.mat","std");}}
+If("f_pp_fade_pp_clr","","","","not"){
+If("f_pp_fade_pp_msk","","","",""){
+Mesh("tri_screen.msh","fade_pp__m.mat","std");}
+If("f_pp_fade_pp_msk","","","","not"){
+Mesh("tri_screen.msh","fade_pp___.mat","std");}}}}
+if(b_editor_on||b_editor_stencil_on){
+If("f_ed_pp_grid_cs","","","",""){
+Mesh("tri_screen.msh","grid_cs.mat","std");}
+If("f_ed_pp_grid_ws","","","",""){
+Mesh("tri_screen.msh","grid_ws.mat","std");}
+If("f_ed_pp_grid_distance","","","",""){
+Mesh("tri_screen.msh","grid_distance.mat","std");}
+If("f_ed_pp_grid_distance_ws","","","",""){
+Mesh("tri_screen.msh","grid_distance_ws.mat","std");}
+use jitter(enabled=true,b_aa_on=b_aa_on);
+SetRenderTargetsView("_Z1_GBUFFER_NRM","stencil");
 Scene("stencil_marker");
-
-use jitter(enabled = false, b_aa_on = b_aa_on);
-
-SetRenderTargetsView("_Z1_RGBA8_SRGB_A", "read_only_ds");
-If("f_ed_sm_0_on", "", "", "", "")
-{
-Mesh("tri_screen.msh", "stencil_marker_0.mat", "std");
-}
-
-If("f_ed_sm_1_on", "", "", "", "")
-{
-Mesh("tri_screen.msh", "stencil_marker_1.mat", "std");
-}
-
-If("f_ed_sm_2_on", "", "", "", "")
-{
-Mesh("tri_screen.msh", "stencil_marker_2.mat", "std");
-}
-
-If("f_ed_sm_3_on", "", "", "", "")
-{
-Mesh("tri_screen.msh", "stencil_marker_3.mat", "std");
-}
-
-If("f_ed_sm_4_on", "", "", "", "")
-{
-Mesh("tri_screen.msh", "stencil_marker_4.mat", "std");
-}
-
-If("f_ed_sm_5_on", "", "", "", "")
-{
-Mesh("tri_screen.msh", "stencil_marker_5.mat", "std");
-}
-
-If("f_ed_sm_6_on", "", "", "", "")
-{
-Mesh("tri_screen.msh", "stencil_marker_6.mat", "std");}
+use jitter(enabled=false,b_aa_on=b_aa_on);
+SetRenderTargetsView("_Z1_RGBA8_SRGB_A","read_only_ds");
+If("f_ed_sm_0_on","","","",""){
+Mesh("tri_screen.msh","stencil_marker_0.mat","std");}
+If("f_ed_sm_1_on","","","",""){
+Mesh("tri_screen.msh","stencil_marker_1.mat","std");}
+If("f_ed_sm_2_on","","","",""){
+Mesh("tri_screen.msh","stencil_marker_2.mat","std");}
+If("f_ed_sm_3_on","","","",""){
+Mesh("tri_screen.msh","stencil_marker_3.mat","std");}
+If("f_ed_sm_4_on","","","",""){
+Mesh("tri_screen.msh","stencil_marker_4.mat","std");}
+If("f_ed_sm_5_on","","","",""){
+Mesh("tri_screen.msh","stencil_marker_5.mat","std");}
+If("f_ed_sm_6_on","","","",""){
+Mesh("tri_screen.msh","stencil_marker_6.mat","std");}
 If("f_ed_sm_7_on","","","",""){
 Mesh("tri_screen.msh","stencil_marker_7.mat","std");}
 If("f_ed_sm_8_on","","","",""){
@@ -1836,9 +1752,9 @@ SetRenderTargetsView("_RIFT_R","");}
 If("i_pp_OculusRightEye","","","","not"){
 SetRenderTargetsView("_RIFT_L", "");}}
 If("i_pp_OculusEnable","","","","not"){
-SetRenderTarget("backbuffer", "3d");}
+SetRenderTarget("backbuffer","3d");}
 }else{
-SetRenderTarget("backbuffer", "3d");}
+SetRenderTarget("backbuffer","3d");}
 if(e_path==SM50||e_path==SM53){
 If("fullscreen","","","","not"){
 Mesh("tri_screen.msh","copy_gamma_win.mat","std");}
