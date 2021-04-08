@@ -1,5 +1,5 @@
-TravelDistance(0.0)
-RayRanges(0.0,0.0)
+TravelDistance(1.0)
+RayRanges(-100.0,1000.0)
 Layer("Trash"){RenderRangesLod(0.0,0.0,0.0)BlendRangesLod(0,0.0,0.0)DensityMap("old_town_foliage_trash")InstancesPerMeter(0.0)ExpensiveTraces(0)
 Type(){MeshLod(0,"foliage_paper_a.msh","paper_foliage.mat")Priority(0)AlignToNormal(0)Scale(0.0,0.0)Shadows(0,0)}
 Type(){MeshLod(0,"foliage_paper_b.msh","paper_foliage.mat")Priority(0)AlignToNormal(0)Scale(0.0,0.0)Shadows(0,0)}
