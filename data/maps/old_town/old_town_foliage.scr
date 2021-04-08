@@ -15,117 +15,20 @@ Type(){MeshLod(0,"foliage_paper_b.msh","paper_foliage.mat")Priority(0)AlignToNor
 Type(){MeshLod(0,"foliage_trash_d.msh","paper_foliage.mat")Priority(0)AlignToNormal(0)Scale(0.0,0.0)Shadows(0,0)}
 Type(){MeshLod(0,"to_cigarette_a.msh","cigarette_a.mat")Priority(0)AlignToNormal(0)Scale(0.0,0.0)Shadows(0,0)}
 Type(){MeshLod(0,"to_cigarette_b.msh","cigarette_a.mat")Priority(0)AlignToNormal(0)Scale(0.0,0.0)Shadows(0,0)}
-Type()
-{
-MeshLod(0, "bottle_trash_a.msh", "bottle_trash_a.mat")
-Priority(1)
-AlignToNormal(0)
-Scale(1.00, 2.00)
-Shadows(0, 1)
-}
-Type()
-{
-MeshLod(0, "bottle_trash_b.msh", "bottle_trash_a.mat")
-Priority(1)
-AlignToNormal(0)
-Scale(1.00, 2.00)
-Shadows(0, 1)
-}
-Type()
-{
-MeshLod(0, "bottle_trash_c.msh", "bottle_trash_a.mat")
-Priority(1)
-AlignToNormal(0)
-Scale(1.00, 2.00)
-Shadows(0, 1)
-}
-Type()
-{
-MeshLod(0, "bottle_trash_d.msh", "bottle_trash_a.mat")
-Priority(1)
-AlignToNormal(0)
-Scale(1.00, 2.00)
-Shadows(0, 1)
-}
- }
- Layer("Grass")
- {
-RenderRangesLod(36.00, 0.00, 0.00)
-BlendRangesLod(0, 5.00, 1.00)
-DensityMap("old_town_foliage_grass")
-InstancesPerMeter(6.00)
-ExpensiveTraces(1)
-Type()
-{
-MeshLod(0, "foliage_grass_a.msh", "foliage_grass_a_fade.mat")
-Priority(70)
-AlignToNormal(1)
-Scale(1.00, 1.20)
-Shadows(1, 1)
-}
- }
- Layer("Stones")
- {
-RenderRangesLod(30.00, 0.00, 0.00)
-BlendRangesLod(0, 5.00, 5.00)
-DensityMap("old_town_foliage_stones")
-InstancesPerMeter(2.00)
-ExpensiveTraces(1)
-Type()
-{
-MeshLod(0, "foliage_trash_stone_a.msh", "foliage_trash_stone_a.mat")
-Priority(10)
-AlignToNormal(1)
-Scale(1.00, 1.30)
-Shadows(0, 1)
-}
-Type()
-{
-MeshLod(0, "foliage_trash_stone_b.msh", "foliage_trash_stone_a.mat")
-Priority(10)
-AlignToNormal(1)
-Scale(1.00, 1.20)
-Shadows(0, 1)
-}
-Type()
-{
-MeshLod(0, "foliage_trash_stone_c.msh", "foliage_trash_stone_a.mat")
-Priority(10)
-AlignToNormal(1)
-Scale(1.00, 1.30)
-Shadows(0, 1)
-}
-Type()
-{
-MeshLod(0, "foliage_trash_stone_d.msh", "foliage_trash_stone_a.mat")
-Priority(20)
-AlignToNormal(1)
-Scale(1.00, 1.30)
-Shadows(0, 1)
-}
-Type()
-{
-MeshLod(0, "foliage_trash_stone_e.msh", "foliage_trash_stone_a.mat")
-Priority(20)
-AlignToNormal(1)
-Scale(1.00, 1.30)
-Shadows(0, 1)
-}
-Type()
-{
-MeshLod(0, "foliage_trash_stone_f.msh", "foliage_trash_stone_a.mat")
-Priority(20)
-AlignToNormal(1)
-Scale(1.00, 1.30)
-Shadows(0, 1)
-}
- }
- Layer("Nature")
- {
-RenderRangesLod(46.00, 0.00, 0.00)
-BlendRangesLod(0, 4.00, 4.00)
-DensityMap("old_town_foliage_nature")
-InstancesPerMeter(0.0)ExpensiveTraces(0)
+Type(){MeshLod(0,"bottle_trash_a.msh","bottle_trash_a.mat")Priority(0)AlignToNormal(0)Scale(0.0,0.0)Shadows(0,0)}
+Type(){MeshLod(0,"bottle_trash_b.msh","bottle_trash_a.mat")Priority(0)AlignToNormal(0)Scale(0.0,0.0)Shadows(0,0)}
+Type(){MeshLod(0,"bottle_trash_c.msh","bottle_trash_a.mat")Priority(0)AlignToNormal(0)Scale(0.0,0.0)Shadows(0,0)}
+Type(){MeshLod(0,"bottle_trash_d.msh","bottle_trash_a.mat")Priority(0)AlignToNormal(0)Scale(0.0,0.0)Shadows(0,0)}}
+Layer("Grass"){RenderRangesLod(0.0,0.0,0.0)BlendRangesLod(0,0.0,0.0)DensityMap("old_town_foliage_grass")InstancesPerMeter(0.0)ExpensiveTraces(0)
+Type(){MeshLod(0,"foliage_grass_a.msh","foliage_grass_a_fade.mat")Priority(0)AlignToNormal(0)Scale(0.0,0.0)Shadows(0,0)}}
+Layer("Stones"){RenderRangesLod(0.0,0.0,0.0)BlendRangesLod(0,0.0,0.0)DensityMap("old_town_foliage_stones")InstancesPerMeter(0.0)ExpensiveTraces(0)
+Type(){MeshLod(0,"foliage_trash_stone_a.msh","foliage_trash_stone_a.mat")Priority(0)AlignToNormal(0)Scale(0.0,0.0)Shadows(0,0)}
+Type(){MeshLod(0,"foliage_trash_stone_b.msh","foliage_trash_stone_a.mat")Priority(0)AlignToNormal(0)Scale(0.0,0.0)Shadows(0,0)}
+Type(){MeshLod(0,"foliage_trash_stone_c.msh","foliage_trash_stone_a.mat")Priority(0)AlignToNormal(0)Scale(0.0,0.0)Shadows(0,0)}
+Type(){MeshLod(0,"foliage_trash_stone_d.msh","foliage_trash_stone_a.mat")Priority(0)AlignToNormal(0)Scale(0.0,0.0)Shadows(0,0)}
+Type(){MeshLod(0,"foliage_trash_stone_e.msh","foliage_trash_stone_a.mat")Priority(0)AlignToNormal(0)Scale(0.0,0.0)Shadows(0,0)}
+Type(){MeshLod(0,"foliage_trash_stone_f.msh","foliage_trash_stone_a.mat")Priority(0)AlignToNormal(0)Scale(0.0,0.0)Shadows(0,0)}}
+Layer("Nature"){RenderRangesLod(0.0,0.0,0.0)BlendRangesLod(0,0.0,0.0)DensityMap("old_town_foliage_nature")InstancesPerMeter(0.0)ExpensiveTraces(0)
 Type(){MeshLod(0,"foliage_grass_a.msh","foliage_grass_a_fade.mat")Priority(0)AlignToNormal(0)Scale(0.0,0.0)Shadows(0,0)}
 Type(){MeshLod(0,"foliage_plant_b.msh","foliage_plant_b_fade.mat")Priority(0)AlignToNormal(0)Scale(0.0,0.0)Shadows(0,0)}
 Type(){MeshLod(0,"foliage_plant_a.msh","foliage_plant_a_b_fade.mat")Priority(0)AlignToNormal(0)Scale(0.0,0.0)Shadows(0,0)}
