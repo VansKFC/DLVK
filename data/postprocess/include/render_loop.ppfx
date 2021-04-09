@@ -321,23 +321,15 @@ If("f_ed_pp_dev_ambient_only_on", "", "", "", "not")
 If("i_pp_lighting_sun_on", "f_weather_wet", "", "", "")
 {
 HiStencilFill();
-SetClearColor(1.0, 1.0, 1.0, 1.0);// we must clear shadows buffer because places that were not touched by shadow boxes will have last frame contents (it is visible on objects afar)
-SetRenderTargetsView("_Z1_L8_A", "color stencil read_only_ds");
-
-If("i_nvidia_pcss_enabled", "", "", "", "not")
-{
-//HACK???
-Mesh("tri_screen.msh", "stencil_write_sky_mask.mat", "std"); //Render "sky" quad that, fills stencil to 255, hi-s is still all to CULL.
-Mesh("tri_screen.msh", "stencil_update_cumulative_mask.mat", "std"); //Render quad, test if stencil is <128 and fill stencil with 127 - in effect everywhere where there is no sky, hi-s is set to PASS.
-}
-
-If("i_nvidia_pcss_enabled", "", "", "", "")
-{
-If("f_weather_weight_wet", "", "", "", "")
-{
-//HACK???
-Mesh("tri_screen.msh", "stencil_write_sky_mask.mat", "std"); //Render "sky" quad that, fills stencil to 255, hi-s is still all to CULL.
-Mesh("tri_screen.msh", "stencil_update_cumulative_mask.mat", "std"); //Render quad, test if stencil is <128 and fill stencil with 127 - in effect everywhere where there is no sky, hi-s is set to PASS.
+SetClearColor(1.0,1.0,1.0,1.0);
+SetRenderTargetsView("_Z1_L8_A","color stencil read_only_ds");
+If("i_nvidia_pcss_enabled","","","","not"){
+Mesh("tri_screen.msh", "stencil_write_sky_mask.mat","std");
+Mesh("tri_screen.msh", "stencil_update_cumulative_mask.mat","std");}
+If("i_nvidia_pcss_enabled","","","",""){
+If("f_weather_weight_wet","","","",""){
+Mesh("tri_screen.msh", "stencil_write_sky_mask.mat", "std");
+Mesh("tri_screen.msh", "stencil_update_cumulative_mask.mat", "std");
 }
 }
 
@@ -463,8 +455,8 @@ DispatchUsingBuffer("hbao_blur_x_96.mat", "std", "1_R16F_UA_A", 1, 1, 96, 1);
 SetRWBuffer(0, "1_RG16F_UA_A");
 SetRWBuffer(1, "1_R32U_PRV_UA_A");
 SetBuffer(8, "1_R16F_UA_A");
-SetBuffer(7, "1_RG16F_PRV_UA_A");
-SetBuffer(6, "2_R16F_UA_A");
+SetBuffer(8, "1_RG16F_PRV_UA_A");
+SetBuffer(8, "2_R16F_UA_A");
 if(e_path == SM51 || e_path == SM52)
 {
 DispatchUsingBuffer("hbao_blur_Y.mat", "std", "1_RG16F_UA_A", 1, 1, 1, 64);
@@ -482,7 +474,7 @@ if(b_sky_on)
 If("i_pp_lighting_sun_on", "i_pp_outdoor_on", "", "", "and")
 {
 HiStencilFill();
-Mesh("tri_screen.msh", "stencil_write_sky_mask_updated.mat", "std"); //Render "sky" quad that, fills stencil to 255, hi-s is still all to CULL.
+Mesh("tri_screen.msh", "stencil_write_sky_mask_updated.mat", "std");
 HiStencilUse();
 Mesh("tri_screen.msh", "ssao_mul_prv_stencil.mat", "std");
 }
@@ -503,19 +495,14 @@ bool b_heat_on = FALSE,
 bool b_sky_on = FALSE,
 bool b_rain_on = FALSE,
 bool b_editor_on = FALSE,
-bool b_editor_lighting_on = FALSE,
-bool b_editor_stencil_on = FALSE,
-bool b_top_on = FALSE,
-bool b_shoots_on = FALSE,
-bool b_glow_on = FALSE,
-bool b_blur_on = FALSE,
-bool b_blur_motion_on = FALSE,
-bool b_aa_on = FALSE
-)
-{
-// Uncomment me to enable SMAA screen jittering
-
-// Configure hi-stencil for light optimizations (PASS only if stencil value == 127, CULL otherwise)
+bool b_editor_lighting_on=FALSE,
+bool b_editor_stencil_on=FALSE,
+bool b_top_on=FALSE,
+bool b_shoots_on=FALSE,
+bool b_glow_on=FALSE,
+bool b_blur_on=FALSE,
+bool b_blur_motion_on=FALSE,
+bool b_aa_on=FALSE){
 HiStencilConfigure(127, TRUE);
 If("f_game_postprocess_effect_4", "", "", "", "not")
 {
@@ -667,9 +654,7 @@ If("f_ed_pp_dev_ambient_only_on", "", "", "", "not")
 {
 if(b_sky_on)
 {
-If("i_pp_lighting_sun_on", "", "", "", "")
-{
-//TODO: if wlaczajacy cienie od chmur, tylko dla wether < 0.4 - to jest dodatkowy warunek, bo slonce jest wykorzystywane w blyskawicach
+If("i_pp_lighting_sun_on", "", "", "", ""){
 If("f_pp_clouds_shadows", "", "", "", "")
 {
 SetRenderTargetsView("_1_L8_A", "read_only_ds");
@@ -677,7 +662,7 @@ Mesh("tri_screen.msh", "shadows_clouds.mat", "std");
 }
 
 SetRenderTargetsView("_Z1_RG11B10F_AB", "read_only_ds");
-Mesh("tri_screen.msh", "lights_sun.mat", "std");//TODO: Render sun quad, stencil test set to equ 127.
+Mesh("tri_screen.msh", "lights_sun.mat", "std");
 }
 }
 else
@@ -1044,7 +1029,7 @@ SetBuffer(8, "1_RG11B10F_B");
 }
 
 
-Scene("rfr"); //Refraction
+Scene("rfr");
 Scene("rfr2");
 
 If("f_pp_rfr3", "f_pp_rfr_last", "", "", "")
